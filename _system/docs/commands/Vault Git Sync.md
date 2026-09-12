@@ -35,36 +35,17 @@ Repository `AGENTS.md` defines the required workflow. On the primary, fetch and 
 Versioned hooks apply only where Vault Git exists:
 
 - `post-commit`: run the required Git LFS post-commit hook.
-- `post-checkout`, `post-merge`, `post-rewrite`: refresh dependency-backed auto-skill projections and global skill links.
+- `post-checkout`, `post-merge`, `post-rewrite`: refresh configured skill materializations and global discovery links.
 - `pre-push`: enforce pointer-only media policy where configured.
 
 ### Worktree coordination
 
-The Vault is single-writer across iCloud Macs and remote clients. Managed mutations use the authoritative host-side writer lease; unmanaged editors must be closed before a remote session.
+Macs edit their local iCloud Vault normally. Changes move between them asynchronously through iCloud, and ordinary editing never waits for another machine or for outbound upload.
 
-Before leaving the active Mac:
+A Linux remote client runs `vault access status` before reading or editing. It continues only when the command succeeds and reports `"ok": true`. Its writes land directly in the configured Mac host's worktree through SSHFS, then that Mac's iCloud client distributes them to the other Macs.
 
-1. Stop Vault edits and close Obsidian plus Vault-rooted Codex tasks.
-2. Finish the leased edit session. Do not wait for outbound iCloud upload.
-3. If the active Mac is the primary, complete and push the required Vault-wide commit before leaving it. If it is a worker, do not run Git; iCloud continues transporting its changes asynchronously.
+On a worker, confirm the shared `.git` pointer remains unresolved and continue with file work only. On the primary, run `vault git-preflight`, inspect the complete worktree, and account for every visible change.
 
-Before starting on another Mac:
+Never run `git`, `vault git-preflight`, `vault refresh`, `vault git-maintenance`, release, agents sync, or Git-backed media commands from a worker or remote client. If iCloud produces a conflict copy, compare both versions and resolve it deliberately. Do not reset, stash, delete, or choose a winner automatically.
 
-1. Ensure the Vault folder is marked **Keep Downloaded** and choose **Download Now** when necessary for missing inbound files.
-2. Require no dataless files and no iCloud conflict copies.
-3. On a worker, confirm the shared `.git` pointer is dangling and continue with file work only. On the primary, run `vault git-preflight`, inspect the complete worktree, and account for every iCloud-delivered change.
-
-Never edit through two worktrees at once. Never run `git`, `vault git-preflight`, `vault refresh`, `vault git-maintenance`, release, agents sync, or Git-backed media commands from a worker or remote client. If iCloud produces a conflict copy, stop and compare both versions; do not reset, stash, delete, or choose a winner automatically.
-
-### Remote session diagnostics
-
-A remote client starts with `vault access status` and acquires the lease through `vault access begin`. `vault access finish` records changed files, hashes, symlinks, and deletions, performs host fsync, writes an ignored diagnostic receipt, releases the lease, and returns without waiting for iCloud upload or caught-up state.
-
-Optional diagnostics on the Git-owner Mac:
-
-```sh
-vault access wait --receipt SESSION_ID
-vault git-preflight
-```
-
-The receipt command can materialize a named session, verify hashes and deletions, check File Provider health, and record `peer-observed`. The primary does not run it as a prerequisite. It follows the full Vault-wide Git procedure against the complete worktree currently visible to it. `vault access ack-git` is optional diagnostic bookkeeping after a pushed commit is visible on the configured remote branch.
+Full machine roles and Linux mount behavior are documented in [[README-primary-worker-vault-sync|Primary and Worker Vault Coordination]] and [[Vault Access]].

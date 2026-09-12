@@ -2,15 +2,10 @@
 type: periodic
 period: quarterly
 entity: business
-period_id: FREE TOOLS (SEO) -start
+period_id: <% tp.file.title %>
 generated: false
 ---
-# Impression Quarterly
-
-[[business#Identity]]
-[[business#Momentum]]
-
-## Planning &  Direction
+## Rough Quarterly Planning
 
 
 

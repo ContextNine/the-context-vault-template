@@ -1,6 +1,5 @@
 ---
 status: active
-content_schedules_enabled: true
 default_capture: false
 ---
 

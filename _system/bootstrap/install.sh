@@ -2,6 +2,7 @@
 set -euo pipefail
 
 REPO_URL="https://github.com/MDerman/the-context-vault-template.git"
+RELEASE_TAG="${CTX9_VAULT_RELEASE_TAG:-}"
 SKILL_SYSTEM_REPO_URL="https://github.com/MDerman/the-skill-problem-system.git"
 DEFAULT_TARGET_RELATIVE="Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/Vault"
 RELEASE_METADATA_RELATIVE="_system/bootstrap/release.json"
@@ -151,7 +152,12 @@ STATE_DIR="${STATE_BASE}/${install_id}"
 UPSTREAM_GIT="${STATE_DIR}/upstream.git"
 
 run_as_install_user mkdir -p "${STATE_DIR}"
-run_as_install_user "${GIT_BIN}" clone --separate-git-dir "${UPSTREAM_GIT}" "${REPO_URL}" "${TARGET}"
+if [[ -n "${RELEASE_TAG}" ]]; then
+  run_as_install_user "${GIT_BIN}" clone --branch "${RELEASE_TAG}" --single-branch \
+    --separate-git-dir "${UPSTREAM_GIT}" "${REPO_URL}" "${TARGET}"
+else
+  run_as_install_user "${GIT_BIN}" clone --separate-git-dir "${UPSTREAM_GIT}" "${REPO_URL}" "${TARGET}"
+fi
 installed_commit="$(run_as_install_user "${GIT_BIN}" --git-dir "${UPSTREAM_GIT}" --work-tree "${TARGET}" rev-parse HEAD)"
 installed_version="$(sed -n 's/.*"version"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${TARGET}/${RELEASE_METADATA_RELATIVE}" | head -1)"
 installed_tag="$(sed -n 's/.*"tag"[[:space:]]*:[[:space:]]*"\([^"]*\)".*/\1/p' "${TARGET}/${RELEASE_METADATA_RELATIVE}" | head -1)"
@@ -213,7 +219,7 @@ install_optional_skill_system() {
   else
     source_dir="$(resolve_target_path "${source_value}")"
   fi
-  if [[ ! -f "${source_dir}/_system/agents/_package/src/agents.py" || ! -x "${source_dir}/install.sh" ]]; then
+  if [[ ! -f "${source_dir}/_system/agents/_package/src/fleet.py" || ! -x "${source_dir}/install.sh" ]]; then
     echo "Skill system source is incomplete: ${source_dir}" >&2
     exit 1
   fi

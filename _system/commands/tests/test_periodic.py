@@ -40,6 +40,23 @@ class PeriodicTemplateRenderingTests(unittest.TestCase):
 
         self.assertEqual(periods["monthly"], "2026-06")
 
+    def test_periodic_opt_out_excludes_active_context(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for entity, periodic_setting in (("personal", ""), ("claudeche", "periodic_notes_enabled: false\n")):
+                entity_dir = root / entity
+                entity_dir.mkdir()
+                (entity_dir / f"{entity}.md").write_text(
+                    f"---\nstatus: active\n{periodic_setting}---\n",
+                    encoding="utf-8",
+                )
+
+            configured = ["personal", "claudeche"]
+            self.assertEqual(periodic.resolve_entities(root, configured, [], False), ["personal"])
+            self.assertEqual(periodic.resolve_entities(root, configured, [], True), ["personal"])
+            with self.assertRaises(SystemExit):
+                periodic.resolve_entities(root, configured, ["claudeche"], False)
+
     def test_system_periodic_notes_render_personal_first(self) -> None:
         rendered = periodic.vault_periodic_note(
             Path("/tmp/vault"),
@@ -51,6 +68,7 @@ class PeriodicTemplateRenderingTests(unittest.TestCase):
 
         self.assertLess(rendered.index("## personal\n"), rendered.index("## business.nosync\n"))
         self.assertLess(rendered.index("  - personal"), rendered.index("  - business.nosync"))
+        self.assertNotIn("\n# ", rendered)
 
     def test_renders_templater_date_now_and_cursor_calls(self) -> None:
         template = """---

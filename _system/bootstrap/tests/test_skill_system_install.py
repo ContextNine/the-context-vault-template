@@ -18,7 +18,7 @@ class SkillSystemBootstrapTests(unittest.TestCase):
         defaults = source / "_system/agents/_package/defaults/instance"
         defaults.mkdir(parents=True)
         (defaults / "profile.json").write_text("{}\n", encoding="utf-8")
-        skill = source / "_system/agents/skills/auto/_test/example"
+        skill = source / "_system/agents/skills/_test/example"
         skill.mkdir(parents=True)
         (skill / "SKILL.md").write_text("---\nname: example\ndescription: Test.\n---\n", encoding="utf-8")
         return source
@@ -35,7 +35,7 @@ class SkillSystemBootstrapTests(unittest.TestCase):
             vault = root / "vault"
             vault.mkdir()
             install_tree(self.source_repo(root), vault, source_url="test", release_version="0.1.0", commit="abc")
-            self.assertTrue((vault / "_system/agents/skills/auto/_test/example/SKILL.md").is_file())
+            self.assertTrue((vault / "_system/agents/skills/_test/example/SKILL.md").is_file())
             self.assertTrue((vault / "_system/agents/_package/instance/profile.json").is_file())
             self.assertTrue((vault / "_system/local/state/skill-system-install.json").is_file())
 

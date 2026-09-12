@@ -5,37 +5,31 @@ status: enabled
 
 ## Vault access
 
-`vault access` reports and enforces full-worktree safety and shared writer leases. It also exposes iCloud, receipt, observation, and Git-push state for diagnostics, but upload state does not gate task completion. It uses schema-v7 machine identity and fails closed on unknown topology or safety output.
+`vault access` checks whether a registered machine can safely use its Vault worktree. The command has no editing session, lock, handoff, or completion workflow.
 
 ### Commands
 
 ```bash
-vault access mount
-vault access unmount
 vault access status [--json]
 vault access doctor [--json]
-vault access wait --download|--upload|--receipt SESSION_ID [--timeout SECONDS]
-vault access begin [--task-id TASK_OR_THREAD_ID]
-vault access finish [--timeout SECONDS]
-vault access recover --reason "EXPLICIT REASON"
-vault access ack-git --receipt SESSION_ID --commit COMMIT_SHA
+vault access mount
+vault access unmount
 ```
 
-`mount` and `unmount` operate SSHFS only on a registered `remote-sshfs` client. A Mac reports its local iCloud worktree instead. Unmount is graceful and refuses an active session or lease.
+`mount` and `unmount` operate SSHFS only on a registered `remote-sshfs` Linux client. A Mac reports its local iCloud worktree instead.
 
-`status` reports four independent states:
+### Linux editing gate
 
-1. `filesystem_saved`
-2. `icloud_uploaded`
-3. `peer_observed`
-4. `git_pushed`
+Before reading or editing the Vault on Linux, run:
 
-It also reports SSH and exact mount health, read-write mode, File Provider and iCloud container state, last activity, dataless/conflict/pause/pending paths, the lease owner/session/heartbeat/expiry, active session, and the latest receipt.
+```bash
+vault access status
+```
 
-`begin` requires a fully materialized, current downloaded worktree with no conflicts, pause, exclusions, or dataless files, then atomically acquires the one host-side lease. Pending outbound uploads and a container that is not caught up do not block access. Managed commands that write Vault files fail without a matching lease. Close Obsidian and unmanaged Vault writers first because filesystem permissions cannot prevent them from bypassing the command boundary.
+Continue only when the command exits successfully and reports `"ok": true`. Otherwise do not edit.
 
-`finish` snapshots changes, hashes changed file bodies, records symlinks and deletions, fsyncs on the Mac host, writes an ignored diagnostic receipt, releases the lease, and returns immediately. It never waits for named uploads, receipt upload, or container caught-up state.
+Status proves that SSH works, the exact registered SSHFS source is mounted read-write, the Vault sentinel exists, the source host identity matches, and the source iCloud worktree is fully downloaded, current, conflict-free, and not paused. Pending outbound upload and a container that is still uploading do not make the mounted worktree stale.
 
-`wait --upload`, `wait --receipt`, and `ack-git` remain explicit diagnostic commands. They are never required before Git preflight, commit, push, or task completion. The registered Git owner commits and pushes the complete worktree currently visible to it.
+Macs edit their local iCloud worktrees normally and do not run an access gate. Linux writes land directly in the configured Mac host's worktree through SSHFS. That Mac's iCloud client distributes them to the other Macs. Only the registered Git owner commits and pushes the Vault.
 
-Setup, systemd, SSHFS options, first acceptance, reboot acceptance, and recovery belong to [[linux-remote-vault-access|Linux Remote Vault Access]] under `$infra-onboard-machine`. Host and Git coordination are summarized in [[Vault Git Sync]] and [[README-primary-worker-vault-sync|Primary and Worker Vault Coordination]].
+Setup, systemd, SSHFS options, acceptance, and recovery belong to [[linux-remote-vault-access|Linux Remote Vault Access]] under `$infra-i-onboard-machine`. Machine roles and Git ownership are documented in [[README-primary-worker-vault-sync|Primary and Worker Vault Coordination]] and [[Vault Git Sync]].

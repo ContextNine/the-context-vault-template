@@ -9,7 +9,7 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 ## Main Scripts
 
 - `vault.py`: terminal dispatcher installed as `vault` in `~/.local/bin`; forwards subcommands to the scripts below.
-- `remote_access.py`: local-Mac `vault access` entrypoint for worktree safety, shared leases, and optional receipt/upload diagnostics. The reviewed deployable host/client/controller lives in the existing `infra-onboard-machine` skill. Remote Linux launchers intercept `vault access` outside the mount.
+- `remote_access.py`: local-Mac `vault access` entrypoint for worktree health. The reviewed deployable host/client/controller lives in the existing `infra-i-onboard-machine` skill. Remote Linux launchers intercept `vault access` outside the mount.
 - `refresh.py`: sole full-refresh entrypoint; runs required Git preflight before generated changes, optional Brain Dump ingestion, content schedules, source/vault periodic notes, `Dashboard.md`, and best-effort Git maintenance.
 - `refresh_schedule.py`: registers, unregisters, reports, and runs the macOS LaunchAgent daily refresh wrapper.
 - `mac_startup.py`: validates private per-machine startup opt-ins and application bundle identifiers, installs or removes the copied macOS `RunAtLoad` runtime, archives configured legacy LaunchAgents, reports state, and runs enabled actions. Explicit `--provision-disabled` supports reviewed onboarding without fleet enablement. Use `vault mac-startup`.
@@ -29,12 +29,12 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 - `git_maintenance.py`: keeps normal Git history shallow and compacts local Git objects. Use `vault git-maintenance`.
 - `git_preflight.py`: fetches and fast-forwards clean `master` before refresh changes files. Use `vault git-preflight`.
 - `worker_bootstrap.py`: keeps iCloud worker Macs Gitless, recoverably retires only the expected legacy external Git directory, and writes machine-local identity plus refresh prohibition; reviewed onboarding can target one disabled Mac worker through `--provision-disabled`. Use `vault worker-sync` only for Mac workers.
-- `_system/agents/_package/src/sync_agents.py`: canonical default-apply fleet orchestrator for portable skills, Codex/Claude settings, and rendered instructions. Use `ctx9-agents sync`; add component selectors or `--dry-run` when needed.
-- `_system/agents/_package/src/sync_skills.py`: validates grouped auto/manual/GH skill sources, materializes selected repo-owned projections, enforces invocation policy, repairs dependency moves, and rebuilds the Vault-local flat catalog.
+- `_system/agents/_package/src/sync_agents.py`: canonical default-apply fleet orchestrator for portable skills, Codex/Claude settings, and rendered instructions. Use `fleet sync`; add component selectors or `--dry-run` when needed.
+- `_system/agents/_package/src/sync_skills.py`: validates flat grouped Vault and repository-scoped GH sources, materializes configured local-checkout links, overlays, and snapshots, enforces invocation naming, and rebuilds the Vault-local flat catalog.
 - `_system/agents/_package/src/skill_snapshots.py`: builds and installs verified point-in-time global skill copies while preserving unmanaged skills.
 - `_system/agents/_package/src/global_agent_configuration.py`: shared Vault alias, machine-footer rendering, and atomic home-file reconciliation used by regular sync, bootstrap, and fleet deployment.
-- `_system/agents/skills/auto/_infrastructure/infra-sync-code-workspaces/scripts/sync_code_workspaces.py`: reconciles registered Code repositories and invokes the same primary-owned Codex/Claude configuration sync used during onboarding.
-- `_system/agents/skills/auto/_infrastructure/infra-sync-code-workspaces/scripts/sync_agent_configuration.py`: previews, applies, or verifies personal Codex/Claude configuration without changing repositories.
+- `_system/agents/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_code_workspaces.py`: reconciles registered Code repositories and invokes the same primary-owned Codex/Claude configuration sync used during onboarding.
+- `_system/agents/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_agent_configuration.py`: previews, applies, or verifies personal Codex/Claude configuration without changing repositories.
 - `snippets.py`: checks and materializes canonical text blocks inside configured files across registered repositories. Use `vault snippets`.
 
 ## Bootstrap Scripts

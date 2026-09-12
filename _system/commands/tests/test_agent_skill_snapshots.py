@@ -112,6 +112,45 @@ class AgentSkillSnapshotTests(unittest.TestCase):
             self.assertTrue((canonical / "code-example").is_dir())
             self.assertFalse((canonical / "code-example").is_symlink())
 
+    def test_repo_links_and_policy_overlays_resolve_against_target_home(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            base = Path(temporary)
+            home = base / "home"
+            home.mkdir()
+            portable = self.make_skill(base / "sources", "code-portable", "portable")
+            direct = self.make_skill(home / "Code/repo/.agents/skills", "repo-direct", "direct")
+            overlaid = self.make_skill(home / "Code/repo/.agents/skills", "repo-overlaid", "overlay")
+            (overlaid / "agents").mkdir()
+            (overlaid / "agents/openai.yaml").write_text(
+                "policy:\n  allow_implicit_invocation: true\n", encoding="utf-8"
+            )
+            bundle = skill_snapshots.build_bundle(
+                {"code-portable": portable},
+                links={"repo-direct": "~/Code/repo/.agents/skills/repo-direct"},
+                overlays={
+                    "repo-overlaid": {
+                        "source": "~/Code/repo/.agents/skills/repo-overlaid",
+                        "allowed": False,
+                    }
+                },
+            )
+            skill_snapshots.reconcile_local(
+                home, bundle, apply=True, verify=False, backup_suffix="links", legacy_catalog=None
+            )
+            installed = home / ".agents/skills"
+            self.assertTrue((installed / "repo-direct").is_symlink())
+            self.assertEqual((installed / "repo-direct").resolve(), direct.resolve())
+            self.assertTrue((installed / "repo-overlaid/SKILL.md").is_symlink())
+            self.assertEqual((installed / "repo-overlaid/SKILL.md").resolve(), (overlaid / "SKILL.md").resolve())
+            self.assertIn(
+                "allow_implicit_invocation: false",
+                (installed / "repo-overlaid/agents/openai.yaml").read_text(encoding="utf-8"),
+            )
+            verified = skill_snapshots.reconcile_local(
+                home, bundle, apply=False, verify=True, backup_suffix="verify", legacy_catalog=None
+            )
+            self.assertTrue(verified["ready"])
+
 
 if __name__ == "__main__":
     unittest.main()

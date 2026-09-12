@@ -55,6 +55,7 @@ Context folder note is local routing/control note. Main controls:
 ```yaml
 ---
 status: active
+periodic_notes_enabled: false
 content_schedules_enabled: true
 default_capture: true
 ---
@@ -63,6 +64,7 @@ default_capture: true
 - `status: active`: included by default in generated rollups.
 - `status: archived`: retained but excluded from default rollups.
 - blank/missing status: not active.
+- `periodic_notes_enabled: false`: excludes the context from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
 - Content capabilities are inferred from their item/publication folders; they are not stored as context types or broad enablement flags.
 - `content_schedules_enabled: true`: enables cadence and schedule generation. Omit it when schedules are not wanted.
 - `default_capture: true`: preferred context for unspecific capture; fallback is first active context.
@@ -98,7 +100,7 @@ Context-owned operating folders use `_obsidian` so ordinary work folders remain 
 
 Commands, schemas, statuses, shorthand, and Bases: [[_system/docs/commands/Tasks And Projects|Tasks And Projects]].
 
-Google Calendar events and time blocks use the direct GWS workflow in `$gws-custom-calendar`; TaskNotes dates are not mirrored automatically.
+Google Calendar events and time blocks use the direct GWS workflow in `$gws-i-custom-calendar`; TaskNotes dates are not mirrored automatically.
 
 ## Periodic Notes
 
@@ -136,7 +138,7 @@ SOP: [[_system/docs/commands/Attachments|Attachments]].
 
 Generated files carry managed markers. Edit source notes/docs, not generated outputs.
 
-Machine-wide operational state for repository reconciliation under `~/Code` lives outside the vault at `~/Code/.workspace-sync/`. `_system/local` records Vault-local actual state and user-specific values; desired fleet, workspace, skill-source, and agent dependency registries live in `_system/agents`. Follow [[_system/agents/skills/auto/_infrastructure/infra-code-folder-and-computer-topology/README-machine-runtime-state|Machine Runtime State]].
+Machine-wide operational state for repository reconciliation under `~/Code` lives outside the vault at `~/Code/.workspace-sync/`. `_system/local` records Vault-local actual state and user-specific values; desired fleet, workspace, skill-source, and agent dependency registries live in `_system/agents`. Follow [[_system/agents/skills/_infrastructure/infra-i-code-folder-and-computer-topology/README-machine-runtime-state|Machine Runtime State]].
 
 ## Refresh And Generated Views
 

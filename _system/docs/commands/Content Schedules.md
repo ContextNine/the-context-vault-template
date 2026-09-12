@@ -91,6 +91,10 @@ vault content
 
 Only context notes with `content_schedules_enabled: true` participate. Capability folders alone never create or refresh schedules. Blog, social-content, and newsletter support is inferred from their respective directories.
 
+## Enable or disable schedule generation
+
+Add `content_schedules_enabled: true` to the context control note to enable generated four-week content calendars. Remove that property to disable future calendar generation. Existing schedule notes stay in place as history; remove any stale `Current content schedule:` line from the context note when disabling it manually.
+
 Content schedule notes live in `<context-folder>/_obsidian/content-schedules/` and normal refresh is create-only. `_obsidian/content/content-cadence.json` controls `schedule_format` and `publication_order`. The generator also keeps the `Current content schedule:` line in the context folder note.
 
 Supported `schedule_format` values:

@@ -17,7 +17,7 @@ _system/deps/install.sh
 _system/deps/install.sh --verify
 ```
 
-Fleet tmux, btop, Starship, workmux, Warp, and cmux configuration is owned by `$infra-manage-fleet-terminal-workspaces`.
+Fleet tmux, btop, Starship, workmux, Warp, and cmux configuration is owned by `$infra-i-manage-fleet-terminal-workspaces`.
 
 ## Useful commands
 

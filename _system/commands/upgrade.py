@@ -682,7 +682,7 @@ def repair_prompt(root: Path) -> int:
         print("No upgrade report found. Run `vault upgrade --dry-run` first.")
         return 1
     print(
-        f"""Use skill `vault-upgrade-repair`.
+        f"""Use skill `vault-i-upgrade-repair`.
 
 Inputs:
 - Report: {report}

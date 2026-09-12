@@ -188,36 +188,10 @@ def enforce_command_policy(command: str, args: list[str]) -> None:
     if "fleet-owner" in capabilities and registry.get("primary_machine_id") != machine.get("id"):
         raise RuntimeError("this command is restricted to the registered fleet primary")
     mode = vault.get("checkout_mode")
-    if "content-read" in capabilities and mode == "remote-sshfs":
+    if capabilities & {"content-read", "content-write"} and mode == "remote-sshfs":
         state = access_status()
         if not state.get("ok") or not isinstance(state.get("mount"), dict) or not state["mount"].get("healthy"):
             raise RuntimeError("remote Vault access is unhealthy")
-    if "content-write" in capabilities:
-        state = access_status()
-        active = state.get("active_session")
-        host = state.get("host")
-        lease = host.get("lease") if isinstance(host, dict) else None
-        if (
-            not state.get("ok")
-            or not isinstance(active, dict)
-            or not isinstance(lease, dict)
-            or active.get("session_id") != lease.get("session_id")
-            or machine.get("id") != lease.get("machine_id")
-            or lease.get("expired")
-        ):
-            raise RuntimeError("content writes require an active owned vault access session")
-    if capabilities & {"git-owner", "fleet-owner"}:
-        try:
-            state = access_status()
-        except RuntimeError:
-            state = {}
-        host = state.get("host")
-        lease = host.get("lease") if isinstance(host, dict) else None
-        if isinstance(lease, dict) and lease.get("machine_id") != machine.get("id"):
-            raise RuntimeError(
-                f"primary operation blocked by active Vault writer {lease.get('machine_id')} "
-                f"session {lease.get('session_id')}"
-            )
 
 
 DEFAULT_APPLY_PREFIXES: dict[str, tuple[tuple[str, ...], ...]] = {
@@ -260,7 +234,7 @@ def print_help() -> None:
 
 Common commands:
   root         Print the current vault root path.
-  access       Mount, inspect, lease, finish, and hand off registered Vault access.
+  access       Mount or inspect registered Vault access.
   refresh      Refresh integrations, schedules, periodic rollups, and Dashboard.
   refresh-schedule  Register, unregister, or inspect the daily refresh LaunchAgent.
   mac-startup  Manage opt-in, per-machine macOS login automation.
@@ -302,8 +276,6 @@ Examples:
   vault refresh --sync-brain-dump
   vault inventory
   vault access status
-  vault access begin --task-id TASK
-  vault access finish
   vault task create business "Follow up with partner" --project "Partnerships" --epic "Growth"
   vault project create business "New Project" --epic "Growth"
   vault attachments --verify-only

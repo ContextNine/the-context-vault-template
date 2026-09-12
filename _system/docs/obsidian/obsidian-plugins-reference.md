@@ -34,7 +34,7 @@ Google Calendar workflow:
 
 - TaskNotes dates are not mirrored to Google Calendar.
 - Context Nine does not run a background calendar timer.
-- Use `$gws-custom-calendar` for authentication and explicit events. Its instance config owns the exact concrete-event and time-block calendar IDs.
+- Use `$gws-i-custom-calendar` for authentication and explicit events. Its instance config owns the exact concrete-event and time-block calendar IDs.
 
 Useful TaskNotes natural-language input:
 

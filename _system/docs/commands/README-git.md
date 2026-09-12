@@ -40,7 +40,7 @@ git commit -m "Description"
 git push
 ```
 
-Every completed Vault task on the primary includes all tracked and untracked non-ignored changes, even when generated, incidental, incomplete, or created by another task. Before commit, regenerate and stage the manifest and verify the index. A Gitless Mac worker and remote client never use this commit procedure; they finish after host filesystem durability and lease release without waiting for iCloud. The primary commits the complete worktree currently visible to it without waiting for or verifying a receipt. `vault git-media status` verifies committed state, local media availability, and custom hook installation where Vault Git exists.
+Every completed Vault task on the primary includes all tracked and untracked non-ignored changes, even when generated, incidental, incomplete, or created by another task. Before commit, regenerate and stage the manifest and verify the index. A Gitless Mac worker and remote client never use this commit procedure. The primary commits the complete worktree currently visible to it without waiting for iCloud upload. `vault git-media status` verifies committed state, local media availability, and custom hook installation where Vault Git exists.
 
 Versioned `.githooks/pre-push` validates pointer and manifest state when `vault.media-mode=pointer-only`. It intentionally never runs `git lfs pre-push`, so normal `git push` cannot upload media bodies. Install versioned hooks with:
 
@@ -48,7 +48,7 @@ Versioned `.githooks/pre-push` validates pointer and manifest state when `vault.
 vault worker-sync install-hooks
 ```
 
-The primary requires local LFS bodies before push. An iCloud worker receives media through iCloud; a remote client reads the same bodies through SSHFS. Neither has a Vault LFS cache. Do not copy the primary cache, run `git lfs pull` against a worker worktree, or place Git state in iCloud. Worker media changes are reviewed, manifested, committed, and pushed when they are present in the primary's worktree; no upload receipt is required. Public installs retain ordinary Git LFS behavior unless pointer-only mode is configured.
+The primary requires local LFS bodies before push. An iCloud worker receives media through iCloud; a remote client reads the same bodies through SSHFS. Neither has a Vault LFS cache. Do not copy the primary cache, run `git lfs pull` against a worker worktree, or place Git state in iCloud. Worker media changes are reviewed, manifested, committed, and pushed when they are present in the primary's worktree. Public installs retain ordinary Git LFS behavior unless pointer-only mode is configured.
 
 Do not run `git lfs push`. Do not replace hook with `git lfs install --force`.
 

@@ -455,6 +455,14 @@ def entity_status(root: Path, entity: str) -> str:
     return parse_frontmatter(path.read_text(encoding="utf-8")).get("status", "").strip().lower()
 
 
+def entity_periodic_notes_enabled(root: Path, entity: str) -> bool:
+    path = context_folder_note_path(root / entity)
+    if not path.exists():
+        return False
+    value = parse_frontmatter(path.read_text(encoding="utf-8")).get("periodic_notes_enabled", "true")
+    return value.strip().lower() not in {"false", "no", "off", "0"}
+
+
 def parse_entities(value: str | None) -> list[str]:
     if not value:
         return []
@@ -469,19 +477,23 @@ def resolve_entities(root: Path, configured: list[str], explicit: list[str], inc
         missing = [entity for entity in explicit if not (root / entity).is_dir()]
         if missing:
             raise SystemExit(f"Explicit context folder(s) not found: {', '.join(missing)}")
-        return explicit
+        candidates = explicit
+    else:
+        candidates = []
+        for entity in configured:
+            entity_path = root / entity
+            if not entity_path.is_dir():
+                print(f"warning: configured context folder not found: {entity}", file=sys.stderr)
+                continue
+            if include_all or entity_status(root, entity) == "active":
+                candidates.append(entity)
 
-    selected: list[str] = []
-    for entity in configured:
-        entity_path = root / entity
-        if not entity_path.is_dir():
-            print(f"warning: configured context folder not found: {entity}", file=sys.stderr)
-            continue
-        if include_all or entity_status(root, entity) == "active":
-            selected.append(entity)
+    selected = [entity for entity in candidates if entity_periodic_notes_enabled(root, entity)]
 
     if not selected:
-        raise SystemExit("No context folders selected. Mark a context folder note as status: active, pass --context-folders, or use --all.")
+        raise SystemExit(
+            "No context folders selected. Mark a context folder note as status: active, remove periodic_notes_enabled: false, or select another context folder."
+        )
     return selected
 
 
@@ -538,8 +550,6 @@ source_context_folders:
 generated_at: {generated_at}
 managed_by: "{MANAGED_PERIODIC}"
 ---
-# {period_id} vault {period}
-
 {sections}
 """
 

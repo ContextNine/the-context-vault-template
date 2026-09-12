@@ -61,6 +61,7 @@ class InventoryTests(unittest.TestCase):
         self.assertEqual(result["active_periods"]["weekly"], "2026-W30")
         self.assertEqual(result["contexts"][0]["note_path"], "personal/personal.md")
         self.assertEqual(result["contexts"][0]["features"], ["blog"])
+        self.assertTrue(result["contexts"][0]["periodic_notes_enabled"])
         self.assertTrue(result["contexts"][0]["content_schedules_enabled"])
         self.assertTrue(result["contexts"][0]["periodic_notes"]["daily"]["exists"])
         self.assertEqual(result["content_schedules"][0]["path"], "personal/_obsidian/content-schedules/Current.md")

@@ -161,4 +161,4 @@ Profile upgrade does not advance the installed public commit. A later full `vaul
 
 New system-level tools should go in `_system/commands` only when they belong behind `vault`. Otherwise use `_system/tools` and declare public Vault dependencies in `_system/deps/packages.yaml`.
 
-The public dependency installer never provides private CTX2 or fleet-agent prerequisites. `ctx9-agents sync` owns those approved dependencies after private fleet authentication.
+The public dependency installer never provides private Secret Bindings or fleet prerequisites. `fleet sync` owns those approved dependencies after private fleet authentication.

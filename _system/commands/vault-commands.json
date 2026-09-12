@@ -49,7 +49,7 @@
   {
     "id": "vault-access-status",
     "label": "Vault Access Status",
-    "description": "Show worktree safety, writer lease, and optional iCloud and receipt state.",
+    "description": "Confirm the registered Vault worktree is current and safe to use.",
     "group": "Inspect",
     "risk": "read",
     "mode": "run",

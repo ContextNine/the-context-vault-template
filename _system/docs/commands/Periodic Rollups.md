@@ -20,6 +20,8 @@ Root Periodic Notes defaults to `personal`. Opening today's daily note creates o
 
 Missing source notes are created from each context folder's local `_obsidian/templates/periodic/<period>-template.md`. `personal` has filled starter templates; other folders may intentionally use blank templates.
 
+Periodic notes are enabled by default for active contexts. Add `periodic_notes_enabled: false` to a context control note to prevent future source-note generation and omit that context from vault rollups. The opt-out also applies to `--all` and explicit `--context-folders` runs. Existing source notes remain untouched.
+
 Existing daily notes are append-only during generation: they are never replaced from the template. Refresh carries the most recent earlier note's daily task section forward by appending unchecked checklist items, ordinary text, and nested headings while omitting checked checklist lines and preserving everything already present in the destination note.
 
 ## Generated Rollups
@@ -31,6 +33,8 @@ _system/_obsidian/periodic/<period>/<period-id>.md
 ```
 
 Context source notes remain editable. Generated vault rollups are read-only derived views. Dashboard links current daily, weekly, monthly, quarterly, and yearly vault rollups.
+
+The filename is the rollup title. Generated rollups start with the context sections and do not repeat the period ID as a heading in the note body.
 
 ## Generate
 
@@ -44,7 +48,7 @@ Useful variants:
 
 ```bash
 vault periodic --all
-vault periodic --context-folders dev,claudeche
+vault periodic --context-folders dev,business
 ```
 
 Context folder periodic notes remain editable source of truth. Vault rollups live under `_system/_obsidian/periodic/<period>/` and use Sync Embeds. `vault refresh` calls periodic generator automatically.

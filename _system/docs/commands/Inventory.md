@@ -16,7 +16,7 @@ Inventory reads source notes on every invocation and writes nothing. Output incl
 
 - current daily, weekly, monthly, quarterly, and yearly IDs;
 - default capture context;
-- context status, type, content flag, control-note path, and current periodic paths;
+- context status, content features, periodic and schedule settings, control-note path, and current periodic paths when enabled;
 - current vault rollup and content-schedule paths;
 - task counts, active routing-task links, and backlog counts;
 - epics and projects.

@@ -4,7 +4,7 @@ status: enabled
 ---
 # Machines
 
-Private registry: `_system/agents/_package/instance/fleet/machines.json`. It is tracked in private Vault Git and excluded from public exports. Registry schema v7 owns stable machine identity, registered home, Code and Vault roots, explicit Vault capability, one Git/refresh owner, iCloud host/remote-client relationships, role, canonical SSH alias, non-secret routes, agent eligibility, and optional VNC. `~` expands against the selected machine's registered home. Credentials, account identity, device keys, mount state, and leases remain machine-local.
+Private registry: `_system/agents/_package/instance/fleet/machines.json`. It is tracked in private Vault Git and excluded from public exports. Registry schema v7 owns stable machine identity, registered home, Code and Vault roots, explicit Vault capability, one Git/refresh owner, iCloud host/remote-client relationships, role, canonical SSH alias, non-secret routes, agent eligibility, and optional VNC. `~` expands against the selected machine's registered home. Credentials, account identity, device keys, and mount state remain machine-local.
 
 ## Commands
 
@@ -25,7 +25,7 @@ vault machine vnc NAME --status
 vault machine vnc NAME --stop
 ```
 
-`vault machine setup` is the normal entrypoint. It initializes the primary registry when missing, requires an explicit provider with no default, previews a disabled worker and private note, prints an exact `$infra-onboard-machine` request, and can copy that editable request before opening `codex app` at the Vault. It never submits a Codex message.
+`vault machine setup` is the normal entrypoint. It initializes the primary registry when missing, requires an explicit provider with no default, previews a disabled worker and private note, prints an exact `$infra-i-onboard-machine` request, and can copy that editable request before opening `codex app` at the Vault. It never submits a Codex message.
 
 Supported Vault modes are `primary-external-git`, `icloud-gitless`, `remote-sshfs`, and `none`. The primary uses clone-local `vault.machine-id`; Gitless Mac workers and remote Linux clients use mode-`0600` `~/.config/vault/machine-id`. A remote client mounts a full registered Mac worktree and never receives Git metadata.
 
@@ -41,10 +41,10 @@ Mac mini uses native `vnc://` URL through same interface.
 
 ## Register future machine
 
-1. Complete [[shared-onboarding-and-acceptance|Shared Onboarding and Acceptance]] and the selected `$infra-onboard-machine` role procedure.
+1. Complete [[shared-onboarding-and-acceptance|Shared Onboarding and Acceptance]] and the selected `$infra-i-onboard-machine` role procedure.
 2. Use `vault machine setup`; choose WireGuard or Tailscale explicitly. WireGuard requires an existing network, such as a deployed Kubernetes Helm chart.
 3. Keep `enabled: false` until SSH identity, home, selected `-mesh` route, source-aware aliases, passwordless canonical reverse forwarding to the primary, reboot, and unattended acceptance pass.
 4. Add `vnc` only after local-only endpoint or native Screen Sharing works.
 5. Set `global_agents_eligible: true` only for reviewed personal Codex/Claude machines; explicit disabled-machine onboarding may provision configuration before enablement.
-6. Run `vault machine list`, `vault machine status ID`, then `$infra-sync-code-workspaces` preview/doctor before enabling the machine.
-7. Update [[_system/agents/skills/auto/_infrastructure/infra-code-folder-and-computer-topology/references/machine-requirements-and-topology|Machine Requirements and Topology]].
+6. Run `vault machine list`, `vault machine status ID`, then `$infra-i-sync-code-workspaces` preview/doctor before enabling the machine.
+7. Update [[_system/agents/skills/_infrastructure/infra-i-code-folder-and-computer-topology/references/machine-requirements-and-topology|Machine Requirements and Topology]].

@@ -19,6 +19,7 @@ Each folder owns `<context-folder>/<context-folder>.md`. Frontmatter controls di
 ```yaml
 ---
 status: active
+periodic_notes_enabled: false
 content_schedules_enabled: true
 default_capture: true
 ---
@@ -27,6 +28,7 @@ default_capture: true
 - `status: active`: included in default rollups.
 - `status: archived`: retained but excluded from default rollups.
 - blank/missing status: not active.
+- `periodic_notes_enabled: false`: excludes this context from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
 - Blog, social-content, and newsletter support is inferred from their capability folders.
 - `content_schedules_enabled: true`: participates in cadence and schedule refresh. Omit it otherwise.
 - `default_capture: true`: preferred unspecific capture destination; fallback is first active folder.

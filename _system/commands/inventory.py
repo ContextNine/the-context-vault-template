@@ -131,6 +131,7 @@ def discover_contexts(root: Path, periods: dict[str, str]) -> list[dict[str, Any
                 "name": child.name,
                 "status": str(metadata.get("status") or "none"),
                 "features": features,
+                "periodic_notes_enabled": truthy(metadata.get("periodic_notes_enabled", "true")),
                 "content_schedules_enabled": truthy(metadata.get("content_schedules_enabled")),
                 "default_capture": truthy(metadata.get("default_capture")),
                 "note_path": note.relative_to(root).as_posix(),
@@ -304,12 +305,14 @@ def print_inventory(inventory: dict[str, Any]) -> None:
     print("\nContexts:")
     for context in inventory["contexts"]:
         flags = [context["status"], *context["features"]]
+        if not context["periodic_notes_enabled"]:
+            flags.append("periodic notes disabled")
         if context["content_schedules_enabled"]:
             flags.append("content schedules")
         if context["default_capture"]:
             flags.append("default capture")
         print(f"  - {context['name']} [{', '.join(flags)}] -> {context['note_path']}")
-        if context["status"] == "active":
+        if context["status"] == "active" and context["periodic_notes_enabled"]:
             for period, item in context["periodic_notes"].items():
                 missing = " (missing)" if not item["exists"] else ""
                 print(f"      {period}: {item['path']}{missing}")
