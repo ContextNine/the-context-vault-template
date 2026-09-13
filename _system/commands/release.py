@@ -366,6 +366,8 @@ def has_meaningful_changes(root: Path, product: Product) -> bool:
     with tempfile.TemporaryDirectory(prefix=f"ctx9-release-{product.name}-") as temporary:
         stage = Path(temporary) / "export"
         stage_export(root, product, stage)
+        if product.name == "skills" and (product.public_root / "_system/agents").exists():
+            return True
         staged = exported_fingerprint(stage, product)
         owned = set(staged)
         if product.name == "vault":

@@ -1,11 +1,11 @@
 {
   "channel": "public-bootstrap",
   "dependency_lock_path": "_system/local/dependencies.lock.json",
-  "dependency_lock_sha256": "aa855dfc52c4d3e876deb1bc86ba7951e3e3a343d753b321bf053be6b8c11db4",
-  "notes": "Public bootstrap release v0.2.15.",
-  "released_at": "2026-09-13T18:50:15Z",
+  "dependency_lock_sha256": "c5e6a0264334bd04320271d83cf02dd98f6fd694a5b90b3be4210baa9d62155e",
+  "notes": "Public bootstrap release v0.2.16.",
+  "released_at": "2026-09-13T18:56:37Z",
   "repo_url": "https://github.com/MDerman/the-context-vault-template.git",
   "schema_version": 2,
-  "tag": "v0.2.15",
-  "version": "0.2.15"
+  "tag": "v0.2.16",
+  "version": "0.2.16"
 }
