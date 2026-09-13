@@ -11,7 +11,7 @@ import tempfile
 import unittest
 
 
-AGENT_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "agents/_package/src"
+AGENT_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "agents/internal/src"
 sys.path.insert(0, str(AGENT_SCRIPTS_DIR))
 
 import sync_skills  # noqa: E402
@@ -25,12 +25,12 @@ class SkillSyncTests(unittest.TestCase):
         home = base / "home"
         repo = home / "Code/example-repo"
         for relative in (
-            "_system/agents/skills/_code",
-            "_system/agents/skills/github",
-            "_system/agents/skills/catalog",
-            "_system/agents/skills/overlays",
-            "_system/agents/skills/snapshots",
-            "_system/agents/_package/instance/skills",
+            "_system/agents/edit/skills/_code",
+            "_system/agents/edit/skills/github",
+            "_system/agents/internal/generated/catalog",
+            "_system/agents/internal/generated/overlays",
+            "_system/agents/internal/generated/snapshots",
+            "_system/agents/edit/settings/skills",
         ):
             (root / relative).mkdir(parents=True)
         repo.mkdir(parents=True)
@@ -38,7 +38,7 @@ class SkillSyncTests(unittest.TestCase):
         return root, home, repo
 
     def write_config(self, root: Path, repos: list[dict[str, object]], gh: dict[str, object] | None = None) -> None:
-        path = root / "_system/agents/_package/instance/skills/skill-sources.json"
+        path = root / "_system/agents/edit/settings/skills/skill-sources.json"
         path.write_text(json.dumps({"schema_version": 4, "gh_skills": gh or {}, "repos": repos}) + "\n", encoding="utf-8")
 
     def write_skill(self, path: Path, name: str, *, implicit: bool | None = None, body: str = "") -> Path:
@@ -53,7 +53,7 @@ class SkillSyncTests(unittest.TestCase):
         return path
 
     def write_gh_skill(self, root: Path, name: str) -> Path:
-        path = root / f"_system/agents/skills/github/example-pack/skills/{name}"
+        path = root / f"_system/agents/edit/skills/github/example-pack/skills/{name}"
         path.mkdir(parents=True)
         (path / "SKILL.md").write_text(
             f"---\nname: {name}\ndescription: Test.\nmetadata:\n  github-repo: https://github.com/example/pack\n  github-path: skills/{name}\n  github-ref: main\n  github-tree-sha: abc\n---\n\n# Test\n",
@@ -64,13 +64,13 @@ class SkillSyncTests(unittest.TestCase):
     def test_flat_vault_groups_require_i_marker_to_match_policy(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root, _, _ = self.fixture(temporary)
-            self.write_skill(root / "_system/agents/skills/_code/code-i-example", "code-i-example", implicit=True)
-            skills = sync_skills.scan_vault_sources(root / "_system/agents/skills")
+            self.write_skill(root / "_system/agents/edit/skills/_code/code-i-example", "code-i-example", implicit=True)
+            skills = sync_skills.scan_vault_sources(root / "_system/agents/edit/skills")
             self.assertEqual([(skill.name, skill.mode) for skill in skills], [("code-i-example", "auto")])
-            metadata = root / "_system/agents/skills/_code/code-i-example/agents/openai.yaml"
+            metadata = root / "_system/agents/edit/skills/_code/code-i-example/agents/openai.yaml"
             metadata.write_text("policy:\n  allow_implicit_invocation: false\n", encoding="utf-8")
             with self.assertRaisesRegex(sync_skills.SyncError, "marker and invocation policy disagree"):
-                sync_skills.scan_vault_sources(root / "_system/agents/skills")
+                sync_skills.scan_vault_sources(root / "_system/agents/edit/skills")
 
     def test_gh_repository_discovery_preserves_installed_metadata(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
@@ -117,7 +117,7 @@ class SkillSyncTests(unittest.TestCase):
             plan = working_repo_skills.plan(root, home=home, require_sources=True)
             self.assertTrue(all(skill.materialization == "snapshot" for skill in plan.skills))
             working_repo_skills.apply(plan, root)
-            snapshot = root / "_system/agents/skills/snapshots/example-repo/local-example-repo-one/SKILL.md"
+            snapshot = root / "_system/agents/internal/generated/snapshots/example-repo/local-example-repo-one/SKILL.md"
             text = snapshot.read_text(encoding="utf-8")
             self.assertIn("name: local-example-repo-one", text)
             self.assertIn("$local-example-repo-two", text)
@@ -138,9 +138,9 @@ class SkillSyncTests(unittest.TestCase):
     def test_catalog_remains_symlink_only_and_second_apply_is_idempotent(self) -> None:
         with tempfile.TemporaryDirectory() as temporary:
             root, home, _ = self.fixture(temporary)
-            source = self.write_skill(root / "_system/agents/skills/_code/code-example", "code-example", implicit=False)
+            source = self.write_skill(root / "_system/agents/edit/skills/_code/code-example", "code-example", implicit=False)
             sync_skills.sync(root, home, True, manage_home_discovery=False, manage_agent_configuration=False)
-            link = root / "_system/agents/skills/catalog/code-example"
+            link = root / "_system/agents/internal/generated/catalog/code-example"
             self.assertTrue(link.is_symlink())
             self.assertEqual(link.resolve(), source.resolve())
             plan, skills = sync_skills.discover_skills(root, home=home)

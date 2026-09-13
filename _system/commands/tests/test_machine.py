@@ -254,7 +254,7 @@ class MachineTests(unittest.TestCase):
             )
             self.assertEqual(
                 written["machines"][-1]["private_notes_path"],
-                "_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/"
+                "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/"
                 "private/My Machines/worker.md",
             )
             self.assertEqual(
@@ -352,7 +352,7 @@ class MachineTests(unittest.TestCase):
     def test_setup_creates_disabled_tailscale_worker_and_note(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
-            registry_path = root / "_system/agents/_package/instance/fleet/machines.json"
+            registry_path = root / "_system/agents/edit/settings/fleet/machines.json"
             args = machine.build_parser().parse_args([
                 "--registry", str(registry_path),
                 "setup", "--root", str(root), "--apply", "--yes", "--no-codex",

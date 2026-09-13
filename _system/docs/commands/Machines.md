@@ -4,7 +4,7 @@ status: enabled
 ---
 # Machines
 
-Private registry: `_system/agents/_package/instance/fleet/machines.json`. It is tracked in private Vault Git and excluded from public exports. Registry schema v7 owns stable machine identity, registered home, Code and Vault roots, explicit Vault capability, one Git/refresh owner, iCloud host/remote-client relationships, role, canonical SSH alias, non-secret routes, agent eligibility, and optional VNC. `~` expands against the selected machine's registered home. Credentials, account identity, device keys, and mount state remain machine-local.
+Private registry: `_system/agents/edit/settings/fleet/machines.json`. It is tracked in private Vault Git and excluded from public exports. Registry schema v7 owns stable machine identity, registered home, Code and Vault roots, explicit Vault capability, one Git/refresh owner, iCloud host/remote-client relationships, role, canonical SSH alias, non-secret routes, agent eligibility, and optional VNC. `~` expands against the selected machine's registered home. Credentials, account identity, device keys, and mount state remain machine-local.
 
 ## Commands
 
@@ -47,4 +47,4 @@ Mac mini uses native `vnc://` URL through same interface.
 4. Add `vnc` only after local-only endpoint or native Screen Sharing works.
 5. Set `global_agents_eligible: true` only for reviewed personal Codex/Claude machines; explicit disabled-machine onboarding may provision configuration before enablement.
 6. Run `vault machine list`, `vault machine status ID`, then `$infra-i-sync-code-workspaces` preview/doctor before enabling the machine.
-7. Update [[_system/agents/skills/_infrastructure/infra-i-code-folder-and-computer-topology/references/machine-requirements-and-topology|Machine Requirements and Topology]].
+7. Update [[_system/agents/edit/skills/_infrastructure/infra-i-code-folder-and-computer-topology/references/machine-requirements-and-topology|Machine Requirements and Topology]].

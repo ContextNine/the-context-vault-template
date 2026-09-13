@@ -6,7 +6,7 @@ type: "learning-note"
 
 # remap tilde ` key
 
-The current managed workflow is documented in [[_system/tools/mac-automation/README|macOS Automation]] and configured by [[_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/README|macOS Startup Configuration]]. Use:
+The current managed workflow is documented in [[_system/tools/mac-automation/README|macOS Automation]] and configured by [[_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/README|macOS Startup Configuration]]. Use:
 
 ```bash
 vault mac-startup status

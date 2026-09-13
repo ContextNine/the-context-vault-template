@@ -12,7 +12,7 @@ _system/local/snippets/
 ```
 
 External repository IDs resolve through
-`_system/agents/_package/instance/fleet/workspaces.json`.
+`_system/agents/edit/settings/fleet/workspaces.json`.
 Repository ID `vault` always means the current vault root. Public bootstrap export
 keeps defaults and sources but excludes `private/` targets.
 

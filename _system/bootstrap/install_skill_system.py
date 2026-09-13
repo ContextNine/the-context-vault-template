@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Install a sanitized public `_system/agents` tree into a Context Vault."""
+"""Map a sanitized public agent package into a Context Vault."""
 
 from __future__ import annotations
 
@@ -21,17 +21,21 @@ def install_tree(
     release_version: str,
     commit: str,
 ) -> Path:
-    source = source_repo.resolve() / "_system/agents"
+    source = source_repo.resolve()
     target = vault_root.resolve() / "_system/agents"
-    if not (source / "_package/defaults/instance").is_dir():
+    if not (source / "edit/settings").is_dir() or not (source / "internal/src").is_dir():
         raise SkillSystemInstallError(f"public skill system source is incomplete: {source}")
     if target.exists() or target.is_symlink():
         raise SkillSystemInstallError(f"refusing to overwrite an existing agents tree: {target}")
     for path in source.rglob("*"):
         if path.is_symlink():
             raise SkillSystemInstallError(f"public skill system contains a symlink: {path}")
-    shutil.copytree(source, target)
-    shutil.copytree(target / "_package/defaults/instance", target / "_package/instance")
+    target.mkdir(parents=True)
+    shutil.copytree(source / "edit", target / "edit")
+    shutil.copytree(source / "internal", target / "internal")
+    readme = source / "README.md"
+    if readme.is_file():
+        shutil.copy2(readme, target / "README.md")
     state = vault_root / "_system/local/state/skill-system-install.json"
     state.parent.mkdir(parents=True, exist_ok=True)
     state.write_text(

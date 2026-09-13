@@ -16,7 +16,7 @@ from vault_layout import VAULT_ROOT
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = VAULT_ROOT
 def configured_repository(repository_id: str) -> Path | None:
-    instance = ROOT / "_system/agents/_package/instance"
+    instance = ROOT / "_system/agents/edit/settings"
     workspaces_path = instance / "fleet/workspaces.json"
     machines_path = instance / "fleet/machines.json"
     if not workspaces_path.is_file() or not machines_path.is_file():
@@ -172,7 +172,7 @@ def enforce_command_policy(command: str, args: list[str]) -> None:
         raise RuntimeError(f"Vault command has no capability policy: {command}")
     if command == "access":
         return
-    registry_path = ROOT / "_system/agents/_package/instance/fleet/machines.json"
+    registry_path = ROOT / "_system/agents/edit/settings/fleet/machines.json"
     registry = json.loads(registry_path.read_text(encoding="utf-8"))
     if registry.get("schema_version") != 7:
         raise RuntimeError("Vault command policy requires machine registry schema_version 7")

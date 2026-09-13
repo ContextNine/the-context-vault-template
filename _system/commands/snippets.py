@@ -489,7 +489,7 @@ def main(argv: list[str] | None = None) -> int:
     args.repository_registry = (
         args.repository_registry.expanduser().resolve()
         if args.repository_registry
-        else args.root / "_system/agents/_package/instance/fleet/workspaces.json"
+        else args.root / "_system/agents/edit/settings/fleet/workspaces.json"
     )
     try:
         targets = load_targets(args.config_dir)

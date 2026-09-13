@@ -13,7 +13,7 @@ from unittest import mock
 VAULT_ROOT = Path(__file__).resolve().parents[3]
 SCRIPT = (
     VAULT_ROOT
-    / "_system/agents/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
     "scripts/remote_vault_access.py"
 )
 SPEC = importlib.util.spec_from_file_location("remote_vault_access_tested", SCRIPT)

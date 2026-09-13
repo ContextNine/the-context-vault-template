@@ -15,10 +15,11 @@ from install_skill_system import SkillSystemInstallError, install_tree
 class SkillSystemBootstrapTests(unittest.TestCase):
     def source_repo(self, root: Path) -> Path:
         source = root / "source"
-        defaults = source / "_system/agents/_package/defaults/instance"
-        defaults.mkdir(parents=True)
-        (defaults / "profile.json").write_text("{}\n", encoding="utf-8")
-        skill = source / "_system/agents/skills/_test/example"
+        settings = source / "edit/settings"
+        settings.mkdir(parents=True)
+        (settings / "profile.json").write_text("{}\n", encoding="utf-8")
+        (source / "internal/src").mkdir(parents=True)
+        skill = source / "edit/skills/_test/example"
         skill.mkdir(parents=True)
         (skill / "SKILL.md").write_text("---\nname: example\ndescription: Test.\n---\n", encoding="utf-8")
         return source
@@ -35,8 +36,8 @@ class SkillSystemBootstrapTests(unittest.TestCase):
             vault = root / "vault"
             vault.mkdir()
             install_tree(self.source_repo(root), vault, source_url="test", release_version="0.1.0", commit="abc")
-            self.assertTrue((vault / "_system/agents/skills/_test/example/SKILL.md").is_file())
-            self.assertTrue((vault / "_system/agents/_package/instance/profile.json").is_file())
+            self.assertTrue((vault / "_system/agents/edit/skills/_test/example/SKILL.md").is_file())
+            self.assertTrue((vault / "_system/agents/edit/settings/profile.json").is_file())
             self.assertTrue((vault / "_system/local/state/skill-system-install.json").is_file())
 
     def test_existing_agents_tree_is_preserved_and_rejected(self) -> None:

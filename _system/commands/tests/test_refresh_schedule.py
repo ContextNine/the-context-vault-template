@@ -116,7 +116,7 @@ class RefreshScheduleTests(unittest.TestCase):
             marker.write_text("worker-mac\n", encoding="utf-8")
             registry = (
                 root
-                / "_system/agents/_package/instance/fleet/machines.json"
+                / "_system/agents/edit/settings/fleet/machines.json"
             )
             registry.parent.mkdir(parents=True)
             registry.write_text(

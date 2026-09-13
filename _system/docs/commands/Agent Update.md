@@ -38,7 +38,7 @@ fleet update --skills --skill-source gh:skybridge
 
 GitHub-managed sources use `gh:<repository-directory>`. The updater runs `gh skill update --all --dir` inside each selected `github/<repo-name>/skills` directory. Existing local checkouts are not updated here; `workspaces.json` and the workspace reconciliation workflow own their Git state.
 
-After GH source acceptance, the command rebuilds overlays and snapshots, validates local checkout links, distributes current skill state, verifies every selected machine, and writes `_system/agents/_package/generated/state/skills.lock.json`. That lock records GH metadata, local source digests and materialization types, and fleet distribution digests. It is factual evidence only and never controls desired state.
+After GH source acceptance, the command rebuilds overlays and snapshots, validates local checkout links, distributes current skill state, verifies every selected machine, and writes `_system/agents/internal/generated/state/skills.lock.json`. That lock records GH metadata, local source digests and materialization types, and fleet distribution digests. It is factual evidence only and never controls desired state.
 
 `_system/local/dependencies.lock.json` has a separate public-release purpose. Public bootstrap and upgrade may reproduce the skill-source revisions captured by a particular Vault release. Routine `fleet update --skills` never consumes those pins. This separation permits the private fleet package to move sources forward without changing a published bootstrap contract.
 

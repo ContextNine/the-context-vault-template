@@ -212,7 +212,7 @@ class WorkerBootstrapTests(unittest.TestCase):
             (VAULT_ROOT / f".githooks/{name}").read_text()
             for name in ("post-checkout", "post-merge", "post-rewrite")
         )
-        self.assertIn("agents/_package/src/sync_agents.py", checkout_hooks)
+        self.assertIn("agents/internal/src/sync_agents.py", checkout_hooks)
         all_hooks = post_commit + checkout_hooks
         for forbidden in ("git push", "ssh ", "vault-worker-sync"):
             self.assertNotIn(forbidden, all_hooks)

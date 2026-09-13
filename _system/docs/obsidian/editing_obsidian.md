@@ -367,7 +367,7 @@ _system/tools/
 Put reusable agent skills in:
 
 ```text
-_system/agents/skills/
+_system/agents/edit/skills/
 ```
 
 Keep vault operating-model scripts under `_system/commands/`. Put reusable non-vault tools under `_system/tools/`.

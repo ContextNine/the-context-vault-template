@@ -26,7 +26,7 @@ from vault_layout import SKILL_CONFIG_DIR, VAULT_ROOT
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT = VAULT_ROOT
-DEFAULT_REGISTRY = ROOT / "_system/agents/_package/instance/fleet/machines.json"
+DEFAULT_REGISTRY = ROOT / "_system/agents/edit/settings/fleet/machines.json"
 DEFAULT_RUNTIME_DIR = Path.home() / ".cache/vault-machine"
 DEFAULT_MACHINE_ID_PATH = Path.home() / ".config/vault/machine-id"
 MACHINE_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
@@ -35,12 +35,12 @@ REGISTRY_SCHEMA_VERSION = 7
 ACCESS_PROVIDERS = ("wireguard", "tailscale")
 ACCESS_RENDERER = (
     ROOT
-    / "_system/agents/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
     "scripts/render_ssh_access.py"
 )
 ACCESS_INSPECTOR = (
     ROOT
-    / "_system/agents/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
     "scripts/inspect_machine_access.py"
 )
 
@@ -684,7 +684,7 @@ def worker_record(
         "vault": vault,
         "global_agents_eligible": False,
         "private_notes_path": (
-            "_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/"
+            "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/"
             f"private/My Machines/{machine_id}.md"
         ),
         "onboarding": {"operation": operation},
@@ -998,7 +998,7 @@ def command_setup(args: argparse.Namespace) -> int:
         raise MachineError(f"machine already registered: {machine_id}")
     note_path = (
         root
-        / "_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/private/My Machines"
+        / "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/private/My Machines"
         / f"{machine_id}.md"
     )
     if note_path.exists():

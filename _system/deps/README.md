@@ -8,7 +8,7 @@ _system/deps/install.sh
 _system/deps/install.sh --verify
 ```
 
-`install.sh` bootstraps Python only when macOS lacks it, then invokes the structured Python installer. Bootstrap calls this entrypoint; it does not own package definitions or install behavior. Agent and skill runtime packages live separately in `_system/agents/_package/defaults/dependencies.json`. Tools installed from managed Code workspaces live in `_system/agents/_package/instance/dependencies/selections.json`.
+`install.sh` bootstraps Python only when macOS lacks it, then invokes the structured Python installer. Bootstrap calls this entrypoint; it does not own package definitions or install behavior. Agent and skill runtime packages live separately in `_system/agents/internal/defaults/dependencies.json`. Tools installed from managed Code workspaces live in `_system/agents/edit/settings/dependencies/selections.json`.
 
 The Vault and agent manifests are intentionally independent. Each must declare its complete requirements and must not inherit, deduplicate against, or assume prior installation by the other. A package needed by both belongs in both manifests. This deliberate duplication keeps public Vault bootstrap and the private agent package independently installable.
 

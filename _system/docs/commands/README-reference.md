@@ -29,12 +29,12 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 - `git_maintenance.py`: keeps normal Git history shallow and compacts local Git objects. Use `vault git-maintenance`.
 - `git_preflight.py`: fetches and fast-forwards clean `master` before refresh changes files. Use `vault git-preflight`.
 - `worker_bootstrap.py`: keeps iCloud worker Macs Gitless, recoverably retires only the expected legacy external Git directory, and writes machine-local identity plus refresh prohibition; reviewed onboarding can target one disabled Mac worker through `--provision-disabled`. Use `vault worker-sync` only for Mac workers.
-- `_system/agents/_package/src/sync_agents.py`: canonical default-apply fleet orchestrator for portable skills, Codex/Claude settings, and rendered instructions. Use `fleet sync`; add component selectors or `--dry-run` when needed.
-- `_system/agents/_package/src/sync_skills.py`: validates flat grouped Vault and repository-scoped GH sources, materializes configured local-checkout links, overlays, and snapshots, enforces invocation naming, and rebuilds the Vault-local flat catalog.
-- `_system/agents/_package/src/skill_snapshots.py`: builds and installs verified point-in-time global skill copies while preserving unmanaged skills.
-- `_system/agents/_package/src/global_agent_configuration.py`: shared Vault alias, machine-footer rendering, and atomic home-file reconciliation used by regular sync, bootstrap, and fleet deployment.
-- `_system/agents/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_code_workspaces.py`: reconciles registered Code repositories and invokes the same primary-owned Codex/Claude configuration sync used during onboarding.
-- `_system/agents/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_agent_configuration.py`: previews, applies, or verifies personal Codex/Claude configuration without changing repositories.
+- `_system/agents/internal/src/sync_agents.py`: canonical default-apply fleet orchestrator for portable skills, Codex/Claude settings, and rendered instructions. Use `fleet sync`; add component selectors or `--dry-run` when needed.
+- `_system/agents/internal/src/sync_skills.py`: validates flat grouped Vault and repository-scoped GH sources, materializes configured local-checkout links, overlays, and snapshots, enforces invocation naming, and rebuilds the Vault-local flat catalog.
+- `_system/agents/internal/src/skill_snapshots.py`: builds and installs verified point-in-time global skill copies while preserving unmanaged skills.
+- `_system/agents/internal/src/global_agent_configuration.py`: shared Vault alias, machine-footer rendering, and atomic home-file reconciliation used by regular sync, bootstrap, and fleet deployment.
+- `_system/agents/edit/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_code_workspaces.py`: reconciles registered Code repositories and invokes the same primary-owned Codex/Claude configuration sync used during onboarding.
+- `_system/agents/edit/skills/_infrastructure/infra-i-sync-code-workspaces/scripts/sync_agent_configuration.py`: previews, applies, or verifies personal Codex/Claude configuration without changing repositories.
 - `snippets.py`: checks and materializes canonical text blocks inside configured files across registered repositories. Use `vault snippets`.
 
 ## Bootstrap Scripts

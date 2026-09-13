@@ -122,7 +122,7 @@ Public install script:
 - downloads Context Nine and other active community plugin bundles, while complete bundles for Simple Folder Note and Relay are already shipped in the vault export.
 - defaults to Vault-only in non-interactive mode. `--install-skill-system` explicitly opts in; `--skill-system-source` selects a reviewed local export or repository URL for tests and recovery.
 - asks `Install the optional CTX9 skill system and public skills? [y/N]`. Declining or EOF leaves `_system/agents` absent.
-- copies the released public `_system/agents` tree without Git metadata, initializes `_package/instance` from blank defaults, runs the shared skill-system wizard, installs every public skill globally, and records source URL, release version, commit, and selected integrations under `_system/local/state/skill-system-install.json`.
+- maps the released public package's `edit/` and `internal/` trees into `_system/agents/` without Git metadata, runs the shared skill-system wizard against that Vault-owned editable source, installs every public skill globally, and records source URL, release version, commit, and selected integrations under `_system/local/state/skill-system-install.json`.
 
 Public README invokes root `install.sh` through the GitHub raw URL and shows only the default command plus a custom-target example.
 

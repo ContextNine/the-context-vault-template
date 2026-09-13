@@ -92,7 +92,7 @@ identity_tmp="$HOME/.config/vault/.machine-id.$$"
 /bin/chmod 600 "$identity_tmp"
 /bin/mv "$identity_tmp" "$HOME/.config/vault/machine-id"
 /bin/ln -sfn "$repo/_system/commands/vault.py" "$HOME/.local/bin/vault"
-python3 "$repo/_system/agents/_package/src/sync_agents.py" sync --root "$repo" --home "$HOME" --skills --local-only
+python3 "$repo/_system/agents/internal/src/sync_agents.py" sync --root "$repo" --home "$HOME" --skills --local-only
 python3 "$repo/_system/commands/refresh_schedule.py" --root "$repo" block-worker --machine-id {shlex.quote(str(worker['id']))}
 python3 "$repo/_system/commands/refresh_schedule.py" --root "$repo" unregister
 """
@@ -161,7 +161,7 @@ def main(argv: list[str] | None = None) -> int:
         if args.command == "install-hooks":
             install_hooks(root, args.apply)
         elif args.command == "bootstrap":
-            registry_path = root / "_system/agents/_package/instance/fleet/machines.json"
+            registry_path = root / "_system/agents/edit/settings/fleet/machines.json"
             bootstrap_worker(
                 root,
                 machine_registry.load_registry(registry_path),

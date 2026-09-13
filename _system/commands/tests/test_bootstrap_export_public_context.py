@@ -119,8 +119,8 @@ class PublicContextExportTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "source"
             export_root = Path(tmp) / "public"
-            private = root / "_system/agents/_package/instance/fleet/machines.json"
-            generic = root / "_system/agents/skills/_infrastructure/example/SKILL.md"
+            private = root / "_system/agents/edit/settings/fleet/machines.json"
+            generic = root / "_system/agents/edit/skills/_infrastructure/example/SKILL.md"
             private.parent.mkdir(parents=True)
             generic.parent.mkdir(parents=True)
             private.write_text("private fleet\n", encoding="utf-8")

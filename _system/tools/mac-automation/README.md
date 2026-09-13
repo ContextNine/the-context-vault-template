@@ -50,11 +50,11 @@ Configured legacy LaunchAgents are unloaded and moved into the runtime folder's 
 
 ## Actions And Bootstrap Safety
 
-Configuration ownership and the opt-in schema live in [[_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/README|macOS Startup Configuration]]. Public defaults keep the workflow disabled, private per-machine configuration is excluded from bootstrap export, and the bootstrap installer never invokes `vault mac-startup install`.
+Configuration ownership and the opt-in schema live in [[_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/README|macOS Startup Configuration]]. Public defaults keep the workflow disabled, private per-machine configuration is excluded from bootstrap export, and the bootstrap installer never invokes `vault mac-startup install`.
 
 To add another optional login action:
 
-1. Add its disabled flag to `_system/agents/_package/instance/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/defaults.json`.
+1. Add its disabled flag to `_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/defaults.json`.
 2. Add its implementation and dispatch case to `startup.sh`.
 3. Add the action ID to the command's supported-action validation.
 4. Add focused configuration, runner, plist, and status tests.

@@ -219,7 +219,7 @@ install_optional_skill_system() {
   else
     source_dir="$(resolve_target_path "${source_value}")"
   fi
-  if [[ ! -f "${source_dir}/_system/agents/_package/src/fleet.py" || ! -x "${source_dir}/install.sh" ]]; then
+  if [[ ! -f "${source_dir}/internal/src/fleet.py" || ! -d "${source_dir}/edit" || ! -x "${source_dir}/install.sh" ]]; then
     echo "Skill system source is incomplete: ${source_dir}" >&2
     exit 1
   fi
@@ -234,9 +234,9 @@ install_optional_skill_system() {
     --release-version "${skill_version:-unknown}" \
     --commit "${skill_commit:-local}"
   if [[ "${NON_INTERACTIVE}" -eq 1 ]]; then
-    run_as_install_user env CTX9_NON_INTERACTIVE=1 HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh"
+    run_as_install_user env CTX9_NON_INTERACTIVE=1 CTX9_SOURCE_ROOT="${TARGET}/_system/agents" HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh"
   else
-    run_as_install_user env HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh" </dev/tty >/dev/tty
+    run_as_install_user env CTX9_SOURCE_ROOT="${TARGET}/_system/agents" HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh" </dev/tty >/dev/tty
   fi
 }
 

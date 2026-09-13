@@ -339,7 +339,7 @@ class Bootstrap:
             "_system/bootstrap",
             "_system/commands",
             "_system/local",
-            "_system/agents/_package/instance/skills/config",
+            "_system/agents/edit/settings/skills/config",
             "_system/docs/commands",
             "_system/docs/obsidian",
             "_system/docs/workflows",

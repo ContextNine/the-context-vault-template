@@ -11,7 +11,7 @@ import unittest
 from pathlib import Path
 
 
-AGENT_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "agents/_package/src"
+AGENT_SCRIPTS_DIR = Path(__file__).resolve().parents[2] / "agents/internal/src"
 sys.path.insert(0, str(AGENT_SCRIPTS_DIR))
 
 import skill_snapshots  # noqa: E402
@@ -93,7 +93,7 @@ class AgentSkillSnapshotTests(unittest.TestCase):
             base = Path(temporary)
             source = self.make_skill(base / "sources", "code-example", "portable")
             home = base / "home"
-            catalog = base / "vault/_system/agents/skills"
+            catalog = base / "vault/_system/agents/edit/skills"
             home.mkdir()
             catalog.mkdir(parents=True)
             (catalog / "code-example").symlink_to(source)
