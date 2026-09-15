@@ -21,6 +21,7 @@ from typing import Iterable
 
 import attachments
 from script_utils import resolve_vault_root
+from vault_layout import ATTACHMENT_STATE_DIR
 
 
 MEDIA_EXTENSIONS = {".png", ".jpg", ".jpeg", ".gif", ".pdf", ".webp", ".heic"}
@@ -605,18 +606,14 @@ def serialize_plan(plan: ReconcilePlan, vault_root: Path, export_root: Path) -> 
     }
 
 
-def write_reports(plan: ReconcilePlan, vault_root: Path, export_root: Path) -> tuple[Path, Path]:
+def write_report(plan: ReconcilePlan, vault_root: Path, export_root: Path) -> Path:
     payload = serialize_plan(plan, vault_root, export_root)
-    state_dir = vault_root / "_system/local/state/learning-attachment-reconciliation"
-    external_dir = Path.home() / "Downloads/vault-generated/learning-attachment-reconciliation"
+    state_dir = vault_root / ATTACHMENT_STATE_DIR / "learning-reconciliation"
     state_dir.mkdir(parents=True, exist_ok=True)
-    external_dir.mkdir(parents=True, exist_ok=True)
     state_path = state_dir / "latest.json"
-    external_path = external_dir / "latest.json"
     rendered = json.dumps(payload, ensure_ascii=False, indent=2) + "\n"
     state_path.write_text(rendered, encoding="utf-8")
-    external_path.write_text(rendered, encoding="utf-8")
-    return state_path, external_path
+    return state_path
 
 
 def validate_plan(plan: ReconcilePlan) -> None:
@@ -703,12 +700,11 @@ def main(argv: list[str] | None = None) -> int:
         secondary = deterministic_generic_plan(vault_root, reserved, set(primary_note.note for primary_note in primary.note_edits))
     plan = merge_plans(primary, secondary)
     validate_plan(plan)
-    state_report, external_report = write_reports(plan, vault_root, export_root)
+    state_report = write_report(plan, vault_root, export_root)
     print(json.dumps(plan.stats, indent=2))
     print(f"conflicts: {len(plan.conflicts)}")
     print(f"unmatched: {len(plan.unmatched)}")
     print(f"state report: {state_report}")
-    print(f"external report: {external_report}")
     if not args.apply:
         print("dry-run: no vault notes or attachments changed")
         return 0

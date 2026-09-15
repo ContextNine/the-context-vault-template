@@ -7,7 +7,7 @@ status: enabled
 Dry-run attachment routing and cleanup:
 
 ```bash
-vault attachments
+vault attachments --dry-run
 ```
 
 Apply the planned cleanup:
@@ -36,6 +36,6 @@ and refuses ambiguous note or attachment mappings.
 
 Only files embedded from Markdown notes belong in `_obsidian/attachments`. Route them under the top-level folder that owns the note, such as `_library/_obsidian/attachments` or `business/_obsidian/attachments`. Store standalone files beside the owning content, never under `_obsidian`. Obsidian's built-in paste destination is the temporary inbox `_system/_obsidian/attachments/_inbox`.
 
-Dry-run/apply reports and quarantined unreferenced import files are written outside the vault under `~/Downloads/vault-generated/`. After each dry-run or apply run, Finder opens that folder.
+Dry-run/apply reports and recoverable quarantined import files are written under ignored `_system/local/state/attachments/`. Learning reconciliation uses the same local state root. Attachment commands never create generated output in `~/Downloads`. After each cleanup dry run or apply run, Finder opens the local state folder.
 
 Implementation script: `_system/commands/attachments.py`.

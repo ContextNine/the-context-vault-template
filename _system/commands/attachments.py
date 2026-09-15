@@ -28,7 +28,7 @@ from pathlib import Path
 from urllib.parse import unquote
 
 from script_utils import discover_context_folders
-from vault_layout import VAULT_ROOT
+from vault_layout import ATTACHMENT_STATE_DIR, VAULT_ROOT
 
 
 ROOT = VAULT_ROOT
@@ -96,9 +96,9 @@ IMPORT_MARKERS = {
 
 SYSTEM_ATTACHMENTS = ROOT / "_system" / "_obsidian" / "attachments"
 SYSTEM_INBOX = SYSTEM_ATTACHMENTS / "_inbox"
-ARTIFACT_ROOT = Path.home() / "Downloads" / "vault-generated"
-REPORT_ROOT = ARTIFACT_ROOT / "import-reports"
-QUARANTINE_ROOT = ARTIFACT_ROOT / "attachment-cleanup-quarantine"
+ARTIFACT_ROOT = ROOT / ATTACHMENT_STATE_DIR
+REPORT_ROOT = ARTIFACT_ROOT / "cleanup-reports"
+QUARANTINE_ROOT = ARTIFACT_ROOT / "quarantine"
 ICONIZE_PATH = ROOT / ".obsidian" / "plugins" / "obsidian-icon-folder" / "data.json"
 FILE_COLOR_PATH = ROOT / ".obsidian" / "plugins" / "obsidian-file-color" / "data.json"
 
@@ -399,6 +399,8 @@ def build_basename_index() -> dict[str, list[Path]]:
         if not root_path.exists():
             continue
         for path in root_path.rglob("*"):
+            if is_under(path, ROOT / "_system/local/state"):
+                continue
             if any(part in SENSITIVE_DIR_NAMES for part in path.relative_to(ROOT).parts):
                 continue
             if path.is_file() and path.suffix.lower() in ATTACHMENT_EXTENSIONS:

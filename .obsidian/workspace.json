@@ -113,7 +113,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 458.78515625
+    "width": 421.59375
   },
   "right": {
     "id": "c5da0292b2670f3d",
@@ -247,10 +247,11 @@
       "obsidian-full-calendar:Open Full Calendar": false,
       "terminal:Open terminal": false,
       "system3-relay:Relay": false,
-      "periodic-notes:Open today": false
+      "periodic-notes:Open today": false,
+      "vscode-editor:Create Code File": false
     }
   },
-  "active": "73c61a053b9943a5",
+  "active": "9b5af85820951a6f",
   "lastOpenFiles": [
     "README.md"
   ]

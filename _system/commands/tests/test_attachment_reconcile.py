@@ -13,6 +13,7 @@ SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
 
 from attachment_reconcile import (  # noqa: E402
+    ReconcilePlan,
     anchor_text,
     deterministic_generic_plan,
     export_targets,
@@ -22,10 +23,25 @@ from attachment_reconcile import (  # noqa: E402
     rewrite_from_export,
     slugify,
     similarity,
+    write_report,
 )
 
 
 class AttachmentReconcileTests(unittest.TestCase):
+    def test_report_stays_in_ignored_vault_state(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp) / "vault"
+            export = Path(tmp) / "export"
+            root.mkdir()
+            export.mkdir()
+            plan = ReconcilePlan([], [], [], [], {})
+
+            report = write_report(plan, root, export)
+
+            self.assertEqual(report, root / "_system/local/state/attachments/learning-reconciliation/latest.json")
+            self.assertTrue(report.is_file())
+            self.assertNotIn("Downloads", report.parts)
+
     def test_export_targets_parse_encoded_balanced_parentheses(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)

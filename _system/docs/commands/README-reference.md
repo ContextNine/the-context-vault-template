@@ -21,7 +21,7 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 - `epic.py`: creates, renames, deletes, lists, and syncs context folder epics; keeps task links, per-epic TaskNotes Kanban Bases, and managed vault task kanban epic views in sync.
 - `folder.py`: creates/registers a context folder from the scaffold template.
 - `business_toolkit.py`: installs, synchronizes, or safely unconfigures the marker-owned business folder/template pack for any registered context.
-- `attachments.py`: dry-runs, applies, and verifies attachment cleanup so note attachments live under each owning top-level root folder's `_obsidian/attachments` directory. Reports and quarantined import leftovers are written outside the vault under `~/Downloads/vault-generated/`.
+- `attachments.py`: dry-runs, applies, and verifies attachment cleanup so note attachments live under each owning top-level root folder's `_obsidian/attachments` directory. Reports and quarantined import leftovers stay in ignored `_system/local/state/attachments/`; the command never creates generated output in `~/Downloads`.
 - `backup.py`: backs up root `.obsidian` under `_system/local/state/backups/obsidian-profile/`.
 - `bootstrap_export.py`: exports the public bootstrap vault from current vault state using `_system/bootstrap/bootstrap-export.json`.
 - `release.py`: publishes SemVer public vault releases by bumping release metadata, locking dependencies, exporting, committing, tagging, pushing, and creating the GitHub Release.

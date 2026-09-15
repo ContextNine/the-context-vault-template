@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-14T15:53:00+00:00",
+  "generated_at": "2026-09-15T15:38:30+00:00",
   "paths": [
     ".agents/skills",
     ".agents/skills/.gitkeep",
@@ -196,6 +196,9 @@
     ".obsidian/plugins/todoist-sync-plugin",
     ".obsidian/plugins/todoist-sync-plugin/manifest.json",
     ".obsidian/plugins/todoist-sync-plugin/styles.css",
+    ".obsidian/plugins/vscode-editor",
+    ".obsidian/plugins/vscode-editor/manifest.json",
+    ".obsidian/plugins/vscode-editor/styles.css",
     ".obsidian/plugins/xlsx-viewer",
     ".obsidian/plugins/xlsx-viewer/manifest.json",
     ".obsidian/plugins/xlsx-viewer/styles.css",
@@ -460,6 +463,7 @@
     "_system/commands/tests",
     "_system/commands/tests/test_agent_skill_snapshots.py",
     "_system/commands/tests/test_attachment_reconcile.py",
+    "_system/commands/tests/test_attachments.py",
     "_system/commands/tests/test_bootstrap_export_public_context.py",
     "_system/commands/tests/test_brain_dump.py",
     "_system/commands/tests/test_business_toolkit.py",
@@ -814,7 +818,6 @@
     "personal-brand/_obsidian/content/items/youtube-videos/uct-lesotho-film",
     "personal-brand/_obsidian/content/publications",
     "personal-brand/_obsidian/content/publications/blogs",
-    "personal-brand/_obsidian/content/publications/newsletters",
     "personal-brand/_obsidian/content/publications/youtube",
     "personal-brand/_obsidian/epics",
     "personal-brand/_obsidian/excalidraw",
