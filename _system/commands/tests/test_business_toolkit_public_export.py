@@ -126,6 +126,12 @@ class BusinessToolkitPublicExportTests(unittest.TestCase):
             self.assertNotIn("private-company", json.dumps(ignored))
             self.assertIn("business/_obsidian/templates/business-toolkit", json.dumps(ignored))
             self.assertTrue((export_root / "business/company/.gitkeep").is_file())
+            self.assertTrue((export_root / "business/relationships/people/.gitkeep").is_file())
+            crm_base = (
+                export_root / "business/_obsidian/bases/relationship-crm.base"
+            ).read_text(encoding="utf-8")
+            self.assertIn('file.inFolder("business/relationships")', crm_base)
+            self.assertNotIn("{{context}}", crm_base)
             for profile in (".obsidian", ".obsidian-mobile"):
                 icons = json.loads(
                     (export_root / profile / "plugins/obsidian-icon-folder/data.json").read_text(encoding="utf-8")

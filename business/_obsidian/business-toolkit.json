@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "pack_version": 2,
+  "pack_version": 4,
   "components": [
     "meetings.one-on-ones",
     "meetings.general",
@@ -12,8 +12,11 @@
     "product.user-signals",
     "gtm.campaigns",
     "gtm.offers",
-    "gtm.icp",
-    "gtm.competitors",
+    "company.audience",
+    "company.competitors",
+    "relationships.people",
+    "relationships.companies",
+    "relationships.opportunities",
     "operations.metrics",
     "operations.sops",
     "operations.status-reports",
@@ -30,17 +33,20 @@
     "_obsidian/templates/business-toolkit/product/user-signal-template.md": "98e7844e7a79ed2ea1d0a54ecc6df6c32adbb7f75f3261970c4c8756dd37acd7",
     "_obsidian/templates/business-toolkit/gtm/campaign-template.md": "0e830575d9276de465ab7553888dcf4345a8d8a8640eb2129c21360d319c0dee",
     "_obsidian/templates/business-toolkit/gtm/offer-template.md": "7b31a0b677d6b60207e33d4a8de1c0b4d31cbc1a96275a99ed2b8ff64b7119b0",
-    "_obsidian/templates/business-toolkit/gtm/icp-template.md": "97863c1f5a82c5b150e44884a5983c523ef10077b0686a5f2c0fb5aa0d06db52",
-    "_obsidian/templates/business-toolkit/gtm/competitor-template.md": "3a254695587da63dd68d80df43bb4b088f1ae6b4a034e448585beb13b5ce6985",
+    "_obsidian/templates/business-toolkit/company/audience-template.md": "26b5a493860dab671f50efc381007a95d4961881c4f99401471ee2c55e9ea19c",
+    "_obsidian/templates/business-toolkit/company/competitor-template.md": "c4645cbfb802710daa99ab4587cee56df2aef9bd5b2f1341c35b41c26cb8da9d",
+    "_obsidian/templates/business-toolkit/relationships/person-template.md": "7ffe5b43d7f0634e0805c85454377c43b8d4476c01a6e092a82230b8d2f1f6b4",
+    "_obsidian/templates/business-toolkit/relationships/company-template.md": "5498d90edad41788b2a78b34991828de052561517f1857b47a0735cd6d8cd743",
+    "_obsidian/templates/business-toolkit/relationships/opportunity-template.md": "8cbbe3261fe2a201efc84ba3a906f18eb8e00522b2c1dce3b6d946a5970710c6",
     "_obsidian/templates/business-toolkit/operations/metrics-snapshot-template.md": "762bd5689a29c0194acddfcc0e331c7b3285aa5b4ee8da471c128b717c63c074",
     "_obsidian/templates/business-toolkit/operations/sop-template.md": "f9f4dc5cc88e366881cd359908f47b9fafb2ccb60c5d02e0ef4f5a8045787b5f",
     "_obsidian/templates/business-toolkit/operations/status-report-template.md": "31069dfce188c05a4880dec451388d7620d13522e0bc96f065e8a4ad3b18c1ac",
     "_obsidian/templates/business-toolkit/skills/local-skill-template.md": "6a6a9e23c4306bee35549a6c2b795a757889f5bc67ab48ff346145bdd499b51e"
   },
   "icons": {
+    "company/audience": "📋",
+    "company/competitors": "📋",
     "gtm/campaigns": "📋",
-    "gtm/competitors": "📋",
-    "gtm/icp": "📋",
     "gtm/offers": "📋",
     "meetings/1-on-1s": "📋",
     "meetings/customer-calls": "📋",
@@ -53,6 +59,9 @@
     "product/experiments": "📋",
     "product/specs": "📋",
     "product/user-signals": "📋",
+    "relationships/companies": "📋",
+    "relationships/opportunities": "📋",
+    "relationships/people": "📋",
     "skills": "📋"
   }
 }

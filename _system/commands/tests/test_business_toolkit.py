@@ -77,6 +77,13 @@ class BusinessToolkitTests(unittest.TestCase):
         with self.assertRaises(SystemExit):
             select_components(components, saved=None, includes=["does-not-exist"], excludes=[])
 
+        by_id = {item.id: item for item in components}
+        self.assertEqual(by_id["company.audience"].folder.as_posix(), "company/audience")
+        self.assertEqual(
+            by_id["company.competitors"].folder.as_posix(),
+            "company/competitors",
+        )
+
     def test_managed_templates_render_valid_frontmatter_and_runtime_values(self) -> None:
         _version, components = load_pack(VAULT_ROOT)
         for component in components:
@@ -87,6 +94,7 @@ class BusinessToolkitTests(unittest.TestCase):
                 rendered = re.sub(r"<%\*[\s\S]*?-%>\n", "", source, count=1)
                 rendered = rendered.replace("<% date %>", "2030-01-02")
                 rendered = rendered.replace("<% tp.file.title %>", "Quarterly planning")
+                rendered = rendered.replace("<% context %>", "studio")
                 rendered = re.sub(
                     r"<% defaultTitles\.has\(tp\.file\.title\) \? targetTitle : tp\.file\.title %>",
                     "Quarterly planning",
@@ -193,7 +201,24 @@ class BusinessToolkitTests(unittest.TestCase):
             root = self.make_root(tmp)
             install_scaffold(root, "studio", apply=True)
             self.assertTrue((root / "studio/company/.gitkeep").is_file())
+            self.assertTrue((root / "studio/company/audience/.gitkeep").is_file())
+            self.assertTrue((root / "studio/company/competitors/.gitkeep").is_file())
             self.assertTrue((root / "studio/gtm/campaigns/.gitkeep").is_file())
+            self.assertFalse((root / "studio/gtm/marketing-stack").exists())
+            self.assertTrue((root / "studio/gtm/tam-to-som/.gitkeep").is_file())
+            self.assertTrue((root / "studio/gtm/funnel.excalidraw").is_file())
+            self.assertTrue((root / "studio/gtm/assets.md").is_file())
+            self.assertTrue((root / "studio/gtm/learnings.md").is_file())
+            self.assertFalse((root / "studio/gtm/marketing-stack/stack.md").exists())
+            self.assertTrue((root / "studio/relationships/people/.gitkeep").is_file())
+            self.assertTrue((root / "studio/relationships/companies/.gitkeep").is_file())
+            self.assertTrue((root / "studio/relationships/opportunities/.gitkeep").is_file())
+            self.assertTrue((root / "studio/relationships/imports/.gitkeep").is_file())
+            crm_base = (root / "studio/_obsidian/bases/relationship-crm.base").read_text(
+                encoding="utf-8"
+            )
+            self.assertIn('file.inFolder("studio/relationships")', crm_base)
+            self.assertNotIn("{{context}}", crm_base)
             self.assertFalse(list((root / "studio").rglob("README*.md")))
             self.assertFalse((root / "studio" / MANIFEST_NAME).exists())
             self.assertFalse((root / "studio/_obsidian/templates/business-toolkit").exists())

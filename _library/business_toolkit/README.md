@@ -4,7 +4,7 @@ status: active
 
 # Business Toolkit
 
-The canonical business scaffold lives under `_system/bootstrap/templates/context-folders/business/`; operating instructions live in [[Business Toolkit]]. This library folder is only its navigation entry point; reusable business research belongs in the most specific topical library category.
+The canonical business scaffold lives under `_system/bootstrap/templates/context-folders/business/`; operating instructions live in [[Business Toolkit]] and [[README-gtm-and-relationships]]. This library folder is only its navigation entry point; reusable business research belongs in the most specific topical library category.
 
 ## Knowledge routes
 

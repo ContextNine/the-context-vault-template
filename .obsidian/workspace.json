@@ -113,7 +113,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 421.59375
+    "width": 475.90625
   },
   "right": {
     "id": "c5da0292b2670f3d",
@@ -251,7 +251,7 @@
       "vscode-editor:Create Code File": false
     }
   },
-  "active": "9b5af85820951a6f",
+  "active": "e0f6e9e0426440b0",
   "lastOpenFiles": [
     "README.md"
   ]

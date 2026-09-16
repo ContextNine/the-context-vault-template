@@ -127,12 +127,24 @@
       "template": "business/_obsidian/templates/business-toolkit/gtm/offer-template.md"
     },
     {
-      "folder": "business/gtm/icp",
-      "template": "business/_obsidian/templates/business-toolkit/gtm/icp-template.md"
+      "folder": "business/company/audience",
+      "template": "business/_obsidian/templates/business-toolkit/company/audience-template.md"
     },
     {
-      "folder": "business/gtm/competitors",
-      "template": "business/_obsidian/templates/business-toolkit/gtm/competitor-template.md"
+      "folder": "business/company/competitors",
+      "template": "business/_obsidian/templates/business-toolkit/company/competitor-template.md"
+    },
+    {
+      "folder": "business/relationships/people",
+      "template": "business/_obsidian/templates/business-toolkit/relationships/person-template.md"
+    },
+    {
+      "folder": "business/relationships/companies",
+      "template": "business/_obsidian/templates/business-toolkit/relationships/company-template.md"
+    },
+    {
+      "folder": "business/relationships/opportunities",
+      "template": "business/_obsidian/templates/business-toolkit/relationships/opportunity-template.md"
     },
     {
       "folder": "business/ops/metrics-snapshots",

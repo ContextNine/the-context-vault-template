@@ -25,7 +25,15 @@ vault business-toolkit status --configured
 vault business-toolkit unconfigure --context-folders studio
 ```
 
-Available groups are `meetings`, `product`, `gtm`, `operations`, and `skills`. Component ids are listed in the canonical pack manifest.
+Available groups are `company`, `meetings`, `product`, `gtm`, `relationships`,
+`operations`, and `skills`. Company identity research, including audience and
+competitors, lives under `company/`. Campaigns, offers, market sizing, and the
+funnel live under `gtm/`. The single shared marketing stack is [[stack]], outside
+every context. Curated CRM records and raw imports live under `relationships/`.
+Component ids are listed in the canonical pack manifest.
+
+Use [[README-gtm-and-relationships]] for the shared company GTM and relationship
+model and for retrofitting an existing context.
 
 Explicit targets may be any registered context. Normal sync never creates, deletes, or restructures ordinary folders. It protects locally changed installed templates and changed managed icons. Apply mode preflights all selected contexts: a terminal asks once before overwriting all conflicts, a non-interactive run aborts without mutation, and `--force` explicitly replaces them.
 

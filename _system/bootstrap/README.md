@@ -40,7 +40,7 @@ Keep public setup instructions in `README-public-vault-template.md`, but keep in
 The exporter:
 
 - copies selected root files, root `.obsidian` and `.obsidian-mobile` profile files with configured exclusions, Vault system files, selected `_library` paths, `_wiki/AGENTS.md`, and configured context folder scaffolds;
-- excludes `_system/agents/**` as one product boundary and never sanitizes or re-adds agent-package files;
+- excludes `_system/agents/**` as a product boundary, then copies only the canonical `vault-i` bundle into root `.agents/skills/vault-i`;
 - writes `_system/local/state/export-manifest.json` so future exports can remove stale export-owned files;
 - preserves repo metadata such as `.git`, `.github`, `.gitignore`, `.gitattributes`, license files, and contribution docs;
 - exports portable local README/defaults but excludes `_system/local/snippets/private/**`, all `_system/local/env/**` contents, and `_system/local/state/**`;
@@ -52,7 +52,7 @@ The exporter:
 
 - personal context content; only configured public context folder notes, Bases, periodic templates, and selected physical packs are produced;
 - generated root dashboards, vault periodic rollups, system attachments, inbox contents, local state, and sync remnants;
-- the complete `_system/agents/**` package, including skills, private instance configuration and generated state;
+- the complete `_system/agents/**` package except the one explicit repo-local `vault-i` export, with private instance configuration and generated state excluded;
 - private local skill/snippet subfolders and all `_system/local/env` contents while keeping the empty env folder;
 - private invoice/email tools;
 - sensitive names such as `.env`, secrets, kubeconfig, plugin integration data, plugin logs, third-party plugin code, `.DS_Store`, `__pycache__`, `.pyc`, and `.bak` files.
@@ -121,6 +121,7 @@ Public install script:
 - runs `_system/bootstrap/init_vault.sh --enable-git`, which asks for three exact context-folder slugs, preserves the starter examples through explicit capabilities/templates, and initializes personal Git/LFS directly under `~/.local/share/vault-git/<vault-name>.git`.
 - downloads Context Nine and other active community plugin bundles, while complete bundles for Simple Folder Note and Relay are already shipped in the vault export.
 - defaults to Vault-only in non-interactive mode. `--install-skill-system` explicitly opts in; `--skill-system-source` selects a reviewed local export or repository URL for tests and recovery.
+- provides repo-local `vault-i` under `.agents/skills` on every install; `.claude/skills` points to the same directory. The skill finds the Vault, then defers to its root `AGENTS.md`.
 - asks `Install the optional CTX9 skill system and public skills? [y/N]`. Declining or EOF leaves `_system/agents` absent.
 - maps the released public package's `edit/` and `internal/` trees into `_system/agents/` without Git metadata, runs the shared skill-system wizard against that Vault-owned editable source, installs every public skill globally, and records source URL, release version, commit, and selected integrations under `_system/local/state/skill-system-install.json`.
 

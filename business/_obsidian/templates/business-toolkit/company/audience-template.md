@@ -2,15 +2,13 @@
 const date = tp.date.now("YYYY-MM-DD");
 -%>
 ---
-type: icp
+type: audience
 status: draft
 date: <% date %>
 project:
 people:
 source:
 ---
-
-# ICP - <% tp.file.title %>
 
 ## Segment
 

@@ -243,11 +243,32 @@ def write_from_git(root: Path, git_dir: Path, rev: str, rel_path: str) -> None:
         target.write_bytes(data)
 
 
+def managed_skill_conflict(root: Path, git_dir: Path, old_rev: str, latest_rev: str, path: str, deleted: bool) -> str | None:
+    """Return a safe disposition for the one public Vault skill and Claude alias."""
+    target = root / path
+    if not target.exists() and not target.is_symlink():
+        return None
+    if target.is_dir() and not target.is_symlink():
+        return "conflict"
+    actual = os.readlink(target).encode() if target.is_symlink() else target.read_bytes()
+    desired = None if deleted else git_bytes(root, git_dir, ["show", f"{latest_rev}:{path}"])
+    if desired is not None and actual == desired:
+        return "already_current"
+    previous = subprocess.run(
+        ["git", "--git-dir", str(git_dir), "--work-tree", str(root), "show", f"{old_rev}:{path}"],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.DEVNULL,
+        check=False,
+    )
+    return None if previous.returncode == 0 and actual == previous.stdout else "conflict"
+
+
 def apply_change(
     *,
     root: Path,
     git_dir: Path,
     latest_rev: str,
+    old_rev: str,
     change: Change,
     action: str,
     policy: dict[str, Any],
@@ -261,6 +282,12 @@ def apply_change(
     if action == "preserve":
         entry["result"] = "preserved"
         return entry
+
+    if change.path.startswith(".agents/skills/vault-i/") or change.path == ".claude/skills":
+        disposition = managed_skill_conflict(root, git_dir, old_rev, latest_rev, change.path, change.status == "D")
+        if disposition is not None:
+            entry["result"] = disposition
+            return entry
 
     if change.status in {"D", "R"} and change.old_path:
         old_action = classify(policy, change.old_path)
@@ -412,6 +439,25 @@ def run_upgrade(root: Path, apply: bool) -> int:
     report_path = write_report(root, report_payload)
 
     try:
+        # Detect conflicts across the whole upgrade before changing any managed file.
+        conflicts = [
+            apply_change(
+                root=root,
+                git_dir=upstream_git_dir,
+                latest_rev=latest_rev,
+                old_rev=installed_rev,
+                change=change,
+                action=classify(policy, change.path),
+                policy=policy,
+                apply=False,
+                backup_root=backup_root,
+            )
+            for change in changes
+        ]
+        if any(entry.get("result") == "conflict" for entry in conflicts):
+            report_payload["changes"] = conflicts
+            report_path = finish_report(root, report_payload, "failed", "Managed Vault skill conflicts with user content.")
+            raise SystemExit(f"Managed Vault skill conflict. See report: {report_path}")
         for change in changes:
             action = classify(policy, change.path)
             entries.append(
@@ -419,6 +465,7 @@ def run_upgrade(root: Path, apply: bool) -> int:
                     root=root,
                     git_dir=upstream_git_dir,
                     latest_rev=latest_rev,
+                    old_rev=installed_rev,
                     change=change,
                     action=action,
                     policy=policy,
@@ -428,7 +475,6 @@ def run_upgrade(root: Path, apply: bool) -> int:
             )
         report_payload["changes"] = entries
         write_report(root, report_payload)
-
         migrations = run_migrations(root, policy, report_path.parent, apply=apply)
         report_payload["migrations"] = migrations
         migration_failures = failed_entries(migrations)

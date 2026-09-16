@@ -92,7 +92,7 @@ Content flags may be added while registering an existing context. A folder templ
 
 Creation writes control note, creates operating structure and local templates/shared-template links, then refreshes discovered context wiring.
 
-Physical packs are directly browsable under `_system/bootstrap/templates/context-folders/`. They do not define a context type. The `personal-brand` pack seeds `brand`, `audience`, `offers`, `products`, `writing`, `media`, and `relationships`; the `business` pack seeds the established operating scaffold and configures its managed toolkit.
+Physical packs are directly browsable under `_system/bootstrap/templates/context-folders/`. They do not define a context type. The `personal-brand` pack keeps identity and marketing memory inside `brand/` while retaining `products`, `writing`, `media`, and `relationships` as sibling workspaces. The `business` pack seeds the company, GTM, relationship CRM, and established operating scaffold, then configures its managed toolkit. Neither pack copies the shared [[stack]]; its rules live in [[README-marketing-stack]].
 
 `--context-type` and `--content-enabled` were removed. Use the independent capability, schedule, and folder-template options above.
 

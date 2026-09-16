@@ -10,8 +10,6 @@ people:
 source:
 ---
 
-# Competitor - <% tp.file.title %>
-
 ## Positioning
 
 - 

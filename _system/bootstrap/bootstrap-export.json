@@ -68,6 +68,10 @@
   ],
   "root_trees": [
     {
+      "source": "_system/agents/edit/skills/_vault/vault-i",
+      "target": ".agents/skills/vault-i"
+    },
+    {
       "source": "_system/bootstrap/public-repo/skills",
       "target": "skills"
     }
@@ -76,7 +80,8 @@
     ".agents/skills"
   ],
   "root_symlinks": {
-    "CLAUDE.md": "AGENTS.md"
+    "CLAUDE.md": "AGENTS.md",
+    ".claude/skills": "../.agents/skills"
   },
   "system_root_markdown_allow_paths": [
     "_system/README.md",

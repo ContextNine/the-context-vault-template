@@ -134,12 +134,26 @@ class PublicContextExportTests(unittest.TestCase):
             exporter.copy_system_or_shared("_system")
             self.assertFalse((export_root / "_system/agents").exists())
 
-    def test_production_export_has_no_agent_readds(self) -> None:
+    def test_production_export_readds_only_the_vault_skill(self) -> None:
         config = json.loads((BOOTSTRAP_DIR / "bootstrap-export.json").read_text(encoding="utf-8"))
         self.assertIn("_system/agents/**", config["generated_exclude_globs"])
         self.assertIn("_system/local/git-media-manifest.json", config["generated_exclude_paths"])
         explicit_sources = {item["source"] for item in config["root_files"] if isinstance(item, dict)}
         self.assertFalse(any(source.startswith("_system/agents/") for source in explicit_sources))
+        agent_trees = [item for item in config["root_trees"] if item["source"].startswith("_system/agents/")]
+        self.assertEqual(agent_trees, [{"source": "_system/agents/edit/skills/_vault/vault-i", "target": ".agents/skills/vault-i"}])
+        self.assertEqual(config["root_symlinks"][".claude/skills"], "../.agents/skills")
+
+    def test_repo_local_vault_skill_and_claude_alias_use_canonical_source(self) -> None:
+        with tempfile.TemporaryDirectory() as temporary:
+            root = BOOTSTRAP_DIR.parents[1]
+            export_root = Path(temporary) / "public"
+            config = json.loads((BOOTSTRAP_DIR / "bootstrap-export.json").read_text(encoding="utf-8"))
+            exporter = BootstrapExporter(root=root, config=config, export_root=export_root, force=True, dry_run=False)
+            exporter.copy_root_files()
+            canonical = root / "_system/agents/edit/skills/_vault/vault-i/SKILL.md"
+            self.assertEqual((export_root / ".agents/skills/vault-i/SKILL.md").read_text(encoding="utf-8"), canonical.read_text(encoding="utf-8"))
+            self.assertEqual((export_root / ".claude/skills").readlink().as_posix(), "../.agents/skills")
 
     def test_patched_simple_folder_note_bundle_is_exported(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

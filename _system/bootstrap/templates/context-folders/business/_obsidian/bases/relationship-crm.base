@@ -1,0 +1,65 @@
+filters:
+  and:
+  - file.inFolder("{{context}}/relationships")
+  - list(crm).contains("commercial")
+properties:
+  file.name:
+    displayName: Record
+  note.record_type:
+    displayName: Type
+  note.company:
+    displayName: Company
+  note.relationship_roles:
+    displayName: Relationship
+  note.commercial_stage:
+    displayName: Stage
+  note.next_action:
+    displayName: Next action
+  note.follow_up:
+    displayName: Follow up
+  note.last_contact:
+    displayName: Last contact
+views:
+- type: table
+  name: Pipeline
+  groupBy:
+    property: note.commercial_stage
+    direction: ASC
+  order:
+  - file.name
+  - note.record_type
+  - note.commercial_stage
+  - note.relationship_roles
+  - note.company
+  - note.next_action
+  - note.follow_up
+  - note.last_contact
+- type: table
+  name: Follow ups
+  filters:
+    and:
+    - follow_up && date(follow_up) <= today()
+    - commercial_stage != "dormant"
+  order:
+  - file.name
+  - note.commercial_stage
+  - note.next_action
+  - note.follow_up
+  - note.last_contact
+  sort:
+  - column: note.follow_up
+    direction: ASC
+- type: table
+  name: Opportunities
+  filters:
+    and:
+    - file.inFolder("{{context}}/relationships/opportunities")
+    - record_type == "opportunity"
+  order:
+  - file.name
+  - note.commercial_stage
+  - note.company
+  - note.value
+  - note.expected_close
+  - note.next_action
+  - note.follow_up

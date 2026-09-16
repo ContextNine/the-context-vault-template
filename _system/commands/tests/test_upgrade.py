@@ -91,6 +91,38 @@ class UpgradeFailureTests(unittest.TestCase):
             self.assertEqual(report["error"], "Dependency sync failed.")
             write_install.assert_not_called()
 
+    def test_user_edited_vault_skill_blocks_upgrade_before_other_writes(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            ordinary = root / "_system/commands/example.py"
+            ordinary.parent.mkdir(parents=True)
+            ordinary.write_text("keep local\n", encoding="utf-8")
+            skill = root / ".agents/skills/vault-i/SKILL.md"
+            skill.parent.mkdir(parents=True)
+            skill.write_text("user edit\n", encoding="utf-8")
+            patches = self.patch_common(root)
+            patches[2] = mock.patch.object(
+                upgrade,
+                "load_policy",
+                return_value={"actions": {"replace": ["_system/commands/**", ".agents/skills/vault-i/**"]}},
+            )
+            patches[4] = mock.patch.object(
+                upgrade,
+                "changed_paths",
+                return_value=[
+                    upgrade.Change(status="M", path="_system/commands/example.py"),
+                    upgrade.Change(status="M", path=".agents/skills/vault-i/SKILL.md"),
+                ],
+            )
+            with patches[0], patches[1], patches[2], patches[3], patches[4], patches[5], patches[6], \
+                mock.patch.object(upgrade, "managed_skill_conflict", return_value="conflict"), \
+                mock.patch.object(upgrade, "write_from_git") as write_from_git:
+                with self.assertRaisesRegex(SystemExit, "Managed Vault skill conflict"):
+                    upgrade.run_upgrade(root, apply=True)
+            write_from_git.assert_not_called()
+            self.assertEqual(ordinary.read_text(encoding="utf-8"), "keep local\n")
+            self.assertEqual(skill.read_text(encoding="utf-8"), "user edit\n")
+
 
 if __name__ == "__main__":
     unittest.main()

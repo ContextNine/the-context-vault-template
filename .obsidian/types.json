@@ -192,6 +192,8 @@
     "Done": "checkbox",
     "Recur Interval (Days)": "number",
     "Level Of Comfort (1-5)": "number",
-    "Stage": "text"
+    "Stage": "text",
+    "follow_up": "date",
+    "last_contact": "date"
   }
 }

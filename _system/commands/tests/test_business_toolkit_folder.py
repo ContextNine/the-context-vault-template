@@ -109,9 +109,27 @@ class ContextFolderCapabilityTests(unittest.TestCase):
             bootstrap_module = self.fixture(root)
             self.create(root, bootstrap_module, ["-n", "creator", "-s", "active", "--folder-template", "personal-brand"])
             self.create(root, bootstrap_module, ["-n", "studio", "-s", "active", "--folder-template", "business"])
-            for relative in ("brand", "audience", "offers", "products", "writing", "media", "relationships"):
+            for relative in (
+                "brand",
+                "brand/audience",
+                "brand/competitors",
+                "brand/campaigns",
+                "brand/offers",
+                "products",
+                "writing",
+                "media",
+                "relationships",
+            ):
                 self.assertTrue((root / "creator" / relative).is_dir())
+            self.assertFalse((root / "creator/audience").exists())
+            self.assertFalse((root / "creator/offers").exists())
+            self.assertFalse((root / "creator/brand/marketing-stack").exists())
+            self.assertFalse((root / "studio/gtm/marketing-stack").exists())
+            self.assertTrue((root / "creator/brand/assets.md").is_file())
+            self.assertTrue((root / "creator/brand/funnel.excalidraw").is_file())
             self.assertTrue((root / "studio/company/.gitkeep").is_file())
+            self.assertTrue((root / "studio/relationships/people/.gitkeep").is_file())
+            self.assertTrue((root / "studio/_obsidian/bases/relationship-crm.base").is_file())
             self.assertTrue((root / "studio/_obsidian/business-toolkit.json").is_file())
 
     def test_registration_adds_capabilities_but_rejects_templates(self) -> None:

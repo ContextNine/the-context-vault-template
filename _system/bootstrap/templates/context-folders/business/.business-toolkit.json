@@ -1,6 +1,6 @@
 {
   "schema_version": 2,
-  "pack_version": 2,
+  "pack_version": 4,
   "components": [
     {"id":"meetings.one-on-ones","group":"meetings","label":"One-on-one meetings","folder":"meetings/1-on-1s","source":"_obsidian/templates/business-toolkit/meetings/one-on-one-template.md","destination":"_obsidian/templates/business-toolkit/meetings/one-on-one-template.md"},
     {"id":"meetings.general","group":"meetings","label":"General meetings","folder":"meetings/general-meetings","source":"_obsidian/templates/business-toolkit/meetings/general-meeting-template.md","destination":"_obsidian/templates/business-toolkit/meetings/general-meeting-template.md"},
@@ -12,8 +12,11 @@
     {"id":"product.user-signals","group":"product","label":"User signals","folder":"product/user-signals","source":"_obsidian/templates/business-toolkit/product/user-signal-template.md","destination":"_obsidian/templates/business-toolkit/product/user-signal-template.md"},
     {"id":"gtm.campaigns","group":"gtm","label":"GTM campaigns","folder":"gtm/campaigns","source":"_obsidian/templates/business-toolkit/gtm/campaign-template.md","destination":"_obsidian/templates/business-toolkit/gtm/campaign-template.md"},
     {"id":"gtm.offers","group":"gtm","label":"Offers","folder":"gtm/offers","source":"_obsidian/templates/business-toolkit/gtm/offer-template.md","destination":"_obsidian/templates/business-toolkit/gtm/offer-template.md"},
-    {"id":"gtm.icp","group":"gtm","label":"Ideal customer profiles","folder":"gtm/icp","source":"_obsidian/templates/business-toolkit/gtm/icp-template.md","destination":"_obsidian/templates/business-toolkit/gtm/icp-template.md"},
-    {"id":"gtm.competitors","group":"gtm","label":"Competitor research","folder":"gtm/competitors","source":"_obsidian/templates/business-toolkit/gtm/competitor-template.md","destination":"_obsidian/templates/business-toolkit/gtm/competitor-template.md"},
+    {"id":"company.audience","group":"company","label":"Audience research","folder":"company/audience","source":"_obsidian/templates/business-toolkit/company/audience-template.md","destination":"_obsidian/templates/business-toolkit/company/audience-template.md"},
+    {"id":"company.competitors","group":"company","label":"Competitor research","folder":"company/competitors","source":"_obsidian/templates/business-toolkit/company/competitor-template.md","destination":"_obsidian/templates/business-toolkit/company/competitor-template.md"},
+    {"id":"relationships.people","group":"relationships","label":"People records","folder":"relationships/people","source":"_obsidian/templates/business-toolkit/relationships/person-template.md","destination":"_obsidian/templates/business-toolkit/relationships/person-template.md"},
+    {"id":"relationships.companies","group":"relationships","label":"Company records","folder":"relationships/companies","source":"_obsidian/templates/business-toolkit/relationships/company-template.md","destination":"_obsidian/templates/business-toolkit/relationships/company-template.md"},
+    {"id":"relationships.opportunities","group":"relationships","label":"Opportunity records","folder":"relationships/opportunities","source":"_obsidian/templates/business-toolkit/relationships/opportunity-template.md","destination":"_obsidian/templates/business-toolkit/relationships/opportunity-template.md"},
     {"id":"operations.metrics","group":"operations","label":"Metrics snapshots","folder":"ops/metrics-snapshots","source":"_obsidian/templates/business-toolkit/operations/metrics-snapshot-template.md","destination":"_obsidian/templates/business-toolkit/operations/metrics-snapshot-template.md"},
     {"id":"operations.sops","group":"operations","label":"Standard operating procedures","folder":"ops/sops","source":"_obsidian/templates/business-toolkit/operations/sop-template.md","destination":"_obsidian/templates/business-toolkit/operations/sop-template.md"},
     {"id":"operations.status-reports","group":"operations","label":"Status reports","folder":"ops/status-reports","source":"_obsidian/templates/business-toolkit/operations/status-report-template.md","destination":"_obsidian/templates/business-toolkit/operations/status-report-template.md"},

@@ -129,7 +129,8 @@ def install_scaffold(root: Path, context: str, *, apply: bool) -> int:
             print(f"{'copy' if apply else '[dry-run] copy'} {target.relative_to(root)}")
             if apply:
                 target.parent.mkdir(parents=True, exist_ok=True)
-                shutil.copy2(source, target)
+                source_bytes = source.read_bytes()
+                target.write_bytes(source_bytes.replace(b"{{context}}", context.encode("utf-8")))
             changed += 1
     return changed
 
