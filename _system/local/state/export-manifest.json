@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "generated_at": "2026-09-18T14:09:24+00:00",
+  "generated_at": "2026-09-18T14:19:03+00:00",
   "paths": [
     ".agents/skills",
     ".agents/skills/.gitkeep",
@@ -375,7 +375,6 @@
     "_system/commands/tests/test_skill_sync.py",
     "_system/commands/tests/test_snippets.py",
     "_system/commands/tests/test_teamspace_folder_rename.py",
-    "_system/commands/tests/test_teamspace_upgrade.py",
     "_system/commands/tests/test_upgrade.py",
     "_system/commands/tests/test_vault_dispatch.py",
     "_system/commands/tests/test_worker_bootstrap.py",

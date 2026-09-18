@@ -32,4 +32,4 @@ Status proves that SSH works, the exact registered SSHFS source is mounted read-
 
 Macs edit their local iCloud worktrees normally and do not run an access gate. Linux writes land directly in the configured Mac host's worktree through SSHFS. That Mac's iCloud client distributes them to the other Macs. Only the registered Git owner commits and pushes the Vault.
 
-Setup, systemd, SSHFS options, acceptance, and recovery belong to [[linux-remote-vault-access|Linux Remote Vault Access]] under `$infra-i-onboard-machine`. Machine roles and Git ownership are documented in [[README-primary-worker-vault-sync|Primary and Worker Vault Coordination]] and [[Vault Git Sync]].
+Setup, systemd, SSHFS options, acceptance, and recovery belong to [[linux-remote-vault-access|Linux Remote Vault Access]] under `$fleet-i-onboard-machine`. Machine roles and Git ownership are documented in [[README-primary-worker-vault-sync|Primary and Worker Vault Coordination]] and [[Vault Git Sync]].

@@ -2,7 +2,7 @@
 
 Use one company and GTM structure for every company teamspace. The business pack lives under
 `_system/templates/teamspaces/business/` and composes the GTM tree from
-`_system/templates/gtm/scaffold/`. `$marketing-i-setup-gtm-workspace` applies
+`_system/templates/gtm/scaffold/`. `$vault-i-use-crm` applies
 the relevant files to an existing teamspace without replacing edits.
 
 For an individual contact or relationship update, use `$vault-i-use-crm` and
@@ -90,7 +90,7 @@ as a temporary step toward an app CRM.
 Run the setup skill rather than copying files by memory:
 
 ```text
-$marketing-i-setup-gtm-workspace
+$vault-i-use-crm
 ```
 
 The setup is additive. Existing `crm/`, CSV, workbook, and relationship folders

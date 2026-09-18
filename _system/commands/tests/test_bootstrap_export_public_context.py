@@ -127,7 +127,7 @@ class PublicContextExportTests(unittest.TestCase):
             root = Path(tmp) / "source"
             export_root = Path(tmp) / "public"
             private = root / "_system/agents/edit/settings/fleet/machines.json"
-            generic = root / "_system/agents/edit/skills/_infrastructure/example/SKILL.md"
+            generic = root / "_system/agents/edit/skills/_fleet/example/SKILL.md"
             private.parent.mkdir(parents=True)
             generic.parent.mkdir(parents=True)
             private.write_text("private fleet\n", encoding="utf-8")

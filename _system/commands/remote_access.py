@@ -19,7 +19,7 @@ ROOT = VAULT_ROOT
 REGISTRY = ROOT / "_system/agents/edit/settings/fleet/machines.json"
 HELPER = (
     ROOT
-    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_fleet/fleet-i-onboard-machine/"
     "scripts/remote_vault_access.py"
 )
 

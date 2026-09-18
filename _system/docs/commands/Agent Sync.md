@@ -4,7 +4,7 @@ status: enabled
 ---
 ## Agent Sync
 
-Sync converges the versions and sources currently declared by the primary; it never searches for newer upstream state. Use [[Agent Update]] or `$infra-i-update-fleet-dependencies` when the intent is to update versions, applications, or skill sources.
+Sync converges the versions and sources currently declared by the primary; it never searches for newer upstream state. Use [[Agent Update]] or `$fleet-i-update-dependencies` when the intent is to update versions, applications, or skill sources.
 
 Read [[_system/agents/edit/skills/_agents/agents-i-write-or-edit-a-skill/references/skill-authoring|Skill SOP]] for source, grouping, policy, dependency, and collision rules. The canonical command applies all selected changes by default:
 

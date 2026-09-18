@@ -35,12 +35,12 @@ REGISTRY_SCHEMA_VERSION = 7
 ACCESS_PROVIDERS = ("wireguard", "tailscale")
 ACCESS_RENDERER = (
     ROOT
-    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_fleet/fleet-i-onboard-machine/"
     "scripts/render_ssh_access.py"
 )
 ACCESS_INSPECTOR = (
     ROOT
-    / "_system/agents/edit/skills/_infrastructure/infra-i-onboard-machine/"
+    / "_system/agents/edit/skills/_fleet/fleet-i-onboard-machine/"
     "scripts/inspect_machine_access.py"
 )
 
@@ -684,7 +684,7 @@ def worker_record(
         "vault": vault,
         "global_agents_eligible": False,
         "private_notes_path": (
-            "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/"
+            "_system/agents/edit/settings/skills/config/fleet-i-code-folder-and-computer-topology/"
             f"private/My Machines/{machine_id}.md"
         ),
         "onboarding": {"operation": operation},
@@ -890,7 +890,7 @@ def write_machine_note(root: Path, record: dict[str, Any], apply: bool) -> None:
         f"- Home: `{record['home']}`\n\n"
         "## Onboarding\n\n"
         "Follow [[shared-onboarding-and-acceptance]] and the matching role/provider routes "
-        "from `$infra-i-onboard-machine`. Keep this registry entry disabled until acceptance passes.\n"
+        "from `$fleet-i-onboard-machine`. Keep this registry entry disabled until acceptance passes.\n"
     )
     if not apply:
         print(f"DRY RUN: write {target}")
@@ -929,7 +929,7 @@ def onboarding_prompt(record: dict[str, Any]) -> str:
         "recovered": "Recover",
     }[operation]
     return (
-        f"$infra-i-onboard-machine {verb} the disabled {role} "
+        f"$fleet-i-onboard-machine {verb} the disabled {role} "
         f"{record['id']} using {provider} for personal fleet access. "
         "Keep the canonical SSH alias stable, complete the selected provider and role acceptance, "
         "and enable the registry entry only after reboot and unattended inbound verification pass."
@@ -998,7 +998,7 @@ def command_setup(args: argparse.Namespace) -> int:
         raise MachineError(f"machine already registered: {machine_id}")
     note_path = (
         root
-        / "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/private/My Machines"
+        / "_system/agents/edit/settings/skills/config/fleet-i-code-folder-and-computer-topology/private/My Machines"
         / f"{machine_id}.md"
     )
     if note_path.exists():

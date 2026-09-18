@@ -254,7 +254,7 @@ class MachineTests(unittest.TestCase):
             )
             self.assertEqual(
                 written["machines"][-1]["private_notes_path"],
-                "_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/"
+                "_system/agents/edit/settings/skills/config/fleet-i-code-folder-and-computer-topology/"
                 "private/My Machines/worker.md",
             )
             self.assertEqual(

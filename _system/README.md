@@ -141,7 +141,7 @@ SOP: [[_system/docs/commands/Attachments|Attachments]].
 
 Generated files carry managed markers. Edit source notes/docs, not generated outputs.
 
-Machine-wide operational state for repository reconciliation under `~/Code` lives outside the vault at `~/Code/.workspace-sync/`. `_system/local` records Vault-local actual state and user-specific values; desired fleet, workspace, skill-source, and agent dependency registries live in `_system/agents`. Follow [[_system/agents/edit/skills/_infrastructure/infra-i-code-folder-and-computer-topology/README-machine-runtime-state|Machine Runtime State]].
+Machine-wide operational state for repository reconciliation under `~/Code` lives outside the vault at `~/Code/.workspace-sync/`. `_system/local` records Vault-local actual state and user-specific values; desired fleet, workspace, skill-source, and agent dependency registries live in `_system/agents`. Follow [[_system/agents/edit/skills/_fleet/fleet-i-code-folder-and-computer-topology/README-machine-runtime-state|Machine Runtime State]].
 
 ## Refresh And Generated Views
 

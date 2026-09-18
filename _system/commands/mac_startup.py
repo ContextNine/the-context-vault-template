@@ -19,7 +19,7 @@ from script_utils import resolve_vault_root
 
 
 DEFAULT_LABEL = "com.obsidian-context-vault.mac-startup"
-DEFAULT_CONFIG_RELATIVE = Path("_system/agents/edit/settings/skills/config/infra-i-code-folder-and-computer-topology/Mac Startup/defaults.json")
+DEFAULT_CONFIG_RELATIVE = Path("_system/agents/edit/settings/skills/config/fleet-i-code-folder-and-computer-topology/Mac Startup/defaults.json")
 PRIVATE_CONFIG_RELATIVE = Path("_system/agents/edit/settings/fleet/startup.json")
 TOPOLOGY_REGISTRY_RELATIVE = Path(
     "_system/agents/edit/settings/fleet/machines.json"
