@@ -64,9 +64,9 @@ For this Vault repository only, the final staging scope supersedes the narrow ta
 
 ## First Read
 
-1. Run `vault inventory` for live periods, contexts, task state, and source-note routing.
+1. Run `vault inventory` for live periods, teamspaces, task state, and source-note routing.
 2. Use the routing index below, then follow folder READMEs until reaching the relevant SOP/tool/command doc.
-3. Read relevant `<context-folder>/<context-folder>.md` before changing entity operating rules.
+3. Read relevant `<teamspace-folder>/<teamspace-folder>.md` before changing entity operating rules.
 4. For public bootstrap/export work, read `_system/bootstrap/README.md` and `_system/docs/commands/Bootstrap Export.md`.
 
 ## Folder Map
@@ -82,11 +82,11 @@ For this Vault repository only, the final staging scope supersedes the narrow ta
 - `_library/`: learning, research dumps, swipe files, source material, thoughts. Read `_library/LIBRARY.md` before organizing it.
 - `_wiki/`: synthesized reusable knowledge.
 - `other/`: archive/holding area only when explicitly asked.
-- Context folders: source-of-truth workspaces with local `<context-folder>.md` routing notes and `_obsidian/` operating folders.
+- Teamspace folders: source-of-truth workspaces with local `<teamspace-folder>.md` routing notes and `_obsidian/` operating folders.
 
 ## Core Docs
 
-- `_system/README.md`: vault architecture, folder model, data model, context folder rules.
+- `_system/README.md`: vault architecture, folder model, data model, teamspace folder rules.
 - `_system/docs/commands/README.md`: `vault` command index and command docs routing.
 - `_system/docs/commands/README-reference.md`: full command and bootstrap script inventory.
 - `_system/docs/obsidian/README.md`: Obsidian profile/plugins/templates/UI.
@@ -97,10 +97,10 @@ For this Vault repository only, the final staging scope supersedes the narrow ta
 
 ## Agent Routing Index
 
-- Current state: `vault inventory`, source context notes, `Dashboard.md`.
-- Tasks/projects/epics: `_system/docs/commands/Tasks And Projects.md`, then `<context-folder>/_obsidian/<tasks|projects|epics>/`.
+- Current state: `vault inventory`, source teamspace notes, `Dashboard.md`.
+- Tasks/projects/epics: `_system/docs/commands/Tasks And Projects.md`, then `<teamspace-folder>/_obsidian/<tasks|projects|epics>/`.
 - Calendar/time blocks: `_system/docs/commands/Google Calendar.md`, then `vault gcal`.
-- Content: `_system/README.md#Content`, `_system/docs/commands/Content Schedules.md`, then the selected capability folders under `<context-folder>/_obsidian/content/`; schedules additionally require `content_schedules_enabled: true`.
+- Content: `_system/README.md#Content`, `_system/docs/commands/Content Schedules.md`, then the selected capability folders under `<teamspace-folder>/_obsidian/content/`; schedules additionally require `content_schedules_enabled: true`.
 - Scripts and `vault` commands: `_system/docs/commands/README.md`; open only the needed script doc.
 - General tools and invoices: `_system/tools/README.md`, then relevant `README-<topic>.md` or tool README.
 - Skills: `_system/agents/README.md`, `_system/agents/README-skills.md`, `_system/docs/commands/Agent Skills Sync.md`.
@@ -115,20 +115,20 @@ For this Vault repository only, the final staging scope supersedes the narrow ta
 
 ## Core Paths
 
-- Tasks: `<context-folder>/_obsidian/tasks/`
-- Projects: `<context-folder>/_obsidian/projects/`
-- Epics: `<context-folder>/_obsidian/epics/`
-- Periodic notes: `<context-folder>/_obsidian/periodic/<daily|weekly|monthly|quarterly|yearly>/`
-- Entity operating notes: `<context-folder>/<context-folder>.md`
-- Content: `<context-folder>/_obsidian/content/`
-- Content schedules: `<context-folder>/_obsidian/content-schedules/`
+- Tasks: `<teamspace-folder>/_obsidian/tasks/`
+- Projects: `<teamspace-folder>/_obsidian/projects/`
+- Epics: `<teamspace-folder>/_obsidian/epics/`
+- Periodic notes: `<teamspace-folder>/_obsidian/periodic/<daily|weekly|monthly|quarterly|yearly>/`
+- Entity operating notes: `<teamspace-folder>/<teamspace-folder>.md`
+- Content: `<teamspace-folder>/_obsidian/content/`
+- Content schedules: `<teamspace-folder>/_obsidian/content-schedules/`
 - Attachments: owning top-level folder's `_obsidian/attachments/`
 - Brain Dump import: `_system/inbox/BRAIN_DUMP.md`
 
 ## Operating SOPs
 
 - Create TaskNotes tasks only for executable next actions, reminders, or decisions needing follow-up.
-- Route unspecific capture to current default context from `vault inventory`.
+- Route unspecific capture to current default teamspace from `vault inventory`.
 - Use `scheduled` for work/surface date and `due` for deadline.
 - Use native time fields: `timeEstimate`, `timeEntries`, `pomodoros`; do not use `duration`.
 - Use `vault gcal create-event` for concrete appointments/travel/meetings/reservations; use `create-block` only for explicit time blocking.
