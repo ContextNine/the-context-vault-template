@@ -12,7 +12,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from script_utils import configured_context_folders, context_folder_note_path, resolve_vault_root
+from script_utils import configured_teamspace_folders, teamspace_folder_note_path, resolve_vault_root
 from vault_layout import MANAGED_CONTENT
 
 
@@ -100,14 +100,14 @@ def strip_generated_marker_comment(text: str) -> str:
 
 
 def entity_status(root: Path, entity: str) -> str:
-    path = context_folder_note_path(root / entity)
+    path = teamspace_folder_note_path(root / entity)
     if not path.exists():
         return ""
     return str(simple_frontmatter(path.read_text(encoding="utf-8")).get("status", "")).strip().lower()
 
 
 def entity_content_schedules_enabled(root: Path, entity: str) -> bool:
-    path = context_folder_note_path(root / entity)
+    path = teamspace_folder_note_path(root / entity)
     if not path.exists():
         return False
     return bool(simple_frontmatter(path.read_text(encoding="utf-8")).get("content_schedules_enabled", False))
@@ -115,23 +115,23 @@ def entity_content_schedules_enabled(root: Path, entity: str) -> bool:
 
 def resolve_entities(root: Path, configured: list[str], explicit: list[str], include_all: bool) -> list[str]:
     if include_all and explicit:
-        raise SystemExit("Use either --all or --context-folders, not both.")
+        raise SystemExit("Use either --all or --teamspace-folders, not both.")
     if explicit:
         missing = [entity for entity in explicit if not (root / entity).is_dir()]
         if missing:
-            raise SystemExit(f"Explicit context folder(s) not found: {', '.join(missing)}")
+            raise SystemExit(f"Explicit teamspace folder(s) not found: {', '.join(missing)}")
         return explicit
 
     selected: list[str] = []
     for entity in configured:
         entity_path = root / entity
         if not entity_path.is_dir():
-            print(f"warning: configured context folder not found: {entity}", file=sys.stderr)
+            print(f"warning: configured teamspace folder not found: {entity}", file=sys.stderr)
             continue
         if include_all or entity_status(root, entity) == "active":
             selected.append(entity)
     if not selected:
-        raise SystemExit("No context folders selected. Mark a context folder note as status: active, pass --context-folders, or use --all.")
+        raise SystemExit("No teamspace folders selected. Mark a teamspace folder note as status: active, pass --teamspace-folders, or use --all.")
     return selected
 
 
@@ -175,7 +175,7 @@ def content_schedule_path(root: Path, entity: str, day: dt.date) -> Path | None:
 def current_schedule_sync_embed(root: Path, entity: str, day: dt.date) -> str:
     path = content_schedule_path(root, entity, day)
     if not path:
-        return "_No active content schedule configured for this context folder._"
+        return "_No active content schedule configured for this teamspace folder._"
     link = str(path.relative_to(root).with_suffix(""))
     return f"```sync\n![[{link}]]\n```"
 
@@ -190,7 +190,7 @@ def entity_note_current_schedule_line(root: Path, path: Path) -> str:
 
 
 def ensure_entity_note_current_schedule_link(root: Path, entity: str, path: Path) -> None:
-    entity_note_path = context_folder_note_path(root / entity)
+    entity_note_path = teamspace_folder_note_path(root / entity)
     if not entity_note_path.exists():
         return
     text = entity_note_path.read_text(encoding="utf-8")
@@ -545,15 +545,15 @@ def generate_content_schedules(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Generate current 4-week content schedule notes.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery from the current directory or script location.")
-    parser.add_argument("--configured-context-folders", dest="configured_entities", metavar="CONTEXT_FOLDERS")
-    parser.add_argument("--context-folders", dest="entities", metavar="CONTEXT_FOLDERS")
+    parser.add_argument("--configured-teamspace-folders", dest="configured_entities", metavar="TEAMSPACE_FOLDERS")
+    parser.add_argument("--teamspace-folders", dest="entities", metavar="TEAMSPACE_FOLDERS")
     parser.add_argument("--all", action="store_true")
     parser.add_argument("--date", default=dt.date.today().isoformat())
     parser.add_argument("--force", action="store_true", help="Regenerate existing managed content schedule notes.")
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    configured = configured_context_folders(root, parse_entities(args.configured_entities), DEFAULT_ENTITIES)
+    configured = configured_teamspace_folders(root, parse_entities(args.configured_entities), DEFAULT_ENTITIES)
     explicit = parse_entities(args.entities)
     selected = resolve_entities(root, configured, explicit, args.all)
     content_entities = [entity for entity in selected if entity_content_schedules_enabled(root, entity)]

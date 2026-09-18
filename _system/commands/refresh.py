@@ -13,7 +13,7 @@ import sys
 import uuid
 from pathlib import Path
 
-from script_utils import configured_context_folders, context_folder_note_path, resolve_vault_root
+from script_utils import configured_teamspace_folders, teamspace_folder_note_path, resolve_vault_root
 
 
 DEFAULT_ENTITIES = ["personal", "personal-brand", "business"]
@@ -28,7 +28,7 @@ def parse_entities(value: str | None) -> list[str]:
 
 
 def entity_content_schedules_enabled(root: Path, entity: str) -> bool:
-    note = context_folder_note_path(root / entity)
+    note = teamspace_folder_note_path(root / entity)
     if not note.exists():
         return False
     for line in note.read_text(encoding="utf-8", errors="replace").splitlines():
@@ -51,7 +51,7 @@ def generate_derived_views(
     import periodic
 
     day = day or dt.date.today()
-    configured = configured_context_folders(root, configured_entities or [], DEFAULT_ENTITIES)
+    configured = configured_teamspace_folders(root, configured_entities or [], DEFAULT_ENTITIES)
     explicit = explicit_entities or []
     selected = periodic.resolve_entities(root, configured, explicit, include_all)
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
@@ -180,8 +180,8 @@ def main(argv: list[str] | None = None) -> int:
         action="store_true",
         help="When used with --sync-brain-dump, ingest Brain Dump without clearing the source note.",
     )
-    parser.add_argument("--all", action="store_true", help="Refresh all registered context folders.")
-    parser.add_argument("--context-folders", default=None, help="Comma-separated context folders for this refresh.")
+    parser.add_argument("--all", action="store_true", help="Refresh all registered teamspace folders.")
+    parser.add_argument("--teamspace-folders", default=None, help="Comma-separated teamspace folders for this refresh.")
     parser.add_argument("--date", default=None, help="Refresh date in YYYY-MM-DD form. Defaults to today.")
     parser.add_argument("--skip-git-maintenance", action="store_true", help="Skip local Git shallow prune/gc maintenance.")
     git_preflight_group = parser.add_mutually_exclusive_group()
@@ -217,7 +217,7 @@ def main(argv: list[str] | None = None) -> int:
     day = dt.date.fromisoformat(args.date) if args.date else local_today()
     _, periods, _ = generate_derived_views(
         root,
-        explicit_entities=parse_entities(args.context_folders),
+        explicit_entities=parse_entities(args.teamspace_folders),
         include_all=args.all,
         day=day,
     )

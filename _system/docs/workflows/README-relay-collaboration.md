@@ -1,6 +1,6 @@
 # Relay Collaboration
 
-Relay shares selected folders between vaults while each person keeps private context in their own vault. Share explicit operating spaces such as `_library` or one context folder; never assume whole vault is shared.
+Relay shares selected folders between vaults while each person keeps private context in their own vault. Share explicit operating spaces such as `_library` or one teamspace folder; never assume whole vault is shared.
 
 ## Join Shared Workspace
 
@@ -10,7 +10,7 @@ Relay shares selected folders between vaults while each person keeps private con
 4. Open Relay settings.
 5. Ask host for Relay host name and workspace invite/details.
 6. Sign in or join same Relay workspace.
-7. Share or download required folders, commonly `_library` and relevant context folder.
+7. Share or download required folders, commonly `_library` and relevant teamspace folder.
 8. Reload Obsidian.
 9. Check Relay sync status panel.
 
@@ -21,4 +21,4 @@ Relay shares selected folders between vaults while each person keeps private con
 - Confirm attachment ownership and shared attachment folders before moving notes between roots.
 - Bootstrap export ships Relay bundle but excludes local Relay config. Each user signs in/configures Relay locally.
 
-Entity operating sections remain in each context folder note. Generated agent Identity/Momentum packets are local derived views, not collaboration sources.
+Entity operating sections remain in each teamspace folder note. Generated agent Identity/Momentum packets are local derived views, not collaboration sources.

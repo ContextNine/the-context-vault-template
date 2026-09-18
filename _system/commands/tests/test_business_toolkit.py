@@ -41,10 +41,12 @@ class BusinessToolkitTests(unittest.TestCase):
         root = Path(tmp) / "vault"
         pack_source = VAULT_ROOT / PACK_RELATIVE
         shutil.copytree(pack_source, root / PACK_RELATIVE)
+        gtm_source = VAULT_ROOT / "_system/templates/gtm/scaffold"
+        shutil.copytree(gtm_source, root / "_system/templates/gtm/scaffold")
         context = root / "studio"
         context.mkdir(parents=True)
         (context / "studio.md").write_text(
-            "---\nstatus: active\ncontext_registered: true\n---\n",
+            "---\nstatus: active\nteamspace_registered: true\n---\n",
             encoding="utf-8",
         )
         templater = root / TEMPLATER_RELATIVE
@@ -218,7 +220,7 @@ class BusinessToolkitTests(unittest.TestCase):
                 encoding="utf-8"
             )
             self.assertIn('file.inFolder("studio/relationships")', crm_base)
-            self.assertNotIn("{{context}}", crm_base)
+            self.assertNotIn("{{teamspace}}", crm_base)
             self.assertFalse(list((root / "studio").rglob("README*.md")))
             self.assertFalse((root / "studio" / MANIFEST_NAME).exists())
             self.assertFalse((root / "studio/_obsidian/templates/business-toolkit").exists())
@@ -255,7 +257,7 @@ class BusinessToolkitTests(unittest.TestCase):
             agency = root / "agency"
             agency.mkdir()
             (agency / "agency.md").write_text(
-                "---\nstatus: active\ncontext_registered: true\n---\n",
+                "---\nstatus: active\nteamspace_registered: true\n---\n",
                 encoding="utf-8",
             )
             for context in ("studio", "agency"):

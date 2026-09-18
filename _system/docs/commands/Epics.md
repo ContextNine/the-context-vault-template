@@ -4,13 +4,13 @@ status: enabled
 ---
 # Epics
 
-Create an epic in a context folder and refresh the related TaskNotes views:
+Create an epic in a teamspace folder and refresh the related TaskNotes views:
 
 ```bash
 vault epic create business "New Epic"
 ```
 
-This creates `<context-folder>/_obsidian/epics/<Epic>.md`, generates the per-epic Kanban Base under `<context-folder>/_obsidian/bases/`, and updates the managed epic views in [[_system/_obsidian/bases/tasks-kanban-v1.base]].
+This creates `<teamspace-folder>/_obsidian/epics/<Epic>.md`, generates the per-epic Kanban Base under `<teamspace-folder>/_obsidian/bases/`, and updates the managed epic views in [[_system/_obsidian/bases/tasks-kanban-v1.base]].
 
 Useful variants:
 

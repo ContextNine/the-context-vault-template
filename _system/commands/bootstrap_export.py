@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 from vault_layout import BOOTSTRAP_DIR, EXPORT_MANIFEST_PATH
 
 
@@ -124,7 +124,7 @@ class BootstrapExporter:
         self.export_root = (export_root or Path(config["export_root"])).expanduser().resolve()
         self.force = force
         self.dry_run = dry_run
-        self.context_configs = config.get("context_folders", [])
+        self.context_configs = config.get("teamspace_folders", [])
         self.context_pairs = [
             (item["source"], item["target"])
             for item in self.context_configs
@@ -172,7 +172,7 @@ class BootstrapExporter:
         self.copy_root_files()
         self.copy_obsidian()
         self.copy_system_or_shared("_system")
-        self.copy_context_folders()
+        self.copy_teamspace_folders()
         self.regenerate_public_bases()
         self.validate_public_base_contexts()
         self.create_library_and_wiki()
@@ -190,7 +190,7 @@ class BootstrapExporter:
         for source, _target in self.context_pairs:
             source_path = self.root / source
             if not source_path.is_dir():
-                raise SystemExit(f"Missing source context folder: {source}")
+                raise SystemExit(f"Missing source teamspace folder: {source}")
         if self.config.get("copy_obsidian") != "exact":
             raise SystemExit("Only copy_obsidian='exact' is supported.")
 
@@ -414,16 +414,16 @@ class BootstrapExporter:
             return True
         return any(part.startswith(".env") for part in parts)
 
-    def copy_context_folders(self) -> None:
+    def copy_teamspace_folders(self) -> None:
         for item in self.context_configs:
             source_name = item["source"]
             target_name = item["target"]
             source = self.root / source_name
             target = self.export_root / target_name
             self.ensure_dir(target)
-            folder_note_path = context_folder_note_path(source)
+            folder_note_path = teamspace_folder_note_path(source)
             if folder_note_path.exists():
-                self.write_public_context_folder_note(
+                self.write_public_teamspace_folder_note(
                     folder_note_path,
                     target / f"{target_name}.md",
                     target_name,
@@ -434,7 +434,7 @@ class BootstrapExporter:
                 self.copy_context_obsidian(obsidian, target / "_obsidian")
             self.write_public_context_scaffold(target_name, target)
 
-    def write_public_context_folder_note(
+    def write_public_teamspace_folder_note(
         self,
         source: Path,
         target: Path,
@@ -454,7 +454,7 @@ class BootstrapExporter:
             rendered_body += "\n\n" + "\n\n".join(heading_lines)
         rendered_body += "\n"
         rendered = join_frontmatter_and_body(frontmatter, rendered_body)
-        self.write_generated_text(target, rendered, f"write public context folder note {target}")
+        self.write_generated_text(target, rendered, f"write public teamspace folder note {target}")
 
     def write_generated_text(self, target: Path, text: str, message: str) -> None:
         self.ensure_dir(target.parent)
@@ -525,7 +525,7 @@ class BootstrapExporter:
     def context_metadata(self, item: dict[str, Any]) -> dict[str, str]:
         target = item["target"]
         target_note = self.export_root / target / f"{target}.md"
-        source_note = context_folder_note_path(self.root / item["source"])
+        source_note = teamspace_folder_note_path(self.root / item["source"])
         for path in [target_note, source_note]:
             if path.exists():
                 return parse_frontmatter(path.read_text(encoding="utf-8"))
@@ -543,7 +543,7 @@ class BootstrapExporter:
         if "personal" in targets:
             return "personal"
         if not targets:
-            raise SystemExit("Public export has no configured context folders.")
+            raise SystemExit("Public export has no configured teamspace folders.")
         return targets[0]
 
     def public_active_contexts(self) -> list[str]:
@@ -588,7 +588,7 @@ class BootstrapExporter:
     def discovered_source_context_names(self) -> set[str]:
         names = {item["source"] for item in self.context_configs}
         for child in self.root.iterdir():
-            if child.is_dir() and context_folder_note_path(child).exists():
+            if child.is_dir() and teamspace_folder_note_path(child).exists():
                 names.add(child.name)
         return names
 
@@ -612,7 +612,7 @@ class BootstrapExporter:
                     leaks.append(f"{path.relative_to(self.export_root)} contains {name}")
         if leaks:
             rendered = "\n".join(f"- {leak}" for leak in leaks[:20])
-            raise SystemExit(f"Refusing to export .base files with source context-folder references:\n{rendered}")
+            raise SystemExit(f"Refusing to export .base files with source teamspace-folder references:\n{rendered}")
 
     def create_library_and_wiki(self) -> None:
         library = self.export_root / "_library"

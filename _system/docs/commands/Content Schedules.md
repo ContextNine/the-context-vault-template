@@ -4,12 +4,14 @@ status: enabled
 ---
 # Content System And Schedules
 
-Context folders may independently support blogs, social content, and newsletters under `_obsidian/content`. Executable work about content belongs in `_obsidian/tasks`, not content storage.
+Teamspace folders may independently support blogs, social content, and newsletters under `_obsidian/content`. Executable work about content belongs in `_obsidian/tasks`, not content storage.
+
+The editable social-post source is `_system/templates/content/social-post/content-item-template.md`. Bootstrap renders it into the shared Obsidian-facing `content-item-template.md`; social-content remains an independent opt-in, not part of a business or personal-brand pack.
 
 ## Structure
 
 ```text
-<context-folder>/_obsidian/content/
+<teamspace-folder>/_obsidian/content/
   content-cadence.json       # only with --content-schedules
   publications/
     blogs/
@@ -22,7 +24,7 @@ Context folders may independently support blogs, social content, and newsletters
     social-posts/
   ideas/
   archive/
-<context-folder>/_obsidian/content-schedules/  # only with --content-schedules
+<teamspace-folder>/_obsidian/content-schedules/  # only with --content-schedules
 ```
 
 ## Schemas
@@ -68,13 +70,13 @@ _system/_obsidian/bases/content-calendar.base
 _system/_obsidian/bases/content-kanban.base
 ```
 
-Context views:
+Teamspace views:
 
 ```text
-<context-folder>/_obsidian/bases/content-dashboard.base
-<context-folder>/_obsidian/bases/content-queue.base
-<context-folder>/_obsidian/bases/content-calendar.base
-<context-folder>/_obsidian/bases/content-kanban.base
+<teamspace-folder>/_obsidian/bases/content-dashboard.base
+<teamspace-folder>/_obsidian/bases/content-queue.base
+<teamspace-folder>/_obsidian/bases/content-calendar.base
+<teamspace-folder>/_obsidian/bases/content-kanban.base
 ```
 
 Calendar views use `publish_date`; dragging item updates that property. Kanban views group by `status` with platform-specific views for Blog, Newsletter, YouTube, LinkedIn, X, Substack, and broad Social items. Content state remains note frontmatter, not Markdown Kanban files or Full Calendar event-note schema.
@@ -89,13 +91,13 @@ vault content
 
 `vault refresh` runs content generation automatically before periodic generation so periodic templates can embed current schedule.
 
-Only context notes with `content_schedules_enabled: true` participate. Capability folders alone never create or refresh schedules. Blog, social-content, and newsletter support is inferred from their respective directories.
+Only teamspace notes with `content_schedules_enabled: true` participate. Capability folders alone never create or refresh schedules. Blog, social-content, and newsletter support is inferred from their respective directories.
 
 ## Enable or disable schedule generation
 
-Add `content_schedules_enabled: true` to the context control note to enable generated four-week content calendars. Remove that property to disable future calendar generation. Existing schedule notes stay in place as history; remove any stale `Current content schedule:` line from the context note when disabling it manually.
+Add `content_schedules_enabled: true` to the teamspace control note to enable generated four-week content calendars. Remove that property to disable future calendar generation. Existing schedule notes stay in place as history; remove any stale `Current content schedule:` line from the teamspace note when disabling it manually.
 
-Content schedule notes live in `<context-folder>/_obsidian/content-schedules/` and normal refresh is create-only. `_obsidian/content/content-cadence.json` controls `schedule_format` and `publication_order`. The generator also keeps the `Current content schedule:` line in the context folder note.
+Content schedule notes live in `<teamspace-folder>/_obsidian/content-schedules/` and normal refresh is create-only. `_obsidian/content/content-cadence.json` controls `schedule_format` and `publication_order`. The generator also keeps the `Current content schedule:` line in the teamspace folder note.
 
 Supported `schedule_format` values:
 
@@ -108,7 +110,7 @@ Supported `schedule_format` values:
 Regenerate an existing managed schedule note with:
 
 ```bash
-vault content --context-folders personal-brand --date 2026-05-13 --force
+vault content --teamspace-folders personal-brand --date 2026-05-13 --force
 ```
 
 Implementation script: `_system/commands/content.py`.

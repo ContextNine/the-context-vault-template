@@ -29,7 +29,7 @@ Usage: init_vault.sh [options]
 
 Initialize a fresh/exported vault after placing it in iCloud.
 
-The script installs/checks dependencies, asks which context folders should
+The script installs/checks dependencies, asks which teamspace folders should
 exist, runs the Vault bootstrap, installs the `vault` command, then optionally
 moves the real Git directory outside iCloud.
 
@@ -139,15 +139,15 @@ print_context_intro() {
 ###############################################################################
 
 We first need to choose which entities you want to operate.
-These are also known as context folders.
+These are also known as teamspace folders.
 
-This starter vault creates three context folders:
+This starter vault creates three teamspace folders:
 
   personal         personal life, admin, health, relationships
   personal-brand   your public voice, writing, media, audience
   business         company or client work
 
-You can delete, add, or rename context folders later. For setup, keep three.
+You can delete, add, or rename teamspace folders later. For setup, keep three.
 
 Input rules:
 
@@ -184,14 +184,14 @@ prompt_context_slug() {
 
 load_config() {
   if [[ ! -f "${CONFIG_PATH}" ]]; then
-    CONTEXT_FOLDERS="personal,personal-brand,business"
-    ACTIVE_CONTEXT_FOLDERS="${CONTEXT_FOLDERS}"
-    BLOG_CONTEXT_FOLDERS="personal-brand,business"
-    SOCIAL_CONTENT_CONTEXT_FOLDERS="personal-brand,business"
-    NEWSLETTER_CONTEXT_FOLDERS="personal-brand,business"
-    CONTENT_SCHEDULE_CONTEXT_FOLDERS="personal-brand,business"
+    TEAMSPACE_FOLDERS="personal,personal-brand,business"
+    ACTIVE_TEAMSPACE_FOLDERS="${TEAMSPACE_FOLDERS}"
+    BLOG_TEAMSPACE_FOLDERS="personal-brand,business"
+    SOCIAL_CONTENT_TEAMSPACE_FOLDERS="personal-brand,business"
+    NEWSLETTER_TEAMSPACE_FOLDERS="personal-brand,business"
+    CONTENT_SCHEDULE_TEAMSPACE_FOLDERS="personal-brand,business"
     FOLDER_TEMPLATES="personal-brand:personal-brand,business:business"
-    DEFAULT_CONTEXT_FOLDER="personal"
+    DEFAULT_TEAMSPACE_FOLDER="personal"
     return 0
   fi
   eval "$("${PYTHON_BIN}" - "${CONFIG_PATH}" <<'PY'
@@ -201,7 +201,7 @@ import sys
 
 path = sys.argv[1]
 data = json.load(open(path, encoding="utf-8"))
-items = data.get("context_folders") or []
+items = data.get("teamspace_folders") or []
 names = [item["name"] for item in items]
 active = [item["name"] for item in items if item.get("status") == "active"]
 blog = [item["name"] for item in items if "blog" in item.get("capabilities", [])]
@@ -212,14 +212,14 @@ defaults = [item["name"] for item in items if item.get("default_capture")]
 default = defaults[0] if defaults else (active[0] if active else (names[0] if names else "personal"))
 templates = [f'{item["name"]}:{item["folder_template"]}' for item in items if item.get("folder_template")]
 values = {
-    "CONTEXT_FOLDERS": ",".join(names),
-    "ACTIVE_CONTEXT_FOLDERS": ",".join(active),
-    "BLOG_CONTEXT_FOLDERS": ",".join(blog),
-    "SOCIAL_CONTENT_CONTEXT_FOLDERS": ",".join(social),
-    "NEWSLETTER_CONTEXT_FOLDERS": ",".join(newsletters),
-    "CONTENT_SCHEDULE_CONTEXT_FOLDERS": ",".join(schedules),
+    "TEAMSPACE_FOLDERS": ",".join(names),
+    "ACTIVE_TEAMSPACE_FOLDERS": ",".join(active),
+    "BLOG_TEAMSPACE_FOLDERS": ",".join(blog),
+    "SOCIAL_CONTENT_TEAMSPACE_FOLDERS": ",".join(social),
+    "NEWSLETTER_TEAMSPACE_FOLDERS": ",".join(newsletters),
+    "CONTENT_SCHEDULE_TEAMSPACE_FOLDERS": ",".join(schedules),
     "FOLDER_TEMPLATES": ",".join(templates),
-    "DEFAULT_CONTEXT_FOLDER": default,
+    "DEFAULT_TEAMSPACE_FOLDER": default,
 }
 for key, value in values.items():
     print(f"{key}={shlex.quote(value)}")
@@ -237,13 +237,13 @@ save_config() {
   local default_context="$7"
   local templates_csv="$8"
 
-  CONTEXT_FOLDERS_CSV="$context_csv" \
-    ACTIVE_CONTEXT_FOLDERS_CSV="$active_csv" \
-    BLOG_CONTEXT_FOLDERS_CSV="$blog_csv" \
-    SOCIAL_CONTENT_CONTEXT_FOLDERS_CSV="$social_csv" \
-    NEWSLETTER_CONTEXT_FOLDERS_CSV="$newsletter_csv" \
-    CONTENT_SCHEDULE_CONTEXT_FOLDERS_CSV="$schedules_csv" \
-    DEFAULT_CONTEXT_FOLDER_VALUE="$default_context" \
+  TEAMSPACE_FOLDERS_CSV="$context_csv" \
+    ACTIVE_TEAMSPACE_FOLDERS_CSV="$active_csv" \
+    BLOG_TEAMSPACE_FOLDERS_CSV="$blog_csv" \
+    SOCIAL_CONTENT_TEAMSPACE_FOLDERS_CSV="$social_csv" \
+    NEWSLETTER_TEAMSPACE_FOLDERS_CSV="$newsletter_csv" \
+    CONTENT_SCHEDULE_TEAMSPACE_FOLDERS_CSV="$schedules_csv" \
+    DEFAULT_TEAMSPACE_FOLDER_VALUE="$default_context" \
     FOLDER_TEMPLATES_CSV="$templates_csv" \
     DRY_RUN_VALUE="$DRY_RUN" \
     "${PYTHON_BIN}" - "${CONFIG_PATH}" <<'PY'
@@ -252,13 +252,13 @@ import os
 import sys
 
 path = sys.argv[1]
-names = [item for item in os.environ["CONTEXT_FOLDERS_CSV"].split(",") if item]
-active = {item for item in os.environ["ACTIVE_CONTEXT_FOLDERS_CSV"].split(",") if item}
-blog = {item for item in os.environ["BLOG_CONTEXT_FOLDERS_CSV"].split(",") if item}
-social = {item for item in os.environ["SOCIAL_CONTENT_CONTEXT_FOLDERS_CSV"].split(",") if item}
-newsletters = {item for item in os.environ["NEWSLETTER_CONTEXT_FOLDERS_CSV"].split(",") if item}
-schedules = {item for item in os.environ["CONTENT_SCHEDULE_CONTEXT_FOLDERS_CSV"].split(",") if item}
-default = os.environ["DEFAULT_CONTEXT_FOLDER_VALUE"]
+names = [item for item in os.environ["TEAMSPACE_FOLDERS_CSV"].split(",") if item]
+active = {item for item in os.environ["ACTIVE_TEAMSPACE_FOLDERS_CSV"].split(",") if item}
+blog = {item for item in os.environ["BLOG_TEAMSPACE_FOLDERS_CSV"].split(",") if item}
+social = {item for item in os.environ["SOCIAL_CONTENT_TEAMSPACE_FOLDERS_CSV"].split(",") if item}
+newsletters = {item for item in os.environ["NEWSLETTER_TEAMSPACE_FOLDERS_CSV"].split(",") if item}
+schedules = {item for item in os.environ["CONTENT_SCHEDULE_TEAMSPACE_FOLDERS_CSV"].split(",") if item}
+default = os.environ["DEFAULT_TEAMSPACE_FOLDER_VALUE"]
 templates = {}
 for item in os.environ["FOLDER_TEMPLATES_CSV"].split(","):
     if not item:
@@ -266,7 +266,7 @@ for item in os.environ["FOLDER_TEMPLATES_CSV"].split(","):
     name, template = item.split(":", 1)
     templates[name] = template
 data = {
-    "context_folders": [
+    "teamspace_folders": [
         {
             "name": name,
             "status": "active" if name in active else "archived",
@@ -300,7 +300,7 @@ collect_config() {
   fi
 
   local existing_array=()
-  IFS=',' read -r -a existing_array <<<"${CONTEXT_FOLDERS}"
+  IFS=',' read -r -a existing_array <<<"${TEAMSPACE_FOLDERS}"
 
   local personal_default="${existing_array[0]:-personal}"
   local brand_default="${existing_array[1]:-personal-brand}"
@@ -313,69 +313,69 @@ collect_config() {
   print_context_intro
 
   local personal_context brand_context business_context
-  personal_context="$(prompt_context_slug "Rename personal? Personal context folder" "${personal_default}")"
+  personal_context="$(prompt_context_slug "Rename personal? Personal teamspace folder" "${personal_default}")"
   brand_context="$(prompt_context_slug "Rename personal-brand? Example: your-name" "${brand_default}")"
   business_context="$(prompt_context_slug "Rename business? Example: kpmg" "${business_default}")"
 
   if [[ "${personal_context}" == "${brand_context}" || "${personal_context}" == "${business_context}" || "${brand_context}" == "${business_context}" ]]; then
-    die "Context folder slugs must be unique."
+    die "Teamspace folder slugs must be unique."
   fi
 
-  CONTEXT_FOLDERS="$(join_by_comma "${personal_context}" "${brand_context}" "${business_context}")"
-  ACTIVE_CONTEXT_FOLDERS="${CONTEXT_FOLDERS}"
-  BLOG_CONTEXT_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
-  SOCIAL_CONTENT_CONTEXT_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
-  NEWSLETTER_CONTEXT_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
-  CONTENT_SCHEDULE_CONTEXT_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
+  TEAMSPACE_FOLDERS="$(join_by_comma "${personal_context}" "${brand_context}" "${business_context}")"
+  ACTIVE_TEAMSPACE_FOLDERS="${TEAMSPACE_FOLDERS}"
+  BLOG_TEAMSPACE_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
+  SOCIAL_CONTENT_TEAMSPACE_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
+  NEWSLETTER_TEAMSPACE_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
+  CONTENT_SCHEDULE_TEAMSPACE_FOLDERS="$(join_by_comma "${brand_context}" "${business_context}")"
   FOLDER_TEMPLATES="$(join_by_comma "${brand_context}:personal-brand" "${business_context}:business")"
-  DEFAULT_CONTEXT_FOLDER="${personal_context}"
+  DEFAULT_TEAMSPACE_FOLDER="${personal_context}"
 
   cat <<EOF
 
 Setup choices:
 
-  Context folders: ${CONTEXT_FOLDERS}
-  Active folders:  ${ACTIVE_CONTEXT_FOLDERS}
-  Blog:            ${BLOG_CONTEXT_FOLDERS}
-  Social content:  ${SOCIAL_CONTENT_CONTEXT_FOLDERS}
-  Newsletters:     ${NEWSLETTER_CONTEXT_FOLDERS}
-  Schedules:       ${CONTENT_SCHEDULE_CONTEXT_FOLDERS}
-  Default capture: ${DEFAULT_CONTEXT_FOLDER}
+  Teamspace folders: ${TEAMSPACE_FOLDERS}
+  Active folders:  ${ACTIVE_TEAMSPACE_FOLDERS}
+  Blog:            ${BLOG_TEAMSPACE_FOLDERS}
+  Social content:  ${SOCIAL_CONTENT_TEAMSPACE_FOLDERS}
+  Newsletters:     ${NEWSLETTER_TEAMSPACE_FOLDERS}
+  Schedules:       ${CONTENT_SCHEDULE_TEAMSPACE_FOLDERS}
+  Default capture: ${DEFAULT_TEAMSPACE_FOLDER}
   Folder templates:${FOLDER_TEMPLATES}
 
 EOF
 
-  save_config "${CONTEXT_FOLDERS}" "${ACTIVE_CONTEXT_FOLDERS}" "${BLOG_CONTEXT_FOLDERS}" "${SOCIAL_CONTENT_CONTEXT_FOLDERS}" "${NEWSLETTER_CONTEXT_FOLDERS}" "${CONTENT_SCHEDULE_CONTEXT_FOLDERS}" "${DEFAULT_CONTEXT_FOLDER}" "${FOLDER_TEMPLATES}"
+  save_config "${TEAMSPACE_FOLDERS}" "${ACTIVE_TEAMSPACE_FOLDERS}" "${BLOG_TEAMSPACE_FOLDERS}" "${SOCIAL_CONTENT_TEAMSPACE_FOLDERS}" "${NEWSLETTER_TEAMSPACE_FOLDERS}" "${CONTENT_SCHEDULE_TEAMSPACE_FOLDERS}" "${DEFAULT_TEAMSPACE_FOLDER}" "${FOLDER_TEMPLATES}"
 }
 
-remap_starter_context_folders() {
+remap_starter_teamspace_folders() {
   local configured=()
   local personal_target brand_target business_target
-  IFS=',' read -r -a configured <<<"${CONTEXT_FOLDERS}"
+  IFS=',' read -r -a configured <<<"${TEAMSPACE_FOLDERS}"
   personal_target="${configured[0]:-personal}"
   brand_target="${configured[1]:-personal-brand}"
   business_target="${configured[2]:-business}"
 
-  rename_starter_context_folder "personal" "${personal_target}"
-  rename_starter_context_folder "personal-brand" "${brand_target}"
-  rename_starter_context_folder "business" "${business_target}"
+  rename_starter_teamspace_folder "personal" "${personal_target}"
+  rename_starter_teamspace_folder "personal-brand" "${brand_target}"
+  rename_starter_teamspace_folder "business" "${business_target}"
 }
 
-rename_starter_context_folder() {
+rename_starter_teamspace_folder() {
   local source="$1"
   local target="$2"
   if [[ "${source}" == "${target}" ]]; then
     return 0
   fi
   if [[ "${DRY_RUN}" -eq 1 ]]; then
-    run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/context_folder_rename.py" \
+    run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/teamspace_folder_rename.py" \
       --root "${VAULT_ROOT}" \
       --dry-run \
       --missing-ok \
       "${source}" \
       "${target}"
   else
-    run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/context_folder_rename.py" \
+    run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/teamspace_folder_rename.py" \
       --root "${VAULT_ROOT}" \
       --missing-ok \
       "${source}" \
@@ -522,18 +522,18 @@ main() {
     run_dry_capable "${PYTHON_BIN}" "${SCRIPT_DIR}/install_plugins.py" --root "${VAULT_ROOT}" --apply
   fi
   collect_config
-  remap_starter_context_folders
+  remap_starter_teamspace_folders
 
   run_with_optional_dry_run "${PYTHON_BIN}" "${SCRIPT_DIR}/bootstrap_vault.py" \
     --root "${VAULT_ROOT}" \
-    --context-folders "${CONTEXT_FOLDERS}" \
-    --active-context-folders "${ACTIVE_CONTEXT_FOLDERS}" \
-    --blog-context-folders "${BLOG_CONTEXT_FOLDERS}" \
-    --social-content-context-folders "${SOCIAL_CONTENT_CONTEXT_FOLDERS}" \
-    --newsletter-context-folders "${NEWSLETTER_CONTEXT_FOLDERS}" \
-    --content-schedule-context-folders "${CONTENT_SCHEDULE_CONTEXT_FOLDERS}" \
+    --teamspace-folders "${TEAMSPACE_FOLDERS}" \
+    --active-teamspace-folders "${ACTIVE_TEAMSPACE_FOLDERS}" \
+    --blog-teamspace-folders "${BLOG_TEAMSPACE_FOLDERS}" \
+    --social-content-teamspace-folders "${SOCIAL_CONTENT_TEAMSPACE_FOLDERS}" \
+    --newsletter-teamspace-folders "${NEWSLETTER_TEAMSPACE_FOLDERS}" \
+    --content-schedule-teamspace-folders "${CONTENT_SCHEDULE_TEAMSPACE_FOLDERS}" \
     --folder-templates "${FOLDER_TEMPLATES}" \
-    --default-context-folder "${DEFAULT_CONTEXT_FOLDER}" \
+    --default-teamspace-folder "${DEFAULT_TEAMSPACE_FOLDER}" \
     --skip-install-vault-command
 
   local template_pair template_context template_name
@@ -544,9 +544,9 @@ main() {
     template_name="${template_pair#*:}"
     [[ "${template_name}" == "business" ]] || continue
     if [[ "${DRY_RUN}" -eq 1 ]]; then
-      run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/business_toolkit.py" sync --root "${VAULT_ROOT}" --context-folders "${template_context}"
+      run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/business_toolkit.py" sync --root "${VAULT_ROOT}" --teamspace-folders "${template_context}"
     else
-      run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/business_toolkit.py" sync --root "${VAULT_ROOT}" --context-folders "${template_context}" --apply
+      run_dry_capable "${PYTHON_BIN}" "${VAULT_ROOT}/_system/commands/business_toolkit.py" sync --root "${VAULT_ROOT}" --teamspace-folders "${template_context}" --apply
     fi
   done
 

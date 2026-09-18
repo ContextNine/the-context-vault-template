@@ -89,7 +89,7 @@ Open Tab Settings changes default note-opening behavior without adding a new hot
 | `Alt+Cmd+T` | Open the native TaskNotes new task dialog, with selected Markdown injected into details on save. |
 | `Alt+Cmd+Y` | Append the selected Markdown block to an existing TaskNotes task. |
 | `#tag` | Add an Obsidian tag in TaskNotes natural-language input. |
-| `@business` | Set task context and route it to that context folder's `_obsidian/tasks` folder. |
+| `@business` | Set task context and route it to that teamspace folder's `_obsidian/tasks` folder. |
 | `+project` or `+[[Project Name]]` | Link a project. Use sparingly; contexts and tags are preferred here. |
 | `$backlog`, `$up-next`, `$to-be-resumed`, `$ongoing`, `$in-progress`, `$done` | Set task status from TaskNotes natural-language input. |
 | `$` | Status trigger in TaskNotes NLP. This replaces the older `*` status trigger. |

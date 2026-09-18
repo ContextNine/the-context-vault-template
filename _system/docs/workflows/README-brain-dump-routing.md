@@ -4,16 +4,16 @@ Use this SOP to recommend and apply destinations for one section of `_system/inb
 
 ## Core Distinction
 
-Context folders hold information specific to that entity. `_library` holds reusable knowledge, learning, examples, prompts, and reference material.
+Teamspace folders hold information specific to that entity. `_library` holds reusable knowledge, learning, examples, prompts, and reference material.
 
 - `personal`: Matt's actual life state and records—blood results, medical history, finances, goals, decisions, routines, relationships, home, and personal work.
 - `business`: Impression-specific product, company, customer, marketing, operations, plans, and work.
 - `personal-brand`: Matt Derman brand-specific positioning, content, audience, offers, and publishing work.
 - `_library`: reusable or external knowledge not bound to one entity. Most Brain Dump reference material belongs here.
-- `_wiki`: synthesized, durable, cross-context knowledge. Use after source material has been distilled, not for raw capture by default.
+- `_wiki`: synthesized, durable, knowledge shared across teamspaces. Use after source material has been distilled, not for raw capture by default.
 - `_system`: vault operating rules, agent SOPs, scripts, templates, and system material only. Do not route ordinary personal or reference captures here.
 
-Test: if material stays useful without Matt's actual data or one entity's current state, prefer `_library`. If it records what happened to Matt, Impression, or Matt's brand, prefer matching context folder.
+Test: if material stays useful without Matt's actual data or one entity's current state, prefer `_library`. If it records what happened to Matt, Impression, or Matt's brand, prefer matching teamspace folder.
 
 ## Library Routing
 
@@ -45,9 +45,9 @@ Examples:
 - Route executable personal work to `personal/_obsidian/tasks/`, Matt Derman brand work to `personal-brand/_obsidian/tasks/`, and Impression work to `business/_obsidian/tasks/`.
 - Create TaskNotes task only for executable next action, reminder, or decision needing follow-up.
 - Append to existing task when capture advances same outcome. Preserve task's project and epic routing.
-- Create new task when action has distinct outcome. Use existing context, project, epic, status, and priority names from `vault inventory`.
+- Create new task when action has distinct outcome. Use existing teamspace, project, epic, status, and priority names from `vault inventory`.
 - Append to project note when material changes project scope, requirements, or durable project context but is not itself next action.
-- Create context note when information is entity-specific but non-actionable.
+- Create teamspace note when information is entity-specific but non-actionable.
 - Create structured content item only for owned publishable angle, draft seed, platform plan, or content definition.
 - Treat attachments next to UI, product, or development language as likely Impression material unless capture says otherwise.
 - Split mixed section when parts clearly belong to different destinations. State split explicitly as one recommendation.

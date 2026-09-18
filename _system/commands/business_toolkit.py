@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create and safely synchronize the canonical business-context scaffold."""
+"""Create and safely synchronize the canonical business-teamspace scaffold."""
 
 from __future__ import annotations
 
@@ -13,10 +13,11 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from script_utils import discover_context_folders, resolve_vault_root
+from script_utils import discover_teamspace_folders, resolve_vault_root
 
 
-PACK_RELATIVE = Path("_system/bootstrap/templates/context-folders/business")
+PACK_RELATIVE = Path("_system/templates/teamspaces/business")
+GTM_SCAFFOLD_RELATIVE = Path("_system/templates/gtm/scaffold")
 MANIFEST_NAME = ".business-toolkit.json"
 STATE_RELATIVE = Path("_obsidian/business-toolkit.json")
 TEMPLATER_RELATIVE = Path(".obsidian/plugins/templater-obsidian/data.json")
@@ -110,38 +111,41 @@ def load_pack(root: Path) -> tuple[int, list[Component]]:
 
 
 def install_scaffold(root: Path, context: str, *, apply: bool) -> int:
-    """Copy the complete ordinary scaffold into a newly created context only."""
-    source_root = root / PACK_RELATIVE
+    """Copy the complete ordinary scaffold into a newly created teamspace only."""
     target_root = root / context
     changed = 0
-    for source in sorted(source_root.rglob("*")):
-        relative = source.relative_to(source_root)
-        if relative == Path(MANIFEST_NAME) or relative == Path("_obsidian/templates/business-toolkit") or Path("_obsidian/templates/business-toolkit") in relative.parents:
-            continue
-        target = target_root / relative
-        if source.is_dir():
-            if not target.exists():
+    for source_root in (root / PACK_RELATIVE, root / GTM_SCAFFOLD_RELATIVE):
+        if not source_root.is_dir():
+            raise SystemExit(f"Missing teamspace scaffold: {source_root}")
+        for source in sorted(source_root.rglob("*")):
+            relative = source.relative_to(source_root)
+            if relative == Path(MANIFEST_NAME) or relative == Path("_obsidian/templates/business-toolkit") or Path("_obsidian/templates/business-toolkit") in relative.parents:
+                continue
+            target = target_root / relative
+            if source.is_dir():
+                if target.exists():
+                    continue
                 print(f"{'mkdir' if apply else '[dry-run] mkdir'} {target.relative_to(root)}")
                 if apply:
                     target.mkdir(parents=True, exist_ok=True)
                 changed += 1
-        elif not target.exists():
-            print(f"{'copy' if apply else '[dry-run] copy'} {target.relative_to(root)}")
-            if apply:
-                target.parent.mkdir(parents=True, exist_ok=True)
-                source_bytes = source.read_bytes()
-                target.write_bytes(source_bytes.replace(b"{{context}}", context.encode("utf-8")))
-            changed += 1
+            elif not target.exists():
+                print(f"{'copy' if apply else '[dry-run] copy'} {target.relative_to(root)}")
+                if apply:
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    source_bytes = source.read_bytes()
+                    target.write_bytes(source_bytes.replace(b"{{teamspace}}", context.encode("utf-8")))
+                changed += 1
     return changed
 
 
 def configured_contexts(root: Path) -> list[str]:
-    return [name for name in discover_context_folders(root) if state_path(root, name).is_file()]
+    return [name for name in discover_teamspace_folders(root) if state_path(root, name).is_file()]
 
 
 def validate_context(root: Path, context: str) -> None:
-    if context not in discover_context_folders(root):
-        raise SystemExit(f"Not a registered context folder: {context}")
+    if context not in discover_teamspace_folders(root):
+        raise SystemExit(f"Not a registered teamspace folder: {context}")
 
 
 def parse_csv(value: str | None) -> list[str]:
@@ -374,7 +378,7 @@ def sync_context(root: Path, context: str, *, includes: list[str] | None = None,
 def selected_contexts(root: Path, args: argparse.Namespace) -> list[str]:
     if getattr(args, "configured", False):
         return configured_contexts(root)
-    result = parse_csv(getattr(args, "context_folders", None))
+    result = parse_csv(getattr(args, "teamspace_folders", None))
     for context in result:
         validate_context(root, context)
     return result
@@ -417,7 +421,7 @@ def run_sync(root: Path, contexts: list[str], *, includes: list[str], excludes: 
     for context in contexts:
         result = sync_context(root, context, includes=includes, excludes=excludes, apply=True, force=force, use_saved=use_saved)
         if result.conflicts:
-            raise SystemExit("Business toolkit changed during apply; stopped before this context was mutated.")
+            raise SystemExit("Business toolkit changed during apply; stopped before this teamspace was mutated.")
     return 0
 
 
@@ -484,13 +488,13 @@ def status_context(root: Path, context: str) -> bool:
 
 def add_target_args(parser: argparse.ArgumentParser) -> None:
     group = parser.add_mutually_exclusive_group()
-    group.add_argument("--context-folders")
+    group.add_argument("--teamspace-folders")
     group.add_argument("--configured", action="store_true")
     parser.add_argument("--root", default=None)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Install and synchronize the business-context toolkit.")
+    parser = argparse.ArgumentParser(description="Install and synchronize the business-teamspace toolkit.")
     subparsers = parser.add_subparsers(dest="command")
     sync = subparsers.add_parser("sync")
     add_target_args(sync)
@@ -512,15 +516,15 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def wizard(root: Path) -> int:
-    contexts = discover_context_folders(root)
+    contexts = discover_teamspace_folders(root)
     if not contexts:
-        print("No registered context folders found.", file=sys.stderr)
+        print("No registered teamspace folders found.", file=sys.stderr)
         return 2
     _version, components = load_pack(root)
     print("Business Toolkit\n")
     for index, context in enumerate(contexts, 1):
         print(f"  {index}. {context}")
-    answer = input("\nSelect contexts by number or name, comma-separated [all]: ").strip()
+    answer = input("\nSelect teamspaces by number or name, comma-separated [all]: ").strip()
     selected: list[str] = []
     if not answer or answer.lower() == "all":
         selected = contexts
@@ -562,7 +566,7 @@ def main(argv: list[str] | None = None) -> int:
     root = resolve_vault_root(args.root, __file__)
     contexts = selected_contexts(root, args)
     if not contexts:
-        parser.error("select --context-folders or --configured")
+        parser.error("select --teamspace-folders or --configured")
     if args.command == "status":
         return 0 if all(status_context(root, context) for context in contexts) else 1
     if args.command == "unconfigure":

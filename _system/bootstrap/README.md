@@ -31,7 +31,7 @@ Keep public setup instructions in `README-public-vault-template.md`, but keep in
 - `_system/tools/README.md`: reusable tool docs.
 - `_system/docs/obsidian/README.md`: Obsidian profile, plugins, UI settings, templates, Sync Embeds.
 
-`_system/docs/` holds durable command, Obsidian, and workflow documentation. Live agent routing comes from `vault inventory`; editable operating state stays in context-folder source notes.
+`_system/docs/` holds durable command, Obsidian, and workflow documentation. Live agent routing comes from `vault inventory`; editable operating state stays in teamspace-folder source notes.
 
 ## Public Export Flow
 
@@ -39,7 +39,7 @@ Keep public setup instructions in `README-public-vault-template.md`, but keep in
 
 The exporter:
 
-- copies selected root files, root `.obsidian` and `.obsidian-mobile` profile files with configured exclusions, Vault system files, selected `_library` paths, `_wiki/AGENTS.md`, and configured context folder scaffolds;
+- copies selected root files, root `.obsidian` and `.obsidian-mobile` profile files with configured exclusions, Vault system files, selected `_library` paths, `_wiki/AGENTS.md`, and configured teamspace folder scaffolds;
 - excludes `_system/agents/**` as a product boundary, then copies only the canonical `vault-i` bundle into root `.agents/skills/vault-i`;
 - writes `_system/local/state/export-manifest.json` so future exports can remove stale export-owned files;
 - preserves repo metadata such as `.git`, `.github`, `.gitignore`, `.gitattributes`, license files, and contribution docs;
@@ -50,7 +50,7 @@ The exporter:
 
 `_system/bootstrap/bootstrap-export.json` is the executable source of truth. At a high level, export excludes:
 
-- personal context content; only configured public context folder notes, Bases, periodic templates, and selected physical packs are produced;
+- personal teamspace content; only configured public teamspace folder notes, Bases, periodic templates, and selected physical packs are produced;
 - generated root dashboards, vault periodic rollups, system attachments, inbox contents, local state, and sync remnants;
 - the complete `_system/agents/**` package except the one explicit repo-local `vault-i` export, with private instance configuration and generated state excluded;
 - private local skill/snippet subfolders and all `_system/local/env` contents while keeping the empty env folder;
@@ -59,7 +59,7 @@ The exporter:
 
 The standalone agent product has its own allowlist exporter, release metadata and publication approval. Vault export never consumes that allowlist.
 
-Public context entries declare `capabilities`, `content_schedules`, and an optional `folder_template` explicitly. The bootstrap does not infer context types. Physical packs live under `_system/bootstrap/templates/context-folders/`.
+Public teamspace entries declare `capabilities`, `content_schedules`, and an optional `folder_template` explicitly. The bootstrap does not infer teamspace types. Physical packs live under `_system/templates/teamspaces/`.
 
 Use raw export for inspection and repair only. Normal public publishing goes through:
 
@@ -118,12 +118,12 @@ Public install script:
 - stores vault-local bootstrap metadata under `_system/local/state/install.json`;
 - runs from README via `sudo bash`, resolves the original sudo user, and writes the vault/state as that user;
 - removes the public-repo `.git` pointer from the vault;
-- runs `_system/bootstrap/init_vault.sh --enable-git`, which asks for three exact context-folder slugs, preserves the starter examples through explicit capabilities/templates, and initializes personal Git/LFS directly under `~/.local/share/vault-git/<vault-name>.git`.
+- runs `_system/bootstrap/init_vault.sh --enable-git`, which asks for three exact teamspace-folder slugs, preserves the starter examples through explicit capabilities/templates, and initializes personal Git/LFS directly under `~/.local/share/vault-git/<vault-name>.git`.
 - downloads Context Nine and other active community plugin bundles, while complete bundles for Simple Folder Note and Relay are already shipped in the vault export.
-- defaults to Vault-only in non-interactive mode. `--install-skill-system` explicitly opts in; `--skill-system-source` selects a reviewed local export or repository URL for tests and recovery.
+- defaults to Vault-only in non-interactive mode. `--install-skill-system` explicitly opts in; `--skill-system-source` selects a reviewed local export or repository URL for tests and recovery. `--skill-system-destination` selects an empty standalone source folder or `vault`; non-interactive installs without that option use the Vault-owned source.
 - provides repo-local `vault-i` under `.agents/skills` on every install; `.claude/skills` points to the same directory. The skill finds the Vault, then defers to its root `AGENTS.md`.
-- asks `Install the optional CTX9 skill system and public skills? [y/N]`. Declining or EOF leaves `_system/agents` absent.
-- maps the released public package's `edit/` and `internal/` trees into `_system/agents/` without Git metadata, runs the shared skill-system wizard against that Vault-owned editable source, installs every public skill globally, and records source URL, release version, commit, and selected integrations under `_system/local/state/skill-system-install.json`.
+- asks whether to install or connect the optional CTX9 skill system. Declining or EOF leaves `_system/agents` absent.
+- reuses a registered existing skill-system source when one is installed, connects this Vault to it, and leaves the source in place. For a new installation, the interactive default is a separate user-owned source repository; `vault` selects `_system/agents/` instead. It installs every public skill globally and records source placement under `_system/local/state/skill-system-install.json`.
 
 Public README invokes root `install.sh` through the GitHub raw URL and shows only the default command plus a custom-target example.
 

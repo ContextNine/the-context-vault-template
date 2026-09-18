@@ -7,6 +7,7 @@
       ".git/**",
       "_system/local/state/install.json",
       "_system/local/state/upgrade-reports/**",
+      "_system/bootstrap/init-vault-config.json",
       "*/*.md",
       "*/brand-strategy-and-vision/**",
       "*/_obsidian/content/content-cadence.json",
@@ -59,6 +60,7 @@
     ]
   },
   "migrations": [
-    "_system/migrations/001-core-first-context-features.py"
+    "_system/migrations/001-core-first-context-features.py",
+    "_system/migrations/002-teamspace-terminology.py"
   ]
 }

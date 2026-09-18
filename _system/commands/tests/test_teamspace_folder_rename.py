@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for context folder rename structured rewrites."""
+"""Tests for teamspace folder rename structured rewrites."""
 
 from __future__ import annotations
 
@@ -13,13 +13,13 @@ from pathlib import Path
 SCRIPT_DIR = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(SCRIPT_DIR))
 
-from context_folder_rename import rename_context_folder, rewrite_text_for_context, validate_slug  # noqa: E402
+from teamspace_folder_rename import rename_teamspace_folder, rewrite_text_for_context, validate_slug  # noqa: E402
 
 
-class ContextFolderRenameTests(unittest.TestCase):
+class TeamspaceFolderRenameTests(unittest.TestCase):
     def test_validate_slug_accepts_dot_suffix_and_camel_case(self) -> None:
-        self.assertEqual(validate_slug("someString.nosync", "new context folder"), "someString.nosync")
-        self.assertEqual(validate_slug("business.nosync", "new context folder"), "business.nosync")
+        self.assertEqual(validate_slug("someString.nosync", "new teamspace folder"), "someString.nosync")
+        self.assertEqual(validate_slug("business.nosync", "new teamspace folder"), "business.nosync")
 
     def test_markdown_rewrites_structured_references_only(self) -> None:
         text = """---
@@ -87,7 +87,7 @@ Do not rewrite grow your business here.
                 encoding="utf-8",
             )
 
-            result = rename_context_folder(root, "business", "studio")
+            result = rename_teamspace_folder(root, "business", "studio")
 
             self.assertTrue(result.moved)
             self.assertFalse((root / "business").exists())

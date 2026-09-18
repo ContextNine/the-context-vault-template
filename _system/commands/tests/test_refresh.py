@@ -50,13 +50,13 @@ class RefreshTests(unittest.TestCase):
                 (context / "_obsidian/content/items/blog-posts").mkdir(parents=True)
                 schedules = "content_schedules_enabled: true\n" if schedules_enabled else ""
                 (context / f"{name}.md").write_text(
-                    f"---\nstatus: active\n{schedules}context_registered: true\n---\n",
+                    f"---\nstatus: active\n{schedules}teamspace_registered: true\n---\n",
                     encoding="utf-8",
                 )
             selected = ["blog-only", "scheduled"]
             periods = {"daily": "2026-08-13"}
             with (
-                mock.patch.object(refresh, "configured_context_folders", return_value=selected),
+                mock.patch.object(refresh, "configured_teamspace_folders", return_value=selected),
                 mock.patch.object(periodic, "resolve_entities", return_value=selected),
                 mock.patch.object(content, "generate_content_schedules", return_value=[]) as generate_content,
                 mock.patch.object(periodic, "generate_periodic_notes", return_value=(selected, periods)),
@@ -112,7 +112,7 @@ class RefreshTests(unittest.TestCase):
                         str(root),
                         "--skip-git-maintenance",
                         "--skip-git-preflight",
-                        "--context-folders",
+                        "--teamspace-folders",
                         "personal,business",
                         "--date",
                         "2026-07-20",

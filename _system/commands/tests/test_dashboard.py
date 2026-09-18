@@ -125,7 +125,7 @@ type: vault-periodic
 period: monthly
 period_id: 2025-06
 generated: true
-source_context_folders:
+source_teamspace_folders:
   - personal
 ---
 """,

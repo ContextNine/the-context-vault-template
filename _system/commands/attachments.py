@@ -27,7 +27,7 @@ from functools import lru_cache
 from pathlib import Path
 from urllib.parse import unquote
 
-from script_utils import discover_context_folders
+from script_utils import discover_teamspace_folders
 from vault_layout import ATTACHMENT_STATE_DIR, VAULT_ROOT
 
 
@@ -42,7 +42,7 @@ SYSTEM_ROOTS = {
 
 @lru_cache(maxsize=1)
 def top_roots() -> set[str]:
-    return set(discover_context_folders(ROOT)) | SYSTEM_ROOTS
+    return set(discover_teamspace_folders(ROOT)) | SYSTEM_ROOTS
 
 SENSITIVE_DIR_NAMES = {
     ".env",

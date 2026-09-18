@@ -4,7 +4,7 @@ status: active
 
 # Business Toolkit
 
-The canonical business scaffold lives under `_system/bootstrap/templates/context-folders/business/`; operating instructions live in [[Business Toolkit]] and [[README-gtm-and-relationships]]. This library folder is only its navigation entry point; reusable business research belongs in the most specific topical library category.
+The canonical business scaffold lives under `_system/templates/teamspaces/business/`; operating instructions live in [[Business Toolkit]] and [[README-gtm-and-relationships]]. This library folder is only its navigation entry point; reusable business research belongs in the most specific topical library category.
 
 ## Knowledge routes
 
@@ -37,8 +37,8 @@ Registering an existing folder adds only the core/capability structure requested
 ```bash
 vault folder register studio
 vault business-toolkit
-vault business-toolkit sync --context-folders studio
-vault business-toolkit sync --context-folders studio --apply
+vault business-toolkit sync --teamspace-folders studio
+vault business-toolkit sync --teamspace-folders studio --apply
 vault business-toolkit status --configured
 ```
 

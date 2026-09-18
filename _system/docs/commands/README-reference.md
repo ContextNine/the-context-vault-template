@@ -14,13 +14,13 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 - `refresh_schedule.py`: registers, unregisters, reports, and runs the macOS LaunchAgent daily refresh wrapper.
 - `mac_startup.py`: validates private per-machine startup opt-ins and application bundle identifiers, installs or removes the copied macOS `RunAtLoad` runtime, archives configured legacy LaunchAgents, reports state, and runs enabled actions. Explicit `--provision-disabled` supports reviewed onboarding without fleet enablement. Use `vault mac-startup`.
 - `dashboard.py`: private renderer used by `refresh.py`; it is not a `vault` command.
-- `content.py`: generates fixed 4-week content schedule notes from enabled `_obsidian/content/content-cadence.json` files and maintains the `Current content schedule:` line in each enabled context folder note. Supports `schedule_format`, `publication_order`, and `--force` to regenerate existing managed schedule notes.
-- `periodic.py`: creates current context source periodic notes, non-destructively carries daily task-section content forward, and generates vault Sync Embed rollups under `_system/_obsidian/periodic/`.
+- `content.py`: generates fixed 4-week content schedule notes from enabled `_obsidian/content/content-cadence.json` files and maintains the `Current content schedule:` line in each enabled teamspace folder note. Supports `schedule_format`, `publication_order`, and `--force` to regenerate existing managed schedule notes.
+- `periodic.py`: creates current teamspace source periodic notes, non-destructively carries daily task-section content forward, and generates vault Sync Embed rollups under `_system/_obsidian/periodic/`.
 - `brain_dump.py`: imports the Brain Dump Apple Note into its single vault import file, copies attachments, and can clear the source note.
 - `brain_dump_triage.py`: creates optional Brain Dump batch backups/proposals, maintains triage Base, clears import file, and applies approved proposals.
-- `epic.py`: creates, renames, deletes, lists, and syncs context folder epics; keeps task links, per-epic TaskNotes Kanban Bases, and managed vault task kanban epic views in sync.
-- `folder.py`: creates/registers a context folder from the scaffold template.
-- `business_toolkit.py`: installs, synchronizes, or safely unconfigures the marker-owned business folder/template pack for any registered context.
+- `epic.py`: creates, renames, deletes, lists, and syncs teamspace folder epics; keeps task links, per-epic TaskNotes Kanban Bases, and managed vault task kanban epic views in sync.
+- `folder.py`: creates/registers a teamspace folder from the scaffold template.
+- `business_toolkit.py`: installs, synchronizes, or safely unconfigures the marker-owned business folder/template pack for any registered teamspace.
 - `attachments.py`: dry-runs, applies, and verifies attachment cleanup so note attachments live under each owning top-level root folder's `_obsidian/attachments` directory. Reports and quarantined import leftovers stay in ignored `_system/local/state/attachments/`; the command never creates generated output in `~/Downloads`.
 - `backup.py`: backs up root `.obsidian` under `_system/local/state/backups/obsidian-profile/`.
 - `bootstrap_export.py`: exports the public bootstrap vault from current vault state using `_system/bootstrap/bootstrap-export.json`.
@@ -41,7 +41,7 @@ This is the fuller script reference. Use `_system/docs/commands/README.md` for n
 
 - `_system/bootstrap/init_vault.sh`: first-run fresh/exported vault setup entrypoint.
 - `_system/bootstrap/offer_machine_setup.py`: testable optional post-init prompt that invokes `vault machine setup` only on explicit yes and always skips under non-interactive setup.
-- `_system/bootstrap/bootstrap_vault.py`: scaffolds/reconciles context folders, templates, Bases, starter notes, and generated setup docs.
+- `_system/bootstrap/bootstrap_vault.py`: scaffolds/reconciles teamspace folders, templates, Bases, starter notes, and generated setup docs.
 - `_system/deps/packages.yaml`: approved cross-platform public Vault dependencies.
 - `_system/deps/install.py`: installs and verifies the public dependency manifest; bootstrap's wrapper only invokes it.
 - `_system/bootstrap/install_vault_command.py`: installs the `vault` dispatcher symlink.

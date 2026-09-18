@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create, delete, list, and sync context-folder epics."""
+"""Create, delete, list, and sync teamspace-folder epics."""
 
 from __future__ import annotations
 
@@ -11,7 +11,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 
 
 MARKER = "vault.epic-views"
@@ -22,22 +22,22 @@ STATUS_COLUMN_ORDER = '["backlog","up-next","to-be-resumed","ongoing","in-progre
 
 @dataclass(frozen=True)
 class Epic:
-    context_folder: str
+    teamspace_folder: str
     path: Path
     title: str
     status: str
 
     @property
     def link_target(self) -> str:
-        return f"{self.context_folder}/_obsidian/epics/{self.path.stem}"
+        return f"{self.teamspace_folder}/_obsidian/epics/{self.path.stem}"
 
     @property
     def view_name(self) -> str:
-        return f"{context_label(self.context_folder)} - {self.title}"
+        return f"{context_label(self.teamspace_folder)} - {self.title}"
 
 
 def parse_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Manage TaskNotes epics for context folders.")
+    parser = argparse.ArgumentParser(description="Manage TaskNotes epics for teamspace folders.")
     parser.add_argument(
         "--root",
         default=None,
@@ -46,13 +46,13 @@ def parse_args() -> argparse.Namespace:
     subparsers = parser.add_subparsers(dest="command", required=True)
 
     create_parser = subparsers.add_parser("create", help="Create an epic note and sync its task Bases.")
-    create_parser.add_argument("context_folder", help="Context folder, e.g. business.")
+    create_parser.add_argument("teamspace_folder", help="Teamspace folder, e.g. business.")
     create_parser.add_argument("title", help="Epic title.")
     create_parser.add_argument("--status", default="in-progress", help="Epic status. Defaults to in-progress.")
     create_parser.add_argument("--dry-run", action="store_true", help="Print intended changes without writing.")
 
     delete_parser = subparsers.add_parser("delete", help="Delete an epic note and sync generated task Bases.")
-    delete_parser.add_argument("context_folder", help="Context folder, e.g. business.")
+    delete_parser.add_argument("teamspace_folder", help="Teamspace folder, e.g. business.")
     delete_parser.add_argument("title", help="Epic title or epic note filename stem.")
     delete_parser.add_argument(
         "--force",
@@ -62,18 +62,18 @@ def parse_args() -> argparse.Namespace:
     delete_parser.add_argument("--dry-run", action="store_true", help="Print intended changes without writing.")
 
     rename_parser = subparsers.add_parser("rename", help="Rename an epic and preserve linked tasks/views.")
-    rename_parser.add_argument("context_folder", help="Context folder, e.g. business.")
+    rename_parser.add_argument("teamspace_folder", help="Teamspace folder, e.g. business.")
     rename_parser.add_argument("old_title", help="Existing epic title or epic note filename stem.")
     rename_parser.add_argument("new_title", help="New epic title.")
     rename_parser.add_argument("--dry-run", action="store_true", help="Print intended changes without writing.")
 
-    list_parser = subparsers.add_parser("list", help="List epics in context folders.")
-    list_parser.add_argument("--context-folders", help="Comma-separated context folders. Defaults to active folders.")
-    list_parser.add_argument("--all", action="store_true", help="Include archived context folders.")
+    list_parser = subparsers.add_parser("list", help="List epics in teamspace folders.")
+    list_parser.add_argument("--teamspace-folders", help="Comma-separated teamspace folders. Defaults to active folders.")
+    list_parser.add_argument("--all", action="store_true", help="Include archived teamspace folders.")
 
     sync_parser = subparsers.add_parser("sync", help="Regenerate epic task Bases and shared kanban epic views.")
-    sync_parser.add_argument("--context-folders", help="Comma-separated context folders. Defaults to active folders.")
-    sync_parser.add_argument("--all", action="store_true", help="Include archived context folders.")
+    sync_parser.add_argument("--teamspace-folders", help="Comma-separated teamspace folders. Defaults to active folders.")
+    sync_parser.add_argument("--all", action="store_true", help="Include archived teamspace folders.")
     sync_parser.add_argument("--dry-run", action="store_true", help="Print intended changes without writing.")
 
     return parser.parse_args()
@@ -98,30 +98,30 @@ def frontmatter(text: str) -> dict[str, str]:
     return result
 
 
-def context_folder_status(context_root: Path) -> str:
-    note = context_folder_note_path(context_root)
+def teamspace_folder_status(context_root: Path) -> str:
+    note = teamspace_folder_note_path(context_root)
     if not note.exists():
         return ""
     metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-    if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
+    if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
         return ""
     return metadata.get("status", "")
 
 
-def discover_context_folders(root: Path, requested: str | None, include_archived: bool) -> list[Path]:
+def discover_teamspace_folders(root: Path, requested: str | None, include_archived: bool) -> list[Path]:
     if requested:
         return [root / name.strip() for name in requested.split(",") if name.strip()]
 
-    context_folders = []
+    teamspace_folders = []
     for child in sorted(root.iterdir()):
         if not child.is_dir() or child.name.startswith(".") or child.name.startswith("_"):
             continue
-        if not context_folder_note_path(child).is_file():
+        if not teamspace_folder_note_path(child).is_file():
             continue
-        status = context_folder_status(child)
+        status = teamspace_folder_status(child)
         if include_archived or status == "active":
-            context_folders.append(child)
-    return context_folders
+            teamspace_folders.append(child)
+    return teamspace_folders
 
 
 def discover_epics(context_root: Path) -> list[Epic]:
@@ -136,7 +136,7 @@ def discover_epics(context_root: Path) -> list[Epic]:
             continue
         epics.append(
             Epic(
-                context_folder=context_root.name,
+                teamspace_folder=context_root.name,
                 path=path,
                 title=metadata.get("title") or path.stem,
                 status=metadata.get("status") or "",
@@ -164,20 +164,20 @@ def obsidian_link_target(value: str) -> str:
     return value.replace("|", "%7C")
 
 
-def context_label(context_folder: str) -> str:
-    return " ".join(part.capitalize() for part in context_folder.split("-"))
+def context_label(teamspace_folder: str) -> str:
+    return " ".join(part.capitalize() for part in teamspace_folder.split("-"))
 
 
-def ensure_context_folder(context_root: Path) -> None:
+def ensure_teamspace_folder(context_root: Path) -> None:
     if not context_root.exists():
-        raise SystemExit(f"Context folder does not exist: {context_root}")
-    if not context_folder_note_path(context_root).exists():
-        raise SystemExit(f"Context folder is missing its folder note: {context_root}")
+        raise SystemExit(f"Teamspace folder does not exist: {context_root}")
+    if not teamspace_folder_note_path(context_root).exists():
+        raise SystemExit(f"Teamspace folder is missing its folder note: {context_root}")
 
 
-def create_epic(root: Path, context_folder: str, title: str, status: str, dry_run: bool) -> int:
-    context_root = root / context_folder
-    ensure_context_folder(context_root)
+def create_epic(root: Path, teamspace_folder: str, title: str, status: str, dry_run: bool) -> int:
+    context_root = root / teamspace_folder
+    ensure_teamspace_folder(context_root)
 
     epics_dir = context_root / "_obsidian/epics"
     filename = safe_filename(title) + ".md"
@@ -190,7 +190,7 @@ title: {yaml_double(title)}
 type: epic
 status: {status}
 contexts:
-  - {context_folder}
+  - {teamspace_folder}
 created: {dt.date.today().isoformat()}
 ---
 """
@@ -201,7 +201,7 @@ created: {dt.date.today().isoformat()}
         epic_path.write_text(content, encoding="utf-8")
         print(f"created: {epic_path.relative_to(root)}", flush=True)
 
-    return sync(root, context_folder, include_archived=True, dry_run=dry_run)
+    return sync(root, teamspace_folder, include_archived=True, dry_run=dry_run)
 
 
 def find_epic(context_root: Path, title_or_stem: str) -> Epic | None:
@@ -216,7 +216,7 @@ def find_epic(context_root: Path, title_or_stem: str) -> Epic | None:
 
 
 def linked_task_paths(root: Path, epic: Epic) -> list[Path]:
-    task_dir = root / epic.context_folder / "_obsidian/tasks"
+    task_dir = root / epic.teamspace_folder / "_obsidian/tasks"
     if not task_dir.exists():
         return []
     needles = [
@@ -261,18 +261,18 @@ def replace_epic_links(text: str, old_epic: Epic, new_link_target: str, new_titl
     return text
 
 
-def rename_epic(root: Path, context_folder: str, old_title: str, new_title: str, dry_run: bool) -> int:
-    context_root = root / context_folder
-    ensure_context_folder(context_root)
+def rename_epic(root: Path, teamspace_folder: str, old_title: str, new_title: str, dry_run: bool) -> int:
+    context_root = root / teamspace_folder
+    ensure_teamspace_folder(context_root)
     old_epic = find_epic(context_root, old_title)
     if old_epic is None:
-        raise SystemExit(f"Epic not found in {context_folder}: {old_title}")
+        raise SystemExit(f"Epic not found in {teamspace_folder}: {old_title}")
 
     new_path = old_epic.path.with_name(safe_filename(new_title) + ".md")
     if new_path.exists() and new_path != old_epic.path:
         raise SystemExit(f"Cannot rename; destination epic already exists: {new_path.relative_to(root)}")
 
-    new_link_target = f"{context_folder}/_obsidian/epics/{new_path.stem}"
+    new_link_target = f"{teamspace_folder}/_obsidian/epics/{new_path.stem}"
     linked_tasks = linked_task_paths(root, old_epic)
 
     if dry_run:
@@ -302,15 +302,15 @@ def rename_epic(root: Path, context_folder: str, old_title: str, new_title: str,
                 updated_count += 1
         print(f"updated linked tasks: {updated_count}", flush=True)
 
-    return sync(root, context_folder, include_archived=True, dry_run=dry_run)
+    return sync(root, teamspace_folder, include_archived=True, dry_run=dry_run)
 
 
-def delete_epic(root: Path, context_folder: str, title_or_stem: str, force: bool, dry_run: bool) -> int:
-    context_root = root / context_folder
-    ensure_context_folder(context_root)
+def delete_epic(root: Path, teamspace_folder: str, title_or_stem: str, force: bool, dry_run: bool) -> int:
+    context_root = root / teamspace_folder
+    ensure_teamspace_folder(context_root)
     epic = find_epic(context_root, title_or_stem)
     if epic is None:
-        raise SystemExit(f"Epic not found in {context_folder}: {title_or_stem}")
+        raise SystemExit(f"Epic not found in {teamspace_folder}: {title_or_stem}")
 
     linked_tasks = linked_task_paths(root, epic)
     if linked_tasks and not force:
@@ -325,7 +325,7 @@ def delete_epic(root: Path, context_folder: str, title_or_stem: str, force: bool
         print("Re-run with --force if you want to delete the epic note anyway.", file=sys.stderr)
         return 2
 
-    generated_base = root / context_folder / "_obsidian/bases" / f"tasks-epic-{slug(epic.title)}-kanban.base"
+    generated_base = root / teamspace_folder / "_obsidian/bases" / f"tasks-epic-{slug(epic.title)}-kanban.base"
     for path in (epic.path, generated_base):
         if not path.exists():
             continue
@@ -335,7 +335,7 @@ def delete_epic(root: Path, context_folder: str, title_or_stem: str, force: bool
             path.unlink()
             print(f"deleted: {path.relative_to(root)}", flush=True)
 
-    return sync(root, context_folder, include_archived=True, dry_run=dry_run)
+    return sync(root, teamspace_folder, include_archived=True, dry_run=dry_run)
 
 
 def vault_view_content(epics: list[Epic]) -> str:
@@ -412,11 +412,11 @@ def update_system_kanban_views(root: Path, context_roots: list[Path], dry_run: b
     return action
 
 
-def run_epic_base_generator(root: Path, context_folders: str | None, include_archived: bool, dry_run: bool) -> int:
+def run_epic_base_generator(root: Path, teamspace_folders: str | None, include_archived: bool, dry_run: bool) -> int:
     script = root / "_system/commands/generate_epic_kanban_views.py"
     cmd = [sys.executable, str(script), "--root", str(root), "--prune"]
-    if context_folders:
-        cmd.extend(["--context-folders", context_folders])
+    if teamspace_folders:
+        cmd.extend(["--teamspace-folders", teamspace_folders])
     if include_archived:
         cmd.append("--all")
     if dry_run:
@@ -425,13 +425,13 @@ def run_epic_base_generator(root: Path, context_folders: str | None, include_arc
     return result.returncode
 
 
-def sync(root: Path, context_folders: str | None, include_archived: bool, dry_run: bool) -> int:
-    context_roots = discover_context_folders(root, context_folders, include_archived)
+def sync(root: Path, teamspace_folders: str | None, include_archived: bool, dry_run: bool) -> int:
+    context_roots = discover_teamspace_folders(root, teamspace_folders, include_archived)
     if not context_roots:
-        print("No matching context folders found.", file=sys.stderr)
+        print("No matching teamspace folders found.", file=sys.stderr)
         return 1
 
-    generator_status = run_epic_base_generator(root, context_folders, include_archived, dry_run)
+    generator_status = run_epic_base_generator(root, teamspace_folders, include_archived, dry_run)
     if generator_status != 0:
         return generator_status
 
@@ -440,8 +440,8 @@ def sync(root: Path, context_folders: str | None, include_archived: bool, dry_ru
     return 0
 
 
-def list_epics(root: Path, context_folders: str | None, include_archived: bool) -> int:
-    context_roots = discover_context_folders(root, context_folders, include_archived)
+def list_epics(root: Path, teamspace_folders: str | None, include_archived: bool) -> int:
+    context_roots = discover_teamspace_folders(root, teamspace_folders, include_archived)
     for context_root in context_roots:
         epics = discover_epics(context_root)
         if not epics:
@@ -458,15 +458,15 @@ def main() -> int:
     root = resolve_vault_root(args.root, __file__)
 
     if args.command == "create":
-        return create_epic(root, args.context_folder, args.title, args.status, args.dry_run)
+        return create_epic(root, args.teamspace_folder, args.title, args.status, args.dry_run)
     if args.command == "delete":
-        return delete_epic(root, args.context_folder, args.title, args.force, args.dry_run)
+        return delete_epic(root, args.teamspace_folder, args.title, args.force, args.dry_run)
     if args.command == "rename":
-        return rename_epic(root, args.context_folder, args.old_title, args.new_title, args.dry_run)
+        return rename_epic(root, args.teamspace_folder, args.old_title, args.new_title, args.dry_run)
     if args.command == "list":
-        return list_epics(root, args.context_folders, args.all)
+        return list_epics(root, args.teamspace_folders, args.all)
     if args.command == "sync":
-        return sync(root, args.context_folders, args.all, args.dry_run)
+        return sync(root, args.teamspace_folders, args.all, args.dry_run)
     raise SystemExit(f"Unknown command: {args.command}")
 
 

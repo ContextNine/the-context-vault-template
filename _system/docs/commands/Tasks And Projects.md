@@ -4,17 +4,17 @@ status: enabled
 ---
 # Tasks And Projects
 
-TaskNotes uses one Markdown file per task under `<context-folder>/_obsidian/tasks/`. Create tasks only for executable next actions, reminders, or decisions needing follow-up.
+TaskNotes uses one Markdown file per task under `<teamspace-folder>/_obsidian/tasks/`. Create tasks only for executable next actions, reminders, or decisions needing follow-up.
 
 Projects and epics are ordinary Obsidian notes:
 
 ```text
-<context-folder>/_obsidian/projects/
-<context-folder>/_obsidian/epics/
+<teamspace-folder>/_obsidian/projects/
+<teamspace-folder>/_obsidian/epics/
 ```
 
 Use epics for larger themes, projects for concrete workstreams, and tasks for executable work.
-- NB - Epics are only assigned to a single context folder. You cannot have multiple context folders using the same epic. If there is ambiguity, ask the user before cleaning up and maybe renaming the Epic appropriately.
+- NB - Epics are only assigned to a single teamspace folder. You cannot have multiple teamspace folders using the same epic. If there is ambiguity, ask the user before cleaning up and maybe renaming the Epic appropriately.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Configured statuses:
 - `done`
 - `archived`
 
-Default status is `backlog`. Unspecific capture routes to current `default_capture` context.
+Default status is `backlog`. Unspecific capture routes to current `default_capture` teamspace.
 
 Keep routing and hierarchy separate:
 
@@ -80,7 +80,7 @@ Sprints are not modeled. Ignore imported sprint data unless explicitly archiving
 ## TaskNotes Shorthand
 
 - `#tag`: tag.
-- `@context`: context and folder routing.
+- `@teamspace`: teamspace and folder routing.
 - `+project` or `+[[Project Name]]`: project link.
 - `tomorrow`, `next Friday`, `January 15 at 3pm`: date/time.
 - `high`, `normal`, `low`: priority.
@@ -117,7 +117,7 @@ contexts:
 
 ## Bases
 
-Vault-wide Bases live under `_system/_obsidian/bases/`; context dashboards live under each context folder's `_obsidian/bases/`.
+Vault-wide Bases live under `_system/_obsidian/bases/`; teamspace dashboards live under each teamspace folder's `_obsidian/bases/`.
 
 Vault-wide task/project/epic views include:
 
@@ -125,7 +125,7 @@ Vault-wide task/project/epic views include:
 - `_system/_obsidian/bases/tasks-this-week.base`
 - `_system/_obsidian/bases/epics-all.base`
 
-Context views include `context-dashboard.base`, `projects-dashboard.base`, and `epics-dashboard.base`. Vault-wide project/epic views include active context folders by default; archived folders remain available but excluded.
+Teamspace views include `teamspace-dashboard.base`, `projects-dashboard.base`, and `epics-dashboard.base`. Vault-wide project/epic views include active teamspace folders by default; archived folders remain available but excluded.
 
 TaskNotes Kanban Bases group columns by `status` and use `projects` as horizontal swimlanes. TaskNotes command views remain separate from dashboard Bases.
 

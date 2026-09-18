@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """
-Generate TaskNotes Kanban Base views for each epic in each context folder.
+Generate TaskNotes Kanban Base views for each epic in each teamspace folder.
 
-By default, this script scans active context folders only. It writes managed `.base`
+By default, this script scans active teamspace folders only. It writes managed `.base`
 files to:
 
-    <context-folder>/_obsidian/bases/tasks-epic-<epic-slug>-kanban.base
+    <teamspace-folder>/_obsidian/bases/tasks-epic-<epic-slug>-kanban.base
 """
 
 from __future__ import annotations
@@ -16,7 +16,7 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 from vault_layout import MANAGED_EPIC_VIEWS
 
 
@@ -29,13 +29,13 @@ GENERATED_AT_RE = re.compile(r"^generated_at: .*$", re.MULTILINE)
 
 @dataclass(frozen=True)
 class Epic:
-    context_folder: str
+    teamspace_folder: str
     path: Path
     title: str
 
     @property
     def link_target(self) -> str:
-        return f"{self.context_folder}/_obsidian/epics/{self.path.stem}"
+        return f"{self.teamspace_folder}/_obsidian/epics/{self.path.stem}"
 
 
 def parse_args() -> argparse.Namespace:
@@ -48,21 +48,21 @@ def parse_args() -> argparse.Namespace:
         help="Workspace root. Defaults to auto-discovery from the current directory or script location.",
     )
     parser.add_argument(
-        "--context-folders",
-        dest="context_folders",
-        help="Comma-separated context folder names to scan. Defaults to active context folders.",
+        "--teamspace-folders",
+        dest="teamspace_folders",
+        help="Comma-separated teamspace folder names to scan. Defaults to active teamspace folders.",
     )
-    parser.add_argument("--sub-vaults", dest="context_folders", help=argparse.SUPPRESS)
-    parser.add_argument("--vaults", dest="context_folders", help=argparse.SUPPRESS)
+    parser.add_argument("--sub-vaults", dest="teamspace_folders", help=argparse.SUPPRESS)
+    parser.add_argument("--vaults", dest="teamspace_folders", help=argparse.SUPPRESS)
     parser.add_argument(
         "--all",
         action="store_true",
-        help="Include archived context folders as well as active context folders.",
+        help="Include archived teamspace folders as well as active teamspace folders.",
     )
     parser.add_argument(
         "--output-folder",
         default=DEFAULT_OUTPUT_FOLDER,
-        help=f"Output folder inside each context folder. Defaults to {DEFAULT_OUTPUT_FOLDER}.",
+        help=f"Output folder inside each teamspace folder. Defaults to {DEFAULT_OUTPUT_FOLDER}.",
     )
     parser.add_argument(
         "--prune",
@@ -96,30 +96,30 @@ def frontmatter(text: str) -> dict[str, str]:
     return result
 
 
-def context_folder_status(context_root: Path) -> str:
-    note = context_folder_note_path(context_root)
+def teamspace_folder_status(context_root: Path) -> str:
+    note = teamspace_folder_note_path(context_root)
     if not note.exists():
         return ""
     metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-    if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
+    if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
         return ""
     return metadata.get("status", "")
 
 
-def discover_context_folders(root: Path, requested: str | None, include_archived: bool) -> list[Path]:
+def discover_teamspace_folders(root: Path, requested: str | None, include_archived: bool) -> list[Path]:
     if requested:
         return [root / name.strip() for name in requested.split(",") if name.strip()]
 
-    context_folders = []
+    teamspace_folders = []
     for child in sorted(root.iterdir()):
         if not child.is_dir() or child.name.startswith(".") or child.name.startswith("_"):
             continue
-        if not context_folder_note_path(child).is_file():
+        if not teamspace_folder_note_path(child).is_file():
             continue
-        status = context_folder_status(child)
+        status = teamspace_folder_status(child)
         if include_archived or status == "active":
-            context_folders.append(child)
-    return context_folders
+            teamspace_folders.append(child)
+    return teamspace_folders
 
 
 def discover_epics(context_root: Path) -> list[Epic]:
@@ -133,7 +133,7 @@ def discover_epics(context_root: Path) -> list[Epic]:
         if metadata.get("type") != "epic":
             continue
         title = metadata.get("title") or path.stem
-        epics.append(Epic(context_folder=context_root.name, path=path, title=title))
+        epics.append(Epic(teamspace_folder=context_root.name, path=path, title=title))
     return epics
 
 
@@ -153,7 +153,7 @@ def yaml_double(value: str) -> str:
 def base_content(epic: Epic) -> str:
     link_filter = f'epic == link("{epic.link_target}")'
     generated_at = dt.datetime.now().isoformat(timespec="seconds")
-    return f"""# {epic.context_folder} Epic Kanban - {epic.title}
+    return f"""# {epic.teamspace_folder} Epic Kanban - {epic.title}
 generated: true
 generated_at: {generated_at}
 managed_by: "{MANAGED_MARKER}"
@@ -241,14 +241,14 @@ def prune_stale(output_dir: Path, expected: set[Path], dry_run: bool) -> list[tu
 def main() -> int:
     args = parse_args()
     root = resolve_vault_root(args.root, __file__)
-    context_folders = discover_context_folders(root, args.context_folders, args.all)
+    teamspace_folders = discover_teamspace_folders(root, args.teamspace_folders, args.all)
 
-    if not context_folders:
-        print("No matching context folders found.")
+    if not teamspace_folders:
+        print("No matching teamspace folders found.")
         return 1
 
     changed = False
-    for context_root in context_folders:
+    for context_root in teamspace_folders:
         epics = discover_epics(context_root)
         output_dir = context_root / args.output_folder
         expected_paths: set[Path] = set()

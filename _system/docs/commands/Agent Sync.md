@@ -33,7 +33,7 @@ fleet sync --skills --instructions
 
 Component-only dependency runs update only their selected aggregate-lock section. For example, `--workspace-deps` refreshes workspace evidence while preserving previously confirmed direct-dependency evidence; an unselected section is never replaced with `null`.
 
-Remote macOS workspace installers run as disposable `launchctl` jobs in the logged-in user's GUI bootstrap domain so native Keychain-backed prerequisites remain available. The worker uses owner-only temporary output files, records only sanitized installer evidence, removes the job afterward, and never moves a credential into SSH, argv, or Vault state. Linux installers continue in the authenticated SSH user context with Secret Service supplied by that machine.
+Remote macOS workspace installers run as disposable `launchctl` jobs in the logged-in user's GUI bootstrap domain so native Keychain-backed prerequisites remain available. The worker uses owner-only temporary output files, records only sanitized installer evidence, removes the job afterward, and never moves a credential into SSH, argv, or Vault state. Linux installers continue in the authenticated SSH user teamspace with Secret Service supplied by that machine.
 
 `--config` distributes the authoritative value-free settings into `~/.agents/settings`, plus Mattbook's `~/.codex/config.toml`, `~/.claude/settings.json`, and non-secret coding-agent service metadata such as the Langfuse instance descriptor. `--instructions` writes `~/.agents/instructions/AGENTS.md` and manages the Codex and Claude links to it. Machine-specific paths and safety overlays are rendered per target. Credentials remain machine-local and independently enrolled. Target-local Codex plugin and marketplace tables are preserved.
 

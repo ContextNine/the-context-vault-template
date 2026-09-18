@@ -36,7 +36,7 @@ The schedule is configured in `_system/local/vault.json` under `refresh_schedule
 
 Scheduled refreshes use best-effort Git preflight: fetch first, safely fast-forward `master` when incoming changes do not overlap local work, and preserve the working tree when Git blocks the update. Network, overlap, or divergence failures warn but cannot block local daily-note, periodic-rollup, or Dashboard generation. Manual `vault refresh` retains fatal preflight unless `--skip-git-preflight` or `--best-effort-git-preflight` is passed explicitly. Daily carry-forward uses the most recent earlier daily note, even when one or more calendar days have no note. Under the daily task section, unchecked checklist items plus ordinary text and nested headings are appended without duplicating existing content; checked checklist lines are not carried. An existing daily note is never regenerated from its template, so refresh preserves content added ahead of time or by Obsidian's calendar UI.
 
-After a successful refresh for the machine's current local date, refresh atomically writes `_system/local/state/refresh-complete.json`. Context Nine watches that ignored marker and replaces actual open Markdown tabs for past periodic notes with the current note in the same context or `_system` rollup scope. Current and future-dated periodic notes remain open. Sidebar Outline state, recent-file history, and `.obsidian/workspace.json` are not edited.
+After a successful refresh for the machine's current local date, refresh atomically writes `_system/local/state/refresh-complete.json`. Context Nine watches that ignored marker and replaces actual open Markdown tabs for past periodic notes with the current note in the same teamspace or `_system` rollup scope. Current and future-dated periodic notes remain open. Sidebar Outline state, recent-file history, and `.obsidian/workspace.json` are not edited.
 
 When Obsidian is already running and its command line interface is registered, refresh also calls the Context Nine CLI handler immediately. It never intentionally launches Obsidian for this notification; unavailable or failed CLI delivery warns at most and the marker remains the durable fallback. Enable the optional direct path under Obsidian **Settings → General → Command line interface**.
 
@@ -76,7 +76,7 @@ To ingest without clearing Brain Dump:
 vault refresh --sync-brain-dump --no-clear-brain-dump
 ```
 
-To refresh all context folders:
+To refresh all teamspace folders:
 
 ```bash
 vault refresh --all
@@ -111,4 +111,4 @@ vault git-maintenance --depth 100
 
 Use `--git-depth N` on `vault refresh` to change the refresh-time depth.
 
-Use `vault content` or `vault periodic` for targeted generation. There is no separate context or Dashboard command.
+Use `vault content` or `vault periodic` for targeted generation. There is no separate teamspace or Dashboard command.

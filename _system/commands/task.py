@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 
 
 DEFAULT_TASK_STATUSES = {"backlog", "up-next", "to-be-resumed", "ongoing", "in-progress", "done", "archived"}
@@ -88,12 +88,12 @@ def unique_path(folder: Path, title: str) -> Path:
 
 
 def ensure_context(root: Path, context: str) -> None:
-    note = context_folder_note_path(root / context)
+    note = teamspace_folder_note_path(root / context)
     if not note.exists():
-        raise SystemExit(f"Context not found: {context}. Run `vault inventory`.")
+        raise SystemExit(f"Teamspace not found: {context}. Run `vault inventory`.")
     metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-    if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
-        raise SystemExit(f"Context is unregistered: {context}. Run `vault folder register {context}`.")
+    if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
+        raise SystemExit(f"Teamspace is unregistered: {context}. Run `vault folder register {context}`.")
 
 
 def find_note(root: Path, context: str, folder_name: str, label: str) -> Path:
@@ -177,11 +177,11 @@ def create_task(root: Path, args: argparse.Namespace) -> int:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Create TaskNotes tasks with validated context/project/epic links.")
+    parser = argparse.ArgumentParser(description="Create TaskNotes tasks with validated teamspace/project/epic links.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     sub = parser.add_subparsers(dest="command", required=True)
     create = sub.add_parser("create", help="Create a TaskNotes task.")
-    create.add_argument("context", help="Context folder, e.g. business.")
+    create.add_argument("context", metavar="teamspace", help="Teamspace folder, e.g. business.")
     create.add_argument("title", help="Task title.")
     create.add_argument("--project", action="append", default=[], help="Existing project title/path. Repeat for multiple.")
     create.add_argument("--epic", default=None, help="Existing epic title/path.")

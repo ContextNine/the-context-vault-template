@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Context-folder creation tests for core-first capabilities and physical packs."""
+"""Teamspace-folder creation tests for core-first capabilities and physical packs."""
 
 from __future__ import annotations
 
@@ -39,20 +39,24 @@ class RecordingBootstrap:
                     (root / context / relative).mkdir(parents=True, exist_ok=True)
 
 
-class ContextFolderCapabilityTests(unittest.TestCase):
+class TeamspaceFolderCapabilityTests(unittest.TestCase):
     def setUp(self) -> None:
         RecordingBootstrap.calls.clear()
 
     def fixture(self, root: Path) -> types.SimpleNamespace:
         shutil.copytree(VAULT_ROOT / PACK_RELATIVE, root / PACK_RELATIVE)
         shutil.copytree(
-            VAULT_ROOT / "_system/bootstrap/templates/context-folders/personal-brand",
-            root / "_system/bootstrap/templates/context-folders/personal-brand",
+            VAULT_ROOT / "_system/templates/gtm/scaffold",
+            root / "_system/templates/gtm/scaffold",
+        )
+        shutil.copytree(
+            VAULT_ROOT / "_system/templates/teamspaces/personal-brand",
+            root / "_system/templates/teamspaces/personal-brand",
         )
         personal = root / "personal"
         personal.mkdir(parents=True)
         (personal / "personal.md").write_text(
-            "---\nstatus: active\ncontext_registered: true\ndefault_capture: true\n---\n",
+            "---\nstatus: active\nteamspace_registered: true\ndefault_capture: true\n---\n",
             encoding="utf-8",
         )
         templater = root / ".obsidian/plugins/templater-obsidian/data.json"
@@ -131,6 +135,9 @@ class ContextFolderCapabilityTests(unittest.TestCase):
             self.assertTrue((root / "studio/relationships/people/.gitkeep").is_file())
             self.assertTrue((root / "studio/_obsidian/bases/relationship-crm.base").is_file())
             self.assertTrue((root / "studio/_obsidian/business-toolkit.json").is_file())
+            self.assertTrue((root / "studio/gtm/funnel.excalidraw").is_file())
+            self.assertFalse((root / "studio/gtm/README-crm.md").exists())
+            self.assertFalse((root / "studio/gtm/README-marketing-stack.md").exists())
 
     def test_registration_adds_capabilities_but_rejects_templates(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -138,7 +145,7 @@ class ContextFolderCapabilityTests(unittest.TestCase):
             bootstrap_module = self.fixture(root)
             existing = root / "existing"
             existing.mkdir()
-            (existing / "existing.md").write_text("---\nstatus: active\ncontext_registered: true\n---\n", encoding="utf-8")
+            (existing / "existing.md").write_text("---\nstatus: active\nteamspace_registered: true\n---\n", encoding="utf-8")
             self.create(root, bootstrap_module, ["existing", "--blog"], register=True)
             self.assertTrue((existing / "_obsidian/content/items/blog-posts").is_dir())
             with self.assertRaises(SystemExit):

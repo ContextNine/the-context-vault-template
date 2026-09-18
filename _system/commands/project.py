@@ -8,7 +8,7 @@ import datetime as dt
 from pathlib import Path
 from typing import Any
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 
 
 def clean_scalar(value: str) -> str:
@@ -56,12 +56,12 @@ def safe_filename(title: str) -> str:
 
 def ensure_context(root: Path, context: str) -> Path:
     path = root / context
-    note = context_folder_note_path(path)
+    note = teamspace_folder_note_path(path)
     if not note.exists():
-        raise SystemExit(f"Context not found: {context}. Run `vault inventory`.")
+        raise SystemExit(f"Teamspace not found: {context}. Run `vault inventory`.")
     metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-    if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
-        raise SystemExit(f"Context is unregistered: {context}. Run `vault folder register {context}`.")
+    if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
+        raise SystemExit(f"Teamspace is unregistered: {context}. Run `vault folder register {context}`.")
     return path
 
 
@@ -129,11 +129,11 @@ def list_projects(root: Path, context: str | None) -> int:
     contexts = [context] if context else []
     if not contexts:
         for child in sorted(root.iterdir()):
-            note = context_folder_note_path(child)
+            note = teamspace_folder_note_path(child)
             if not child.is_dir() or not note.exists():
                 continue
             metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-            if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
+            if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
                 continue
             contexts.append(child.name)
     for context_name in contexts:
@@ -160,13 +160,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     sub = parser.add_subparsers(dest="command", required=True)
     create = sub.add_parser("create", help="Create a project note.")
-    create.add_argument("context")
+    create.add_argument("context", metavar="teamspace")
     create.add_argument("title")
     create.add_argument("--status", default="backlog")
     create.add_argument("--epic", default=None)
     create.add_argument("--dry-run", action="store_true")
     listing = sub.add_parser("list", help="List project notes.")
-    listing.add_argument("--context", default=None)
+    listing.add_argument("--teamspace", dest="context", default=None)
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)

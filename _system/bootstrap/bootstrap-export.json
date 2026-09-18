@@ -2,7 +2,7 @@
   "export_root": "~/Code/ctx9/vault-public",
   "manifest_name": "_system/local/state/export-manifest.json",
   "copy_obsidian": "exact",
-  "context_folders": [
+  "teamspace_folders": [
     {
       "source": "personal",
       "target": "personal",

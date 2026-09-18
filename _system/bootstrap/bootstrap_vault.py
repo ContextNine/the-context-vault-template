@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Bootstrap this Obsidian workspace into the context folder layout.
+Bootstrap this Obsidian workspace into the teamspace folder layout.
 
 The script is intentionally conservative:
 - it only overwrites files that contain a stable managed-file marker;
@@ -69,7 +69,7 @@ END_EPIC_VIEWS = f"  # END {EPIC_VIEWS_MARKER}: epic views"
 BOOTSTRAP_MARKERS = (GENERATED_MARKER,)
 VAULT_PERIODIC_MARKERS = (VAULT_PERIODIC_MARKER,)
 MANAGED_MARKERS = (GENERATED_MARKER, VAULT_PERIODIC_MARKER)
-OBSOLETE_CONTEXT_FOLDER_WORKSPACE_LINKS = [
+OBSOLETE_TEAMSPACE_FOLDER_WORKSPACE_LINKS = [
     ".agents",
     ".claude",
     "AGENTS.md",
@@ -277,9 +277,9 @@ class Bootstrap:
         if not self.dry_run:
             path.write_text(content, encoding="utf-8")
 
-    def write_context_folder_note(self, entity: str, status: str, content_schedules_enabled: bool, default_capture: bool) -> None:
-        path = context_folder_note_path(self.root, entity)
-        content = context_folder_note(status, content_schedules_enabled, default_capture)
+    def write_teamspace_folder_note(self, entity: str, status: str, content_schedules_enabled: bool, default_capture: bool) -> None:
+        path = teamspace_folder_note_path(self.root, entity)
+        content = teamspace_folder_note(status, content_schedules_enabled, default_capture)
         if not path.exists():
             self.ensure_dir(path.parent)
             self.log(f"write {rel(path, self.root)}")
@@ -290,7 +290,7 @@ class Bootstrap:
         if not any(marker in existing for marker in BOOTSTRAP_MARKERS) and not has_frontmatter(existing):
             self.log(f"skip existing non-managed file {rel(path, self.root)}")
             return
-        content = update_context_folder_note(existing, status, content_schedules_enabled, default_capture)
+        content = update_teamspace_folder_note(existing, status, content_schedules_enabled, default_capture)
         if existing == content:
             return
         self.log(f"write {rel(path, self.root)}")
@@ -385,33 +385,39 @@ class Bootstrap:
         self.setup_folder_templates()
 
     def setup_folder_templates(self) -> None:
-        template_root = self.root / "_system/bootstrap/templates/context-folders"
+        template_root = self.root / "_system/templates/teamspaces"
         for entity, template in sorted(self.folder_templates.items()):
             source_root = template_root / template
             if not source_root.is_dir():
                 raise SystemExit(f"Missing folder template: {source_root}")
-            for source in sorted(source_root.rglob("*")):
-                relative = source.relative_to(source_root)
-                if relative == Path(".business-toolkit.json"):
-                    continue
-                target = self.root / entity / relative
-                if source.is_dir():
-                    self.ensure_dir(target)
-                elif not target.exists():
-                    self.copy_file_if_missing(source, target)
+            roots = [source_root]
+            if template == "business":
+                roots.append(self.root / "_system/templates/gtm/scaffold")
+            for pack_root in roots:
+                if not pack_root.is_dir():
+                    raise SystemExit(f"Missing folder template: {pack_root}")
+                for source in sorted(pack_root.rglob("*")):
+                    relative = source.relative_to(pack_root)
+                    if relative == Path(".business-toolkit.json"):
+                        continue
+                    target = self.root / entity / relative
+                    if source.is_dir():
+                        self.ensure_dir(target)
+                    elif not target.exists():
+                        self.copy_file_if_missing(source, target)
 
-    def setup_context_folder_notes(self) -> None:
+    def setup_teamspace_folder_notes(self) -> None:
         active = set(self.active_entities)
         schedules = set(self.content_schedule_entities)
         for entity in self.entities:
             status = "active" if entity in active else "archived"
-            self.write_context_folder_note(entity, status, entity in schedules, entity == self.default_entity)
+            self.write_teamspace_folder_note(entity, status, entity in schedules, entity == self.default_entity)
 
-    def cleanup_obsolete_context_folder_workspace_artifacts(self) -> None:
+    def cleanup_obsolete_teamspace_folder_workspace_artifacts(self) -> None:
         for entity in self.entities:
             entity_root = self.root / entity
             self.remove_path(entity_root / ".obsidian")
-            for name in OBSOLETE_CONTEXT_FOLDER_WORKSPACE_LINKS:
+            for name in OBSOLETE_TEAMSPACE_FOLDER_WORKSPACE_LINKS:
                 self.remove_symlink_or_skip(entity_root / name)
 
     def setup_context_template_dirs(self) -> None:
@@ -437,13 +443,13 @@ class Bootstrap:
         self.safe_remove_generated_path(self.root / "README_PERSONALIZED_QUICKSTART.md", BOOTSTRAP_MARKERS)
         self.safe_remove_generated_path(self.root / "_system" / "README_PERSONALIZED_QUICKSTART.md", BOOTSTRAP_MARKERS)
         self.safe_remove_generated_path(self.root / "_system/_obsidian/templates/shared/entity-notes/personal.md", BOOTSTRAP_MARKERS)
-        self.safe_remove_generated_path(self.root / "_system/_obsidian/templates/shared/entity-notes/personal-context-template.md", BOOTSTRAP_MARKERS)
+        self.safe_remove_generated_path(self.root / "_system/_obsidian/templates/shared/entity-notes/personal-teamspace-template.md", BOOTSTRAP_MARKERS)
         self.safe_remove_generated_path(self.root / "_system/_obsidian/templates/shared/entity-notes/personal-brand.md", BOOTSTRAP_MARKERS)
         self.safe_remove_generated_path(self.root / "_system/_obsidian/templates/shared/entity-notes/company.md", BOOTSTRAP_MARKERS)
         self.write_managed(self.root / "_system/_obsidian/templates/shared/default-tasks-template.md", shared_task_template())
-        self.write_managed(self.root / "_system/_obsidian/templates/shared/content/content-item-template.md", content_item_template())
+        self.write_managed(self.root / "_system/_obsidian/templates/shared/content/content-item-template.md", content_item_template(self.root))
         self.write_managed(self.root / "_system/_obsidian/templates/shared/content/publication-template.md", publication_template())
-        self.write_managed(self.root / "_system/_obsidian/templates/shared/entity-notes/context-template.md", entity_note_template("context"))
+        self.write_managed(self.root / "_system/_obsidian/templates/shared/entity-notes/teamspace-template.md", entity_note_template("context"))
         personal_periodic = self.root / self.default_entity / "_obsidian/templates/periodic"
         if personal_periodic.is_symlink():
             self.remove_path(personal_periodic)
@@ -506,7 +512,7 @@ class Bootstrap:
             )
 
         for entity in self.entities:
-            self.write_managed(self.root / entity / "_obsidian/bases/context-dashboard.base", entity_dashboard_base(entity))
+            self.write_managed(self.root / entity / "_obsidian/bases/teamspace-dashboard.base", entity_dashboard_base(entity))
             self.write_managed(self.root / entity / "_obsidian/bases/projects-dashboard.base", entity_projects_base(entity))
             self.write_managed(self.root / entity / "_obsidian/bases/epics-dashboard.base", entity_epics_base(entity))
             for old_name in [
@@ -613,8 +619,8 @@ class Bootstrap:
 
     def run(self) -> None:
         self.setup_directories()
-        self.setup_context_folder_notes()
-        self.cleanup_obsolete_context_folder_workspace_artifacts()
+        self.setup_teamspace_folder_notes()
+        self.cleanup_obsolete_teamspace_folder_workspace_artifacts()
         self.setup_context_template_dirs()
         self.setup_excalidraw()
         self.setup_templates()
@@ -631,7 +637,7 @@ def rel(path: Path, root: Path) -> str:
         return str(path)
 
 
-def context_folder_note_path(root: Path, entity: str) -> Path:
+def teamspace_folder_note_path(root: Path, entity: str) -> Path:
     return root / entity / f"{entity}.md"
 
 
@@ -957,12 +963,12 @@ def inline_code_list(items: list[str]) -> str:
     return ", ".join(f"`{item}`" for item in items)
 
 
-def context_folder_note(status: str, content_schedules_enabled: bool = False, default_capture: bool = False) -> str:
+def teamspace_folder_note(status: str, content_schedules_enabled: bool = False, default_capture: bool = False) -> str:
     default_value = "true" if default_capture else "false"
     schedules = "content_schedules_enabled: true\n" if content_schedules_enabled else ""
     return f"""---
 status: {status}
-{schedules}context_registered: true
+{schedules}teamspace_registered: true
 default_capture: {default_value}
 ---
 """
@@ -979,7 +985,7 @@ def entity_note_template(
     schedules = "content_schedules_enabled: true\n" if content_schedules_enabled else ""
     return f"""---
 status: {status}
-{schedules}context_registered: true
+{schedules}teamspace_registered: true
 default_capture: {default_value}
 {managed_properties()}
 ---
@@ -1014,11 +1020,11 @@ def split_frontmatter(existing: str) -> tuple[list[str], str]:
     return existing[4:end].splitlines(), body
 
 
-def update_context_folder_note(existing: str, status: str, content_schedules_enabled: bool, default_capture: bool) -> str:
+def update_teamspace_folder_note(existing: str, status: str, content_schedules_enabled: bool, default_capture: bool) -> str:
     lines, body = split_frontmatter(existing)
     desired = {
         "status": status,
-        "context_registered": "true",
+        "teamspace_registered": "true",
         "default_capture": "true" if default_capture else "false",
     }
     if content_schedules_enabled:
@@ -1037,7 +1043,7 @@ def update_context_folder_note(existing: str, status: str, content_schedules_ena
                 seen.add(key)
                 continue
         output.append(line)
-    for key in ["status", "content_schedules_enabled", "context_registered", "default_capture"]:
+    for key in ["status", "content_schedules_enabled", "teamspace_registered", "default_capture"]:
         if key not in seen:
             if key in desired:
                 output.append(f"{key}: {desired[key]}")
@@ -1075,32 +1081,11 @@ tags:
 """
 
 
-def content_item_template() -> str:
-    return f"""---
-type: content
-entity: <% tp.file.folder(true).split('/')[0] %>
-content_kind: social-post
-platform:
-publication:
-status: idea
-publish_date:
-source:
-repurposed_from:
-cta:
-conversion_goal:
-tags:
-  - content
-{managed_properties()}
----
-
-# <% tp.file.title %>
-
-## AI Summary
-
-## Draft
-
-## Notes
-"""
+def content_item_template(root: Path) -> str:
+    source = root / "_system/templates/content/social-post/content-item-template.md"
+    if not source.is_file():
+        raise SystemExit(f"Missing social-post template: {source}")
+    return source.read_text(encoding="utf-8").replace("{{managed_properties}}", managed_properties())
 
 
 def publication_template() -> str:
@@ -1157,7 +1142,7 @@ tags:
 
 # Set up {entity} workspace
 
-Use this starter task to confirm TaskNotes sees this context folder's `_obsidian/tasks` folder.
+Use this starter task to confirm TaskNotes sees this teamspace folder's `_obsidian/tasks` folder.
 """
 
 
@@ -1297,7 +1282,7 @@ views:
     name: "Periodic Notes"
     order:
       - file.name
-      - context_folder
+      - teamspace_folder
       - period
       - period_id
       - file.folder
@@ -1550,7 +1535,7 @@ filters:
 
 views:
   - type: table
-    name: "Context Folder Files"
+    name: "Teamspace Folder Files"
     order:
       - file.name
       - file.folder
@@ -1759,7 +1744,7 @@ def parse_feature_entities(value: str | None, entities: list[str], label: str) -
     selected = parse_entities(value) if value else []
     missing = [entity for entity in selected if entity not in entities]
     if missing:
-        raise SystemExit(f"{label} context folders are not configured: {missing}")
+        raise SystemExit(f"{label} teamspace folders are not configured: {missing}")
     return selected
 
 
@@ -1767,10 +1752,10 @@ def parse_folder_templates(value: str | None, entities: list[str]) -> dict[str, 
     templates: dict[str, str] = {}
     for item in [part.strip() for part in (value or "").split(",") if part.strip()]:
         if ":" not in item:
-            raise SystemExit(f"folder template mapping must use CONTEXT_FOLDER:TEMPLATE: {item!r}")
+            raise SystemExit(f"folder template mapping must use TEAMSPACE_FOLDER:TEMPLATE: {item!r}")
         entity, template = (part.strip() for part in item.split(":", 1))
         if entity not in entities:
-            raise SystemExit(f"folder template context folder is not configured: {entity}")
+            raise SystemExit(f"folder template teamspace folder is not configured: {entity}")
         if template not in {"personal-brand", "business"}:
             raise SystemExit(f"unsupported folder template: {template}")
         templates[entity] = template
@@ -1783,20 +1768,20 @@ def prompt(default: str, label: str) -> str:
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Bootstrap the context folder Obsidian layout.")
+    parser = argparse.ArgumentParser(description="Bootstrap the teamspace folder Obsidian layout.")
     parser.add_argument("--root", default=".", help="Vault root. Defaults to current directory.")
-    parser.add_argument("--context-folders", dest="entities", metavar="CONTEXT_FOLDERS", help="Comma-separated context folders.")
+    parser.add_argument("--teamspace-folders", dest="entities", metavar="TEAMSPACE_FOLDERS", help="Comma-separated teamspace folders.")
     parser.add_argument("--sub-vaults", dest="entities", help=argparse.SUPPRESS)
     parser.add_argument("--entities", dest="entities", help=argparse.SUPPRESS)
-    parser.add_argument("--active-context-folders", dest="active_entities", metavar="CONTEXT_FOLDERS", help="Comma-separated context folders to mark active in folder notes.")
+    parser.add_argument("--active-teamspace-folders", dest="active_entities", metavar="TEAMSPACE_FOLDERS", help="Comma-separated teamspace folders to mark active in folder notes.")
     parser.add_argument("--active-sub-vaults", dest="active_entities", help=argparse.SUPPRESS)
     parser.add_argument("--active-entities", dest="active_entities", help=argparse.SUPPRESS)
-    parser.add_argument("--blog-context-folders", metavar="CONTEXT_FOLDERS")
-    parser.add_argument("--social-content-context-folders", metavar="CONTEXT_FOLDERS")
-    parser.add_argument("--newsletter-context-folders", metavar="CONTEXT_FOLDERS")
-    parser.add_argument("--content-schedule-context-folders", metavar="CONTEXT_FOLDERS")
-    parser.add_argument("--folder-templates", metavar="CONTEXT_FOLDER:TEMPLATE", help="Comma-separated creation-time physical folder templates.")
-    parser.add_argument("--default-context-folder", dest="default_entity", metavar="CONTEXT_FOLDER", default="personal", help="Default capture context folder.")
+    parser.add_argument("--blog-teamspace-folders", metavar="TEAMSPACE_FOLDERS")
+    parser.add_argument("--social-content-teamspace-folders", metavar="TEAMSPACE_FOLDERS")
+    parser.add_argument("--newsletter-teamspace-folders", metavar="TEAMSPACE_FOLDERS")
+    parser.add_argument("--content-schedule-teamspace-folders", metavar="TEAMSPACE_FOLDERS")
+    parser.add_argument("--folder-templates", metavar="TEAMSPACE_FOLDER:TEMPLATE", help="Comma-separated creation-time physical folder templates.")
+    parser.add_argument("--default-teamspace-folder", dest="default_entity", metavar="TEAMSPACE_FOLDER", default="personal", help="Default capture teamspace folder.")
     parser.add_argument("--default-sub-vault", dest="default_entity", help=argparse.SUPPRESS)
     parser.add_argument("--default-entity", dest="default_entity", help=argparse.SUPPRESS)
     parser.add_argument("--date", help="Run date in YYYY-MM-DD. Defaults to today.")
@@ -1815,38 +1800,38 @@ def main(argv: list[str] | None = None) -> None:
     default_entity = args.default_entity
     context_features = {entity: set() for entity in entities}
     feature_args = {
-        "blog": args.blog_context_folders,
-        "social-content": args.social_content_context_folders,
-        "newsletters": args.newsletter_context_folders,
+        "blog": args.blog_teamspace_folders,
+        "social-content": args.social_content_teamspace_folders,
+        "newsletters": args.newsletter_teamspace_folders,
     }
     for feature, value in feature_args.items():
         for entity in parse_feature_entities(value, entities, feature):
             context_features[entity].add(feature)
     content_schedule_entities = (
-        parse_feature_entities(args.content_schedule_context_folders, entities, "content schedule")
-        if args.content_schedule_context_folders is not None
+        parse_feature_entities(args.content_schedule_teamspace_folders, entities, "content schedule")
+        if args.content_schedule_teamspace_folders is not None
         else []
     )
     folder_templates = parse_folder_templates(args.folder_templates, entities)
 
     if args.interactive:
-        entities = parse_entities(prompt(",".join(entities), "Context folders"))
-        active_entities = parse_entities(prompt(",".join(active_entities), "Active context folders"))
+        entities = parse_entities(prompt(",".join(entities), "Teamspace folders"))
+        active_entities = parse_entities(prompt(",".join(active_entities), "Active teamspace folders"))
         for feature in sorted(CONTENT_FEATURES):
             current = [entity for entity in entities if feature in context_features[entity]]
-            selected = parse_entities(prompt(",".join(current), f"{feature} context folders"))
+            selected = parse_entities(prompt(",".join(current), f"{feature} teamspace folders"))
             context_features = {
                 entity: (features | {feature}) if entity in selected else (features - {feature})
                 for entity, features in context_features.items()
             }
-        content_schedule_entities = parse_entities(prompt(",".join(content_schedule_entities), "Content schedule context folders"))
-        default_entity = prompt(default_entity, "Default capture context folder")
+        content_schedule_entities = parse_entities(prompt(",".join(content_schedule_entities), "Content schedule teamspace folders"))
+        default_entity = prompt(default_entity, "Default capture teamspace folder")
 
     if default_entity not in entities:
-        raise SystemExit(f"default context folder {default_entity!r} is not in configured context folders: {entities}")
+        raise SystemExit(f"default teamspace folder {default_entity!r} is not in configured teamspace folders: {entities}")
     missing_active = [entity for entity in active_entities if entity not in entities]
     if missing_active:
-        raise SystemExit(f"active context folders are not in configured context folders: {missing_active}")
+        raise SystemExit(f"active teamspace folders are not in configured teamspace folders: {missing_active}")
     for entity, features in context_features.items():
         unsupported = sorted(features - CONTENT_FEATURES)
         if unsupported:

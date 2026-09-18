@@ -15,7 +15,7 @@ Companion references:
 
 ## Root Profile
 
-Root `.obsidian` is the only active Obsidian profile. Context folders do not have their own active profiles.
+Root `.obsidian` is the only active Obsidian profile. Teamspace folders do not have their own active profiles.
 
 After changing root Obsidian settings or installing plugins, root `.obsidian` itself is the source of truth. Bootstrap does not copy or patch Obsidian profile settings.
 
@@ -95,7 +95,7 @@ For File Color, `palette` stores named color presets and `fileColors` stores vau
 
 Reuse existing palette IDs by preset name instead of hardcoding new colors. Root `_obsidian` folders and `_system` should use the Obsidian purple preset. `personal-brand/Youtube Factory` should use the YouTube red preset.
 
-When creating a new context folder, add File Color entries for the new root folder and its `_obsidian` subtree because coloring the bootstrap template does not retarget copied paths automatically.
+When creating a new teamspace folder, add File Color entries for the new root folder and its `_obsidian` subtree because coloring the bootstrap template does not retarget copied paths automatically.
 
 ## Templater
 
@@ -113,10 +113,10 @@ README-obsidian-profile
 _system
 ```
 
-Each context folder owns its local periodic templates:
+Each teamspace folder owns its local periodic templates:
 
 ```text
-<context-folder>/_obsidian/templates/periodic/
+<teamspace-folder>/_obsidian/templates/periodic/
 ```
 
 Shared non-periodic templates live in:
@@ -127,18 +127,18 @@ _system/_obsidian/templates/shared/
 
 Folder rules:
 
-- `<context-folder>/_obsidian/periodic/daily` → local `daily-template.md`
-- `<context-folder>/_obsidian/periodic/weekly` → local `weekly-template.md`
-- `<context-folder>/_obsidian/periodic/monthly` → local `monthly-template.md`
-- `<context-folder>/_obsidian/periodic/quarterly` → local `quarterly-template.md`
-- `<context-folder>/_obsidian/periodic/yearly` → local `yearly-template.md`
-- `<context-folder>/_obsidian/tasks` → `_system/_obsidian/templates/shared/default-tasks-template.md`
+- `<teamspace-folder>/_obsidian/periodic/daily` → local `daily-template.md`
+- `<teamspace-folder>/_obsidian/periodic/weekly` → local `weekly-template.md`
+- `<teamspace-folder>/_obsidian/periodic/monthly` → local `monthly-template.md`
+- `<teamspace-folder>/_obsidian/periodic/quarterly` → local `quarterly-template.md`
+- `<teamspace-folder>/_obsidian/periodic/yearly` → local `yearly-template.md`
+- `<teamspace-folder>/_obsidian/tasks` → `_system/_obsidian/templates/shared/default-tasks-template.md`
 
 Periodic templates may include `{{current_content_schedule_sync_embed}}`; periodic generator replaces it with active four-week schedule embed when content cadence is enabled.
 
 Use `***` for thematic breaks in template and note bodies. Standalone `---` lines are reserved for opening and closing YAML frontmatter; using them in a body can turn the preceding line into a Setext heading while editing.
 
-Shared entity-note templates live under `_system/_obsidian/templates/shared/entity-notes/` and are copied/adapted into context control notes. Vault rollups under `_system/_obsidian/periodic/` are script-owned and have no manual Templater rules.
+Shared entity-note templates live under `_system/_obsidian/templates/shared/entity-notes/` and are copied/adapted into teamspace control notes. Vault rollups under `_system/_obsidian/periodic/` are script-owned and have no manual Templater rules.
 
 ## File Explorer Note Creation
 
@@ -165,10 +165,10 @@ Vault-wide Bases live in:
 _system/_obsidian/bases/
 ```
 
-Context folder Bases live in:
+Teamspace folder Bases live in:
 
 ```text
-<context-folder>/_obsidian/bases/
+<teamspace-folder>/_obsidian/bases/
 ```
 
 Content calendars use `calendar-bases` views over the `publish_date` property. Do not convert content notes into native Full Calendar event notes.
@@ -217,7 +217,7 @@ _system/_obsidian/excalidraw/
 _system/_obsidian/excalidraw/Scripts/
 ```
 
-Bootstrap copies script folder into `<context-folder>/_obsidian/excalidraw/Scripts/`. Context Nine points at shared folder; context-owned drawings live in local `_obsidian/excalidraw/`.
+Bootstrap copies script folder into `<teamspace-folder>/_obsidian/excalidraw/Scripts/`. Context Nine points at shared folder; teamspace-owned drawings live in local `_obsidian/excalidraw/`.
 
 ## Sync Embeds
 
@@ -235,7 +235,7 @@ Reference notes for the installed beta plugin live at:
 _system/docs/obsidian/beta_plugins_docs/README-sync-embeds.md
 ```
 
-Vault periodic rollups under `_system/_obsidian/periodic/` use Sync Embeds. Agents should inspect live routing with `vault inventory`, then open relevant context source notes.
+Vault periodic rollups under `_system/_obsidian/periodic/` use Sync Embeds. Agents should inspect live routing with `vault inventory`, then open relevant teamspace source notes.
 
 ### Test Public Sync Embeds Against Local Patch
 

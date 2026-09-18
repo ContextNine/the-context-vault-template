@@ -10,6 +10,7 @@ INSTALL_STATE_RELATIVE="_system/local/state/install.json"
 
 TARGET_ARGUMENT=""
 SKILL_SYSTEM_SOURCE="${CTX9_SKILL_SYSTEM_SOURCE:-}"
+SKILL_SYSTEM_DESTINATION="${CTX9_SKILL_SYSTEM_DESTINATION:-}"
 INSTALL_SKILL_SYSTEM=0
 SKIP_SKILL_SYSTEM=0
 NON_INTERACTIVE=0
@@ -19,6 +20,11 @@ while [[ "$#" -gt 0 ]]; do
   case "$1" in
     --skill-system-source)
       SKILL_SYSTEM_SOURCE="${2:?--skill-system-source requires a URL or path}"
+      INSTALL_SKILL_SYSTEM=1
+      shift 2
+      ;;
+    --skill-system-destination)
+      SKILL_SYSTEM_DESTINATION="${2:?--skill-system-destination requires a path or vault}"
       INSTALL_SKILL_SYSTEM=1
       shift 2
       ;;
@@ -211,8 +217,46 @@ install_optional_skill_system() {
   if [[ "${INSTALL_SKILL_SYSTEM}" -ne 1 ]]; then
     return
   fi
+  local existing=""
+  existing="$(run_as_install_user "${PYTHON_BIN}" "${TARGET}/_system/bootstrap/install_skill_system.py" --existing-source --home "${INSTALL_HOME}")"
+  if [[ -n "${existing}" ]]; then
+    run_as_install_user "${PYTHON_BIN}" "${TARGET}/_system/bootstrap/install_skill_system.py" \
+      --connect-existing --home "${INSTALL_HOME}" --vault-root "${TARGET}"
+    return
+  fi
+  local destination="${SKILL_SYSTEM_DESTINATION}"
+  if [[ -z "${destination}" && "${NON_INTERACTIVE}" -ne 1 && -r /dev/tty ]]; then
+    printf 'Editable skill-system source [~/Code/the-skill-problem-system] (type vault to store it inside this Vault): ' >/dev/tty
+    IFS= read -r destination </dev/tty || destination=""
+    destination="${destination:-~/Code/the-skill-problem-system}"
+  fi
+  destination="${destination:-vault}"
   local source_value="${SKILL_SYSTEM_SOURCE:-${SKILL_SYSTEM_REPO_URL}}"
   local source_dir="${source_value}"
+  local editable_source="${TARGET}/_system/agents"
+  if [[ "${destination}" != "vault" ]]; then
+    editable_source="$(resolve_target_path "${destination}")"
+    if [[ -e "${editable_source}" ]]; then
+      echo "Skill-system source destination already exists: ${editable_source}" >&2
+      exit 1
+    fi
+    if [[ "${source_value}" == http://* || "${source_value}" == https://* || "${source_value}" == git@* ]]; then
+      run_as_install_user mkdir -p "$(dirname "${editable_source}")"
+      run_as_install_user "${GIT_BIN}" clone "${source_value}" "${editable_source}"
+      run_as_install_user "${PYTHON_BIN}" "${editable_source}/edit/skills/public/ctx9-install-skill-problem-system/scripts/prepare_repository.py" "${editable_source}"
+    else
+      run_as_install_user "${PYTHON_BIN}" "${TARGET}/_system/bootstrap/install_skill_system.py" \
+        --copy-standalone --source-repo "$(resolve_target_path "${source_value}")" --destination "${editable_source}"
+    fi
+    if [[ "${NON_INTERACTIVE}" -eq 1 ]]; then
+      run_as_install_user env CTX9_NON_INTERACTIVE=1 CTX9_VAULT_ROOT="${TARGET}" HOME="${INSTALL_HOME}" /bin/bash "${editable_source}/install.sh"
+    else
+      run_as_install_user env CTX9_VAULT_ROOT="${TARGET}" HOME="${INSTALL_HOME}" /bin/bash "${editable_source}/install.sh" </dev/tty >/dev/tty
+    fi
+    run_as_install_user "${PYTHON_BIN}" "${TARGET}/_system/bootstrap/install_skill_system.py" \
+      --record-source --home "${INSTALL_HOME}" --vault-root "${TARGET}"
+    return
+  fi
   if [[ "${source_value}" == http://* || "${source_value}" == https://* || "${source_value}" == git@* ]]; then
     source_dir="${STATE_DIR}/skill-system-source"
     run_as_install_user "${GIT_BIN}" clone "${source_value}" "${source_dir}"
@@ -234,7 +278,7 @@ install_optional_skill_system() {
     --release-version "${skill_version:-unknown}" \
     --commit "${skill_commit:-local}"
   if [[ "${NON_INTERACTIVE}" -eq 1 ]]; then
-    run_as_install_user env CTX9_NON_INTERACTIVE=1 CTX9_SOURCE_ROOT="${TARGET}/_system/agents" HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh"
+  run_as_install_user env CTX9_NON_INTERACTIVE=1 CTX9_SOURCE_ROOT="${TARGET}/_system/agents" HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh"
   else
     run_as_install_user env CTX9_SOURCE_ROOT="${TARGET}/_system/agents" HOME="${INSTALL_HOME}" /bin/bash "${source_dir}/install.sh" </dev/tty >/dev/tty
   fi

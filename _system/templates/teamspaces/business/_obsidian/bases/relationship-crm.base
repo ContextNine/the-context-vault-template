@@ -1,6 +1,6 @@
 filters:
   and:
-  - file.inFolder("{{context}}/relationships")
+  - file.inFolder("{{teamspace}}/relationships")
   - list(crm).contains("commercial")
 properties:
   file.name:
@@ -53,7 +53,7 @@ views:
   name: Opportunities
   filters:
     and:
-    - file.inFolder("{{context}}/relationships/opportunities")
+    - file.inFolder("{{teamspace}}/relationships/opportunities")
     - record_type == "opportunity"
   order:
   - file.name

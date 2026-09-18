@@ -2,7 +2,7 @@
 status: active
 content_schedules_enabled: true
 default_capture: false
-context_registered: true
+teamspace_registered: true
 ---
 
 # business

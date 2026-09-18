@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Tests for public context folder bootstrap export."""
+"""Tests for public teamspace folder bootstrap export."""
 
 from __future__ import annotations
 
@@ -40,13 +40,20 @@ class PublicContextExportTests(unittest.TestCase):
                 dry_run=False,
                 run_date=dt.date(2026, 8, 3),
             )
+            source = BOOTSTRAP_DIR.parent / "templates/content/social-post/content-item-template.md"
+            target = root / "_system/templates/content/social-post/content-item-template.md"
+            target.parent.mkdir(parents=True)
+            shutil.copy2(source, target)
 
             bootstrap.setup_templates()
 
-            replacement = root / "_system/_obsidian/templates/shared/entity-notes/context-template.md"
+            replacement = root / "_system/_obsidian/templates/shared/entity-notes/teamspace-template.md"
             self.assertFalse(legacy.exists())
             self.assertTrue(replacement.is_file())
             self.assertIn("vault.bootstrap", replacement.read_text(encoding="utf-8"))
+            social = root / "_system/_obsidian/templates/shared/content/content-item-template.md"
+            self.assertIn("content_kind: social-post", social.read_text(encoding="utf-8"))
+            self.assertNotIn("{{managed_properties}}", social.read_text(encoding="utf-8"))
 
     def test_nested_export_manifest_parent_is_created(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -188,7 +195,7 @@ class PublicContextExportTests(unittest.TestCase):
             self.assertFalse((export_root / ".obsidian/plugins/ordinary-plugin/main.js").exists())
             self.assertTrue((export_root / ".obsidian/plugins/ordinary-plugin/manifest.json").exists())
 
-    def test_context_folder_note_is_sanitized(self) -> None:
+    def test_teamspace_folder_note_is_sanitized(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "source"
             export_root = Path(tmp) / "public"
@@ -224,7 +231,7 @@ Private purpose detail should not be exported.
             )
             config = {
                 "export_root": str(export_root),
-                "context_folders": [
+                "teamspace_folders": [
                     {
                         "source": "business",
                         "target": "business",
@@ -244,7 +251,7 @@ Private purpose detail should not be exported.
                 force=True,
                 dry_run=False,
             )
-            exporter.copy_context_folders()
+            exporter.copy_teamspace_folders()
 
             context_note = (export_root / "business" / "business.md").read_text(encoding="utf-8")
             self.assertIn("status: active", context_note)
@@ -288,7 +295,7 @@ default_capture: true
             )
             config = {
                 "export_root": str(export_root),
-                "context_folders": [
+                "teamspace_folders": [
                     {"source": "personal", "target": "personal"},
                 ],
                 "copy_obsidian": "exact",
@@ -302,7 +309,7 @@ default_capture: true
                 force=True,
                 dry_run=False,
             )
-            exporter.copy_context_folders()
+            exporter.copy_teamspace_folders()
 
             exported_template = (
                 export_root / "personal/_obsidian/templates/periodic/daily-template.md"
@@ -338,7 +345,7 @@ default_capture: true
             )
             config = {
                 "export_root": str(export_root),
-                "context_folders": [
+                "teamspace_folders": [
                     {"source": "personal", "target": "personal"},
                 ],
                 "copy_obsidian": "exact",
@@ -352,7 +359,7 @@ default_capture: true
                 force=True,
                 dry_run=False,
             )
-            exporter.copy_context_folders()
+            exporter.copy_teamspace_folders()
 
             exported_template = (
                 export_root / "personal/_obsidian/templates/periodic/daily-template.md"
@@ -514,7 +521,7 @@ views:
                 (context_root / f"{name}.md").write_text(
                     f"""---
 status: active
-context_registered: true
+teamspace_registered: true
 default_capture: {"true" if name == "personal" else "false"}
 ---
 """,
@@ -523,7 +530,7 @@ default_capture: {"true" if name == "personal" else "false"}
 
             config = {
                 "export_root": str(export_root),
-                "context_folders": [
+                "teamspace_folders": [
                     {"source": "personal", "target": "personal", "capabilities": []},
                     {"source": source_brand, "target": "personal-brand", "capabilities": ["blog"]},
                     {"source": source_business, "target": "business", "capabilities": ["blog"]},
@@ -541,7 +548,7 @@ default_capture: {"true" if name == "personal" else "false"}
             )
             exporter.prepare_export_root()
             exporter.copy_system_or_shared("_system")
-            exporter.copy_context_folders()
+            exporter.copy_teamspace_folders()
             exporter.regenerate_public_bases()
             exporter.validate_public_base_contexts()
 

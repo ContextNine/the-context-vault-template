@@ -1,14 +1,18 @@
 # GTM and relationship workspace
 
-Use one structure for every company context. The business context pack under
-`_system/bootstrap/templates/context-folders/business/` is the canonical source.
-`$marketing-i-setup-gtm-workspace` applies the relevant part of that pack to an
-existing context without replacing files.
+Use one company and GTM structure for every company teamspace. The business pack lives under
+`_system/templates/teamspaces/business/` and composes the GTM tree from
+`_system/templates/gtm/scaffold/`. `$marketing-i-setup-gtm-workspace` applies
+the relevant files to an existing teamspace without replacing edits.
+
+For an individual contact or relationship update, use `$vault-i-use-crm` and
+[[README-crm]]. The CRM guide lives under `_system/templates/gtm/` and is not
+part of a teamspace's copied `gtm/` tree.
 
 ## Folder model
 
 ```text
-<context>/
+<teamspace>/
 ├── company/
 │   ├── audience/
 │   └── competitors/
@@ -19,7 +23,7 @@ existing context without replacing files.
 │   ├── funnel.excalidraw
 │   ├── assets.md
 │   └── learnings.md
-└── relationships/
+└── relationships/                 # optional note-based CRM
     ├── relationships.md
     ├── people/
     ├── companies/
@@ -28,25 +32,26 @@ existing context without replacing files.
 ```
 
 `company/` describes the business and market. `gtm/` contains acquisition and
-conversion work. `relationships/` is the CRM memory shared by sales,
-partnerships, customer research, delivery, and talent.
+conversion work. When selected, `relationships/` holds curated notes shared by
+sales, partnerships, customer research, delivery, and talent. GTM setup does
+not require it.
 
-The shared tool inventory and rules live once in [[README-marketing-stack]] and
-[[stack]] under `_system/docs/marketing-stack/`. Neither the business nor the
-personal-brand pack copies a `marketing-stack/` folder into a context.
+Shared tool rules live once in [[README-marketing-stack]] under
+`_system/templates/gtm/marketing-stack/`. There is no separate live inventory
+in the Vault, and neither teamspace pack copies a `marketing-stack/` folder.
 
 ## CRM boundary
 
-Each company has its own `relationships/` tree and context-filtered Base. Both
-use the same record fields and templates. A lead is a person or company at an
-early commercial stage; it does not need a separate `leads/` folder or an
-opportunity note.
+Companies that adopt the note-based CRM each have their own `relationships/`
+tree and teamspace-filtered Base. They use the same record fields and templates.
+A lead is a person or company at an early commercial stage; it does not need a
+separate `leads/` folder or an opportunity note.
 
-Keep one note per actionable lead, relationship, researched account, or
-qualified opportunity. Store unchanged CSV and workbook sources in
-`relationships/imports/` during migration. A large, unselected prospect list
-can remain a source file. Do not confuse such a list with a smaller working
-lead sheet that needs follow-up.
+For a company using relationship notes as its CRM, keep one note per selected
+actionable lead, relationship, researched account, or qualified opportunity.
+New retained import and export files belong in `relationships/imports/`. Do not
+move an existing working lead sheet or convert its rows merely because the
+folder exists. A large, unselected prospect list can remain a source file.
 
 Use email as the preferred identifier for people and domain for companies when
 present. When identifiers are absent, compare name, company, profile URL, and
@@ -62,34 +67,25 @@ The shared record fields are:
 - opportunities: `company`, `contacts`, `offer`, `campaign`, `value`, and
   `expected_close`.
 
-Preserve the original source row and status during a conversion. A source label
-such as `Follow up` is an action queue, not proof of a `qualified` stage or a
-real `last_contact` date. Migrate in a reviewable batch, check counts and
-duplicates, then switch the Base to the converted records. Do not erase the
+In an approved conversion, preserve the original source row and status. A
+source label such as `Follow up` is an action queue, not proof of a `qualified`
+stage or a real `last_contact` date. Migrate in a reviewable batch, check counts
+and duplicates, then switch the Base to the converted records. Do not erase the
 source sheet.
 
 Use `possible`, `connected`, `qualified`, `proposed`, `engagement-planned`,
 `client`, and `dormant` for `commercial_stage`. A person or company may stay
 `connected` while a linked opportunity moves through its own pipeline.
 
-## Attio boundary
+## Operational CRM boundary
 
-The Vault remains the durable narrative and source archive. Attio may become the
-operational CRM when email/calendar sync, team workflows, automation, or large
-list management outweigh the cost of another system.
+The folder template does not choose an operational CRM app. A company may keep
+an existing lead sheet or app as its working source while using relationship
+notes for selected narrative teamspace. Any change of source of truth needs its
+own reviewed migration. Do not stage a full lead-sheet conversion into notes
+as a temporary step toward an app CRM.
 
-The model maps without redesign:
-
-- `people/` to Attio People, keyed by email;
-- `companies/` to Attio Companies, keyed by domain;
-- `opportunities/` to Attio Deals;
-- campaign-specific fields to Attio Lists;
-- `imports/` to retained source exports and migration files.
-
-Do not make Attio the only copy of relationship notes. Export it periodically if
-it becomes operational.
-
-## Existing contexts
+## Existing teamspaces
 
 Run the setup skill rather than copying files by memory:
 
@@ -98,6 +94,9 @@ $marketing-i-setup-gtm-workspace
 ```
 
 The setup is additive. Existing `crm/`, CSV, workbook, and relationship folders
-remain untouched until a separate conversion is approved. For Impression, read
-[[Lead sources and mapping]] before that conversion. Outsource Think's existing
-people and company notes remain in its own CRM.
+remain untouched until a separate conversion is approved. Read the selected
+teamspace's source mapping and relationship home note before changing records.
+
+When applying GTM to an existing teamspace, the setup script adds `company/` and
+`gtm/` by default. Pass `--relationships` only when adopting the optional
+relationship-note CRM. New `business` teamspaces use the full business pack.

@@ -155,7 +155,7 @@ def stale_monthly_sops(root: Path, current_month: str, fallback_entities: list[s
         period_id = str(props.get("period_id") or path.stem)
         if period_id >= current_month:
             continue
-        entities = props.get("source_context_folders")
+        entities = props.get("source_teamspace_folders")
         if not isinstance(entities, list) or not entities:
             entities = fallback_entities
         count = 0

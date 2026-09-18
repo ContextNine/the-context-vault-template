@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rename a context folder and rewrite structured vault references."""
+"""Rename a teamspace folder and rewrite structured vault references."""
 
 from __future__ import annotations
 
@@ -143,11 +143,11 @@ def move_or_merge_folder(root: Path, old: str, new: str, dry_run: bool, missing_
         return False, False
     if not source.exists():
         if missing_ok:
-            print(f"skip missing context folder: {old}")
+            print(f"skip missing teamspace folder: {old}")
             return False, False
-        raise SystemExit(f"context folder does not exist: {old}")
+        raise SystemExit(f"teamspace folder does not exist: {old}")
     if not source.is_dir() or source.is_symlink():
-        raise SystemExit(f"context folder path is not a directory: {rel(root, source)}")
+        raise SystemExit(f"teamspace folder path is not a directory: {rel(root, source)}")
     if target.exists() and (not target.is_dir() or target.is_symlink()):
         raise SystemExit(f"context rename target is not a directory: {rel(root, target)}")
     if not target.exists():
@@ -164,7 +164,7 @@ def move_or_merge_folder(root: Path, old: str, new: str, dry_run: bool, missing_
         )
         suffix = "" if len(conflicts) <= 20 else f"\n  ... and {len(conflicts) - 20} more"
         raise SystemExit(
-            "Cannot safely merge context folder rename target.\n"
+            "Cannot safely merge teamspace folder rename target.\n"
             f"Source: {rel(root, source)}\n"
             f"Target: {rel(root, target)}\n"
             "Move or remove conflicting files manually, then rerun.\n"
@@ -186,7 +186,7 @@ def rename_inside_folder_note(root: Path, old: str, new: str, dry_run: bool) -> 
     if source.exists():
         if target.exists() and source.resolve() != target.resolve():
             raise SystemExit(
-                "Cannot rename context folder note because target already exists.\n"
+                "Cannot rename teamspace folder note because target already exists.\n"
                 f"Source: {rel(root, source)}\n"
                 f"Target: {rel(root, target)}"
             )
@@ -196,7 +196,7 @@ def rename_inside_folder_note(root: Path, old: str, new: str, dry_run: bool) -> 
         return
 
     if not target.exists():
-        raise SystemExit(f"Context folder note missing after rename: {rel(root, target)}")
+        raise SystemExit(f"Teamspace folder note missing after rename: {rel(root, target)}")
 
 
 def replace_common_structured(text: str, old: str, new: str) -> str:
@@ -316,12 +316,12 @@ def rewrite_structured_references(root: Path, old: str, new: str, dry_run: bool)
     return tuple(changed)
 
 
-def rename_context_folder(root: Path, old: str, new: str, dry_run: bool = False, missing_ok: bool = False) -> RenameResult:
-    old = validate_slug(old, "old context folder")
-    new = validate_slug(new, "new context folder")
+def rename_teamspace_folder(root: Path, old: str, new: str, dry_run: bool = False, missing_ok: bool = False) -> RenameResult:
+    old = validate_slug(old, "old teamspace folder")
+    new = validate_slug(new, "new teamspace folder")
     root = root.expanduser().resolve()
     if old == new:
-        print(f"no-op context rename: {old}")
+        print(f"no-op teamspace rename: {old}")
         return RenameResult(moved=False, merged=False, rewritten_files=())
     moved, merged = move_or_merge_folder(root, old, new, dry_run, missing_ok)
     rename_inside_folder_note(root, old, new, dry_run)
@@ -334,16 +334,16 @@ def rename_context_folder(root: Path, old: str, new: str, dry_run: bool = False,
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(description="Rename a context folder and rewrite structured references.")
-    parser.add_argument("old_slug", help="Existing context folder slug.")
-    parser.add_argument("new_slug", help="New context folder slug.")
+    parser = argparse.ArgumentParser(description="Rename a teamspace folder and rewrite structured references.")
+    parser.add_argument("old_slug", help="Existing teamspace folder slug.")
+    parser.add_argument("new_slug", help="New teamspace folder slug.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned changes without modifying files.")
     parser.add_argument("--missing-ok", action="store_true", help="Do not fail if the old folder is already gone.")
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    rename_context_folder(root, args.old_slug, args.new_slug, args.dry_run, args.missing_ok)
+    rename_teamspace_folder(root, args.old_slug, args.new_slug, args.dry_run, args.missing_ok)
     return 0
 
 

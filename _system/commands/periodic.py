@@ -10,7 +10,7 @@ import re
 import sys
 from pathlib import Path
 
-from script_utils import configured_context_folders, context_folder_note_path, resolve_vault_root
+from script_utils import configured_teamspace_folders, teamspace_folder_note_path, resolve_vault_root
 from vault_layout import MANAGED_BOOTSTRAP, MANAGED_PERIODIC, VAULT_PERIODIC_DIR
 
 SCRIPT_DIR = Path(__file__).resolve().parent
@@ -449,14 +449,14 @@ def vault_periodic_path(root: Path, period: str, period_id: str) -> Path:
 
 
 def entity_status(root: Path, entity: str) -> str:
-    path = context_folder_note_path(root / entity)
+    path = teamspace_folder_note_path(root / entity)
     if not path.exists():
         return ""
     return parse_frontmatter(path.read_text(encoding="utf-8")).get("status", "").strip().lower()
 
 
 def entity_periodic_notes_enabled(root: Path, entity: str) -> bool:
-    path = context_folder_note_path(root / entity)
+    path = teamspace_folder_note_path(root / entity)
     if not path.exists():
         return False
     value = parse_frontmatter(path.read_text(encoding="utf-8")).get("periodic_notes_enabled", "true")
@@ -471,19 +471,19 @@ def parse_entities(value: str | None) -> list[str]:
 
 def resolve_entities(root: Path, configured: list[str], explicit: list[str], include_all: bool) -> list[str]:
     if include_all and explicit:
-        raise SystemExit("Use either --all or --context-folders, not both.")
+        raise SystemExit("Use either --all or --teamspace-folders, not both.")
 
     if explicit:
         missing = [entity for entity in explicit if not (root / entity).is_dir()]
         if missing:
-            raise SystemExit(f"Explicit context folder(s) not found: {', '.join(missing)}")
+            raise SystemExit(f"Explicit teamspace folder(s) not found: {', '.join(missing)}")
         candidates = explicit
     else:
         candidates = []
         for entity in configured:
             entity_path = root / entity
             if not entity_path.is_dir():
-                print(f"warning: configured context folder not found: {entity}", file=sys.stderr)
+                print(f"warning: configured teamspace folder not found: {entity}", file=sys.stderr)
                 continue
             if include_all or entity_status(root, entity) == "active":
                 candidates.append(entity)
@@ -492,7 +492,7 @@ def resolve_entities(root: Path, configured: list[str], explicit: list[str], inc
 
     if not selected:
         raise SystemExit(
-            "No context folders selected. Mark a context folder note as status: active, remove periodic_notes_enabled: false, or select another context folder."
+            "No teamspace folders selected. Mark a teamspace folder note as status: active, remove periodic_notes_enabled: false, or select another teamspace folder."
         )
     return selected
 
@@ -545,7 +545,7 @@ type: vault-periodic
 period: {period}
 period_id: {period_id}
 generated: true
-source_context_folders:
+source_teamspace_folders:
 {yaml_list(entities)}
 generated_at: {generated_at}
 managed_by: "{MANAGED_PERIODIC}"
@@ -593,18 +593,18 @@ def generate_periodic_notes(
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="Generate source periodic notes and vault Sync Embed rollups.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery from the current directory or script location.")
-    parser.add_argument("--configured-context-folders", dest="configured_entities", metavar="CONTEXT_FOLDERS")
+    parser.add_argument("--configured-teamspace-folders", dest="configured_entities", metavar="TEAMSPACE_FOLDERS")
     parser.add_argument("--configured-sub-vaults", dest="configured_entities", help=argparse.SUPPRESS)
     parser.add_argument("--configured-entities", dest="configured_entities", help=argparse.SUPPRESS)
-    parser.add_argument("--context-folders", dest="entities", metavar="CONTEXT_FOLDERS", help="Comma-separated context folders for this run.")
+    parser.add_argument("--teamspace-folders", dest="entities", metavar="TEAMSPACE_FOLDERS", help="Comma-separated teamspace folders for this run.")
     parser.add_argument("--sub-vaults", dest="entities", help=argparse.SUPPRESS)
     parser.add_argument("--entities", dest="entities", help=argparse.SUPPRESS)
-    parser.add_argument("--all", action="store_true", help="Use all configured context folders.")
+    parser.add_argument("--all", action="store_true", help="Use all configured teamspace folders.")
     parser.add_argument("--date", default=dt.date.today().isoformat())
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    configured = configured_context_folders(root, parse_entities(args.configured_entities), DEFAULT_ENTITIES)
+    configured = configured_teamspace_folders(root, parse_entities(args.configured_entities), DEFAULT_ENTITIES)
     explicit = parse_entities(args.entities)
     generate_periodic_notes(
         root,

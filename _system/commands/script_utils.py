@@ -54,46 +54,46 @@ def simple_frontmatter(text: str) -> dict[str, str]:
     return data
 
 
-def context_folder_note_path(context_root: Path) -> Path:
-    """Return the inside-folder note path used as a context folder control panel."""
+def teamspace_folder_note_path(context_root: Path) -> Path:
+    """Return the inside-folder note path used as a teamspace folder control panel."""
     return context_root / f"{context_root.name}.md"
 
 
 def context_note_path(root: Path, context: str) -> Path:
-    return context_folder_note_path(root / context)
+    return teamspace_folder_note_path(root / context)
 
 
-def context_folder_metadata(context_root: Path) -> dict[str, str]:
-    note = context_folder_note_path(context_root)
+def teamspace_folder_metadata(context_root: Path) -> dict[str, str]:
+    note = teamspace_folder_note_path(context_root)
     if not note.is_file():
         return {}
     return simple_frontmatter(note.read_text(encoding="utf-8", errors="replace"))
 
 
-def is_context_folder(path: Path) -> bool:
+def is_teamspace_folder(path: Path) -> bool:
     if not path.is_dir() or path.name.startswith(".") or path.name.startswith("_"):
         return False
-    metadata = context_folder_metadata(path)
-    registered = str(metadata.get("context_registered", "true")).strip().lower()
+    metadata = teamspace_folder_metadata(path)
+    registered = str(metadata.get("teamspace_registered", "true")).strip().lower()
     if registered in {"false", "no", "0"}:
         return False
-    return bool(metadata.get("status") or "context_registered" in metadata)
+    return bool(metadata.get("status") or "teamspace_registered" in metadata)
 
 
-def discover_context_folders(root: Path) -> list[str]:
-    """Return configured context folders discovered from folder-note metadata."""
+def discover_teamspace_folders(root: Path) -> list[str]:
+    """Return configured teamspace folders discovered from folder-note metadata."""
     contexts: list[str] = []
     for child in sorted(root.iterdir()):
-        if is_context_folder(child):
+        if is_teamspace_folder(child):
             contexts.append(child.name)
     return contexts
 
 
-def configured_context_folders(root: Path, explicit: list[str], fallback: list[str]) -> list[str]:
+def configured_teamspace_folders(root: Path, explicit: list[str], fallback: list[str]) -> list[str]:
     """Use explicit configured folders, otherwise discover folders, otherwise fallback defaults."""
     if explicit:
         return explicit
-    return discover_context_folders(root) or fallback[:]
+    return discover_teamspace_folders(root) or fallback[:]
 
 
 def vault_relative_path_string(path: Path, root: Path) -> str:

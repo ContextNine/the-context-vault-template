@@ -28,19 +28,23 @@ class BusinessToolkitPublicExportTests(unittest.TestCase):
                 root / "_library/business_toolkit",
             )
             shutil.copytree(
-                VAULT_ROOT / "_system/bootstrap/templates/context-folders/business",
-                export_root / "_system/bootstrap/templates/context-folders/business",
+                VAULT_ROOT / "_system/templates/teamspaces/business",
+                export_root / "_system/templates/teamspaces/business",
+            )
+            shutil.copytree(
+                VAULT_ROOT / "_system/templates/gtm/scaffold",
+                export_root / "_system/templates/gtm/scaffold",
             )
             source_context = root / "private-company"
             source_context.mkdir(parents=True)
             (source_context / "private-company.md").write_text(
-                "---\nstatus: active\ncontext_registered: true\n---\n",
+                "---\nstatus: active\nteamspace_registered: true\n---\n",
                 encoding="utf-8",
             )
             export_context = export_root / "business"
             export_context.mkdir(parents=True)
             (export_context / "business.md").write_text(
-                "---\nstatus: active\ncontext_registered: true\n---\n",
+                "---\nstatus: active\nteamspace_registered: true\n---\n",
                 encoding="utf-8",
             )
             commands = export_root / "_system/commands"
@@ -85,7 +89,7 @@ class BusinessToolkitPublicExportTests(unittest.TestCase):
             config = {
                 "export_root": str(export_root),
                 "copy_obsidian": "exact",
-                "context_folders": [{"source": "private-company", "target": "business", "folder_template": "business"}],
+                "teamspace_folders": [{"source": "private-company", "target": "business", "folder_template": "business"}],
                 "library_include_paths": ["business_toolkit"],
             }
             exporter = BootstrapExporter(
@@ -109,7 +113,7 @@ class BusinessToolkitPublicExportTests(unittest.TestCase):
             manifest = json.loads(
                 (
                     export_root
-                    / "_system/bootstrap/templates/context-folders/business/.business-toolkit.json"
+                    / "_system/templates/teamspaces/business/.business-toolkit.json"
                 ).read_text(encoding="utf-8")
             )
             self.assertEqual(len(state["components"]), len(manifest["components"]))
@@ -127,11 +131,13 @@ class BusinessToolkitPublicExportTests(unittest.TestCase):
             self.assertIn("business/_obsidian/templates/business-toolkit", json.dumps(ignored))
             self.assertTrue((export_root / "business/company/.gitkeep").is_file())
             self.assertTrue((export_root / "business/relationships/people/.gitkeep").is_file())
+            self.assertTrue((export_root / "business/gtm/funnel.excalidraw").is_file())
+            self.assertFalse((export_root / "business/gtm/README-crm.md").exists())
             crm_base = (
                 export_root / "business/_obsidian/bases/relationship-crm.base"
             ).read_text(encoding="utf-8")
             self.assertIn('file.inFolder("business/relationships")', crm_base)
-            self.assertNotIn("{{context}}", crm_base)
+            self.assertNotIn("{{teamspace}}", crm_base)
             for profile in (".obsidian", ".obsidian-mobile"):
                 icons = json.loads(
                     (export_root / profile / "plugins/obsidian-icon-folder/data.json").read_text(encoding="utf-8")

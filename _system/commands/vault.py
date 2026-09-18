@@ -239,7 +239,7 @@ Common commands:
   refresh-schedule  Register, unregister, or inspect the daily refresh LaunchAgent.
   mac-startup  Manage opt-in, per-machine macOS login automation.
   sync         Import the configured Brain Dump Apple Note.
-  inventory    Print live periods, contexts, tasks, epics, and projects for routing.
+  inventory    Print live periods, teamspaces, tasks, epics, and projects for routing.
   content      Generate current content schedule notes.
   periodic     Generate source periodic notes and vault Sync Embed rollups.
   attachments  Apply attachment routing, or preview/verify it explicitly.
@@ -250,8 +250,8 @@ Common commands:
   epic         Create, rename, delete, list epics and sync epic task Bases.
   project      Create and list project notes.
   task         Create TaskNotes tasks with validated project/epic links.
-  folder       Create, register, or rename a context folder.
-  business-toolkit  Configure marker-owned business folders and templates for registered contexts.
+  folder       Create, register, or rename a teamspace folder.
+  business-toolkit  Configure marker-owned business folders and templates for registered teamspaces.
   git-media    Manage pointer-only media manifests and no-upload Git hooks.
   git-maintenance  Keep local Git history shallow and prune local objects.
   git-preflight  Fetch and fast-forward a clean master checkout.
@@ -286,7 +286,7 @@ Examples:
   vault snippets check
   vault snippets sync --dry-run
   vault folder register studio
-  vault business-toolkit sync --context-folders business,studio
+  vault business-toolkit sync --teamspace-folders business,studio
   vault business-toolkit status --configured
   vault folder unregister studio --dry-run
   vault folder remove studio --dry-run

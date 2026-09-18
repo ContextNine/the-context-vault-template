@@ -47,7 +47,7 @@ Open only the script doc needed for the current task. Create a separate `README-
 - [[_system/docs/commands/Epics|Epics]]
 - [[_system/docs/commands/Brain Dump|Brain Dump]]
 - [[_system/docs/commands/Attachments|Attachments]]
-- [[_system/docs/commands/Context Folders|Context Folders]]
+- [[_system/docs/commands/Teamspace Folders|Teamspace Folders]]
 - [[_system/docs/commands/Business Toolkit|Business Toolkit]]
 - [[_system/docs/commands/Obsidian Profile|Obsidian Profile]]
 - [[_system/docs/commands/Todoist CLI|Todoist CLI]]

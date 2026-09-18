@@ -9,7 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from script_utils import context_folder_note_path, resolve_vault_root
+from script_utils import teamspace_folder_note_path, resolve_vault_root
 from vault_layout import VAULT_PERIODIC_DIR
 
 
@@ -73,10 +73,10 @@ def active_periods(day: dt.date) -> dict[str, str]:
     }
 
 
-def note_info(root: Path, context: str, kind: str, path: Path) -> dict[str, Any]:
+def note_info(root: Path, teamspace: str, kind: str, path: Path) -> dict[str, Any]:
     metadata = frontmatter(path.read_text(encoding="utf-8", errors="replace"))
     return {
-        "context": context,
+        "teamspace": teamspace,
         "title": str(metadata.get("title") or path.stem),
         "status": str(metadata.get("status") or ""),
         "epic": str(metadata.get("epic") or ""),
@@ -101,7 +101,7 @@ def task_statuses(root: Path) -> list[str]:
     return statuses or DEFAULT_TASK_STATUSES
 
 
-def context_periodic_paths(root: Path, name: str, periods: dict[str, str]) -> dict[str, dict[str, Any]]:
+def teamspace_periodic_paths(root: Path, name: str, periods: dict[str, str]) -> dict[str, dict[str, Any]]:
     result: dict[str, dict[str, Any]] = {}
     for period, period_id in periods.items():
         path = Path(name) / "_obsidian/periodic" / period / f"{period_id}.md"
@@ -109,16 +109,16 @@ def context_periodic_paths(root: Path, name: str, periods: dict[str, str]) -> di
     return result
 
 
-def discover_contexts(root: Path, periods: dict[str, str]) -> list[dict[str, Any]]:
-    contexts = []
+def discover_teamspaces(root: Path, periods: dict[str, str]) -> list[dict[str, Any]]:
+    teamspaces = []
     for child in sorted(root.iterdir()):
         if not child.is_dir() or child.name.startswith(".") or child.name.startswith("_"):
             continue
-        note = context_folder_note_path(child)
+        note = teamspace_folder_note_path(child)
         if not note.exists():
             continue
         metadata = frontmatter(note.read_text(encoding="utf-8", errors="replace"))
-        if str(metadata.get("context_registered", "true")).strip().lower() in {"false", "no", "0"}:
+        if str(metadata.get("teamspace_registered", "true")).strip().lower() in {"false", "no", "0"}:
             continue
         content_root = child / "_obsidian/content"
         features = [
@@ -126,7 +126,7 @@ def discover_contexts(root: Path, periods: dict[str, str]) -> list[dict[str, Any
             for feature, directories in CONTENT_FEATURE_DIRECTORIES.items()
             if any((content_root / directory).is_dir() for directory in directories)
         ]
-        contexts.append(
+        teamspaces.append(
             {
                 "name": child.name,
                 "status": str(metadata.get("status") or "none"),
@@ -135,20 +135,20 @@ def discover_contexts(root: Path, periods: dict[str, str]) -> list[dict[str, Any
                 "content_schedules_enabled": truthy(metadata.get("content_schedules_enabled")),
                 "default_capture": truthy(metadata.get("default_capture")),
                 "note_path": note.relative_to(root).as_posix(),
-                "periodic_notes": context_periodic_paths(root, child.name, periods),
+                "periodic_notes": teamspace_periodic_paths(root, child.name, periods),
             }
         )
-    return contexts
+    return teamspaces
 
 
-def default_capture_context(contexts: list[dict[str, Any]]) -> str:
-    for context in contexts:
-        if context["default_capture"]:
-            return str(context["name"])
-    for context in contexts:
-        if context["status"] == "active":
-            return str(context["name"])
-    return str(contexts[0]["name"]) if contexts else ""
+def default_capture_teamspace(teamspaces: list[dict[str, Any]]) -> str:
+    for teamspace in teamspaces:
+        if teamspace["default_capture"]:
+            return str(teamspace["name"])
+    for teamspace in teamspaces:
+        if teamspace["status"] == "active":
+            return str(teamspace["name"])
+    return str(teamspaces[0]["name"]) if teamspaces else ""
 
 
 def vault_periodic_paths(root: Path, periods: dict[str, str]) -> dict[str, dict[str, Any]]:
@@ -159,12 +159,12 @@ def vault_periodic_paths(root: Path, periods: dict[str, str]) -> dict[str, dict[
     return result
 
 
-def current_content_schedules(root: Path, contexts: list[dict[str, Any]], day: dt.date) -> list[dict[str, str]]:
+def current_content_schedules(root: Path, teamspaces: list[dict[str, Any]], day: dt.date) -> list[dict[str, str]]:
     schedules: list[dict[str, str]] = []
-    for context in contexts:
-        if not context["content_schedules_enabled"]:
+    for teamspace in teamspaces:
+        if not teamspace["content_schedules_enabled"]:
             continue
-        folder = root / str(context["name"]) / "_obsidian/content-schedules"
+        folder = root / str(teamspace["name"]) / "_obsidian/content-schedules"
         if not folder.exists():
             continue
         for path in sorted(folder.glob("*.md")):
@@ -176,7 +176,7 @@ def current_content_schedules(root: Path, contexts: list[dict[str, Any]], day: d
             if start and end and start <= day.isoformat() <= end:
                 schedules.append(
                     {
-                        "context": str(context["name"]),
+                        "teamspace": str(teamspace["name"]),
                         "path": path.relative_to(root).as_posix(),
                         "schedule_start": start,
                         "schedule_end": end,
@@ -185,16 +185,16 @@ def current_content_schedules(root: Path, contexts: list[dict[str, Any]], day: d
     return schedules
 
 
-def collect_notes(root: Path, contexts: list[dict[str, Any]], kind: str) -> dict[str, list[dict[str, Any]]]:
+def collect_notes(root: Path, teamspaces: list[dict[str, Any]], kind: str) -> dict[str, list[dict[str, Any]]]:
     folder_name = "projects" if kind == "project" else "epics"
     grouped: dict[str, list[dict[str, Any]]] = {}
-    for context in contexts:
-        context_name = str(context["name"])
-        folder = root / context_name / "_obsidian" / folder_name
-        grouped[context_name] = []
+    for teamspace in teamspaces:
+        teamspace_name = str(teamspace["name"])
+        folder = root / teamspace_name / "_obsidian" / folder_name
+        grouped[teamspace_name] = []
         if folder.exists():
-            grouped[context_name] = [
-                note_info(root, context_name, kind, path)
+            grouped[teamspace_name] = [
+                note_info(root, teamspace_name, kind, path)
                 for path in sorted(folder.glob("*.md"))
             ]
     return grouped
@@ -219,11 +219,11 @@ def task_sort_key(task: dict[str, Any]) -> tuple[int, dt.date, dt.date, dt.date,
     )
 
 
-def collect_tasks(root: Path, contexts: list[dict[str, Any]]) -> tuple[dict[str, list[dict[str, Any]]], dict[str, dict[str, int]]]:
+def collect_tasks(root: Path, teamspaces: list[dict[str, Any]]) -> tuple[dict[str, list[dict[str, Any]]], dict[str, dict[str, int]]]:
     grouped = {status: [] for status in ROUTING_TASK_STATUSES}
     counts: dict[str, dict[str, int]] = {}
-    for context in contexts:
-        name = str(context["name"])
+    for teamspace in teamspaces:
+        name = str(teamspace["name"])
         counts[name] = {}
         folder = root / name / "_obsidian/tasks"
         if not folder.exists():
@@ -238,7 +238,7 @@ def collect_tasks(root: Path, contexts: list[dict[str, Any]]) -> tuple[dict[str,
                 continue
             grouped[status].append(
                 {
-                    "context": name,
+                    "teamspace": name,
                     "title": str(metadata.get("title") or path.stem),
                     "status": status,
                     "priority": str(metadata.get("priority") or ""),
@@ -256,29 +256,29 @@ def collect_tasks(root: Path, contexts: list[dict[str, Any]]) -> tuple[dict[str,
 def build_inventory(root: Path, active_only: bool, day: dt.date | None = None) -> dict[str, Any]:
     day = day or dt.date.today()
     periods = active_periods(day)
-    all_contexts = discover_contexts(root, periods)
-    contexts = [item for item in all_contexts if not active_only or item["status"] == "active"]
-    tasks, task_counts = collect_tasks(root, contexts)
+    all_teamspaces = discover_teamspaces(root, periods)
+    teamspaces = [item for item in all_teamspaces if not active_only or item["status"] == "active"]
+    tasks, task_counts = collect_tasks(root, teamspaces)
     return {
         "date": day.isoformat(),
         "active_periods": periods,
-        "default_capture_context": default_capture_context(all_contexts),
+        "default_capture_teamspace": default_capture_teamspace(all_teamspaces),
         "task_statuses": task_statuses(root),
-        "contexts": contexts,
+        "teamspaces": teamspaces,
         "vault_periodic_notes": vault_periodic_paths(root, periods),
-        "content_schedules": current_content_schedules(root, contexts, day),
+        "content_schedules": current_content_schedules(root, teamspaces, day),
         "task_counts": task_counts,
         "tasks": tasks,
         "backlog_counts": {name: counts.get("backlog", 0) for name, counts in task_counts.items()},
-        "epics": collect_notes(root, contexts, "epic"),
-        "projects": collect_notes(root, contexts, "project"),
+        "epics": collect_notes(root, teamspaces, "epic"),
+        "projects": collect_notes(root, teamspaces, "project"),
     }
 
 
 def print_grouped(title: str, grouped: dict[str, list[dict[str, Any]]]) -> None:
     print(f"\n{title}:")
-    for context, items in grouped.items():
-        print(f"  {context}:")
+    for teamspace, items in grouped.items():
+        print(f"  {teamspace}:")
         if not items:
             print("    - none")
             continue
@@ -300,20 +300,20 @@ def print_inventory(inventory: dict[str, Any]) -> None:
     periods = inventory["active_periods"]
     print(f"Date: {inventory['date']}")
     print("Periods: " + ", ".join(f"{period}={periods[period]}" for period in PERIODS))
-    print(f"Default capture: {inventory['default_capture_context'] or 'none'}")
+    print(f"Default capture: {inventory['default_capture_teamspace'] or 'none'}")
     print(f"Task statuses: {', '.join(inventory['task_statuses'])}")
-    print("\nContexts:")
-    for context in inventory["contexts"]:
-        flags = [context["status"], *context["features"]]
-        if not context["periodic_notes_enabled"]:
+    print("\nTeamspaces:")
+    for teamspace in inventory["teamspaces"]:
+        flags = [teamspace["status"], *teamspace["features"]]
+        if not teamspace["periodic_notes_enabled"]:
             flags.append("periodic notes disabled")
-        if context["content_schedules_enabled"]:
+        if teamspace["content_schedules_enabled"]:
             flags.append("content schedules")
-        if context["default_capture"]:
+        if teamspace["default_capture"]:
             flags.append("default capture")
-        print(f"  - {context['name']} [{', '.join(flags)}] -> {context['note_path']}")
-        if context["status"] == "active" and context["periodic_notes_enabled"]:
-            for period, item in context["periodic_notes"].items():
+        print(f"  - {teamspace['name']} [{', '.join(flags)}] -> {teamspace['note_path']}")
+        if teamspace["status"] == "active" and teamspace["periodic_notes_enabled"]:
+            for period, item in teamspace["periodic_notes"].items():
                 missing = " (missing)" if not item["exists"] else ""
                 print(f"      {period}: {item['path']}{missing}")
     print_path_group("Vault periodic rollups", inventory["vault_periodic_notes"])
@@ -321,21 +321,21 @@ def print_inventory(inventory: dict[str, Any]) -> None:
     if not inventory["content_schedules"]:
         print("  - none")
     for schedule in inventory["content_schedules"]:
-        print(f"  - {schedule['context']}: {schedule['path']} ({schedule['schedule_start']} to {schedule['schedule_end']})")
+        print(f"  - {schedule['teamspace']}: {schedule['path']} ({schedule['schedule_start']} to {schedule['schedule_end']})")
     print("\nTask counts:")
-    for context, counts in inventory["task_counts"].items():
+    for teamspace, counts in inventory["task_counts"].items():
         rendered = ", ".join(f"{status}={count}" for status, count in sorted(counts.items())) or "none"
-        print(f"  - {context}: {rendered}")
+        print(f"  - {teamspace}: {rendered}")
     for status in ROUTING_TASK_STATUSES:
         print(f"\nTasks {status}:")
         tasks = inventory["tasks"][status]
         if not tasks:
             print("  - none")
         for task in tasks:
-            print(f"  - {task['title']} [{task['context']}] -> {task['path']}")
+            print(f"  - {task['title']} [{task['teamspace']}] -> {task['path']}")
     print("\nBacklog counts:")
-    for context, count in inventory["backlog_counts"].items():
-        print(f"  - {context}: {count}")
+    for teamspace, count in inventory["backlog_counts"].items():
+        print(f"  - {teamspace}: {count}")
     print_grouped("Epics", inventory["epics"])
     print_grouped("Projects", inventory["projects"])
 
@@ -343,7 +343,7 @@ def print_inventory(inventory: dict[str, Any]) -> None:
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description="Print live vault periods, routing sources, tasks, projects, and epics.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
-    parser.add_argument("--active-only", action="store_true", help="Show active context folders only.")
+    parser.add_argument("--active-only", action="store_true", help="Show active teamspace folders only.")
     parser.add_argument("--json", action="store_true", help="Print machine-readable JSON.")
     args = parser.parse_args(argv)
 

@@ -27,4 +27,4 @@ Return `http://127.0.0.1:3000` as the clickable Mattbook URL. Prefer the same po
 
 Keep the server and tunnel alive while inspection remains useful. A tunnel failure must not be worked around by binding either listener to `0.0.0.0`, a LAN address, or a mesh address. Mattbook SSH must permit TCP forwarding; `GatewayPorts` is unnecessary because its listener stays on `127.0.0.1`.
 
-Global agent behavior is sourced from `_system/agents/edit/root-agents/AGENTS.md` and distributed through [[Agent Sync]].
+Global agent behavior is sourced from `_system/agents/edit/agent-instructions/AGENT-INSTRUCTIONS.md` and its templates, then distributed through [[Agent Sync]].

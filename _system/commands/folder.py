@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create, register, or rename context folders in the root Obsidian vault."""
+"""Create, register, or rename teamspace folders in the root Obsidian vault."""
 
 from __future__ import annotations
 
@@ -9,8 +9,8 @@ import shutil
 import sys
 from pathlib import Path
 
-from script_utils import context_folder_note_path, resolve_vault_root
-from context_folder_rename import rename_context_folder, validate_slug
+from script_utils import teamspace_folder_note_path, resolve_vault_root
+from teamspace_folder_rename import rename_teamspace_folder, validate_slug
 from business_toolkit import (
     install_scaffold as install_business_scaffold,
     sync_context as sync_business_toolkit,
@@ -79,16 +79,16 @@ def has_content_structure(context_root: Path) -> bool:
     return bool(detect_context_features(context_root))
 
 
-def read_context_registered(path: Path) -> bool:
+def read_teamspace_registered(path: Path) -> bool:
     if not path.exists():
         return True
-    value = parse_frontmatter(path.read_text(encoding="utf-8")).get("context_registered", "true")
+    value = parse_frontmatter(path.read_text(encoding="utf-8")).get("teamspace_registered", "true")
     return value.strip().lower() not in {"false", "no", "0"}
 
 
 def set_frontmatter_value(path: Path, key: str, value: str, dry_run: bool) -> None:
     if not path.exists():
-        raise SystemExit(f"Missing context folder note: {path}")
+        raise SystemExit(f"Missing teamspace folder note: {path}")
     text = path.read_text(encoding="utf-8")
     if not text.startswith("---\n"):
         rendered = f"---\n{key}: {value}\n---\n{text}"
@@ -119,7 +119,7 @@ def set_frontmatter_value(path: Path, key: str, value: str, dry_run: bool) -> No
         path.write_text(rendered, encoding="utf-8")
 
 
-def write_context_folder_note(path: Path, status: str, content_schedules_enabled: bool) -> None:
+def write_teamspace_folder_note(path: Path, status: str, content_schedules_enabled: bool) -> None:
     value = "" if status == "none" else status
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.exists():
@@ -144,8 +144,8 @@ def write_context_folder_note(path: Path, status: str, content_schedules_enabled
                                 out.append("content_schedules_enabled: true")
                                 seen.add(key)
                             continue
-                        if key == "context_registered":
-                            out.append("context_registered: true")
+                        if key == "teamspace_registered":
+                            out.append("teamspace_registered: true")
                             seen.add(key)
                             continue
                     out.append(line)
@@ -153,16 +153,16 @@ def write_context_folder_note(path: Path, status: str, content_schedules_enabled
                     out.append(f"status: {value}")
                 if content_schedules_enabled and "content_schedules_enabled" not in seen:
                     out.append("content_schedules_enabled: true")
-                if "context_registered" not in seen:
-                    out.append("context_registered: true")
+                if "teamspace_registered" not in seen:
+                    out.append("teamspace_registered: true")
                 path.write_text("---\n" + "\n".join(out) + "\n---\n" + body, encoding="utf-8")
                 return
     schedules = "content_schedules_enabled: true\n" if content_schedules_enabled else ""
-    path.write_text(f"---\nstatus: {value}\n{schedules}context_registered: true\n---\n", encoding="utf-8")
+    path.write_text(f"---\nstatus: {value}\n{schedules}teamspace_registered: true\n---\n", encoding="utf-8")
 
 
 def install_personal_brand_template(root: Path, context: str, *, apply: bool) -> int:
-    source_root = root / "_system/bootstrap/templates/context-folders/personal-brand"
+    source_root = root / "_system/templates/teamspaces/personal-brand"
     if not source_root.is_dir():
         raise SystemExit(f"Missing personal-brand folder template: {source_root}")
     target_root = root / context
@@ -195,8 +195,8 @@ def discover_entities(root: Path, excluded: set[str] | None = None) -> list[str]
             continue
         if path.name.startswith("_"):
             continue
-        note = context_folder_note_path(path)
-        if note.exists() and read_context_registered(note):
+        note = teamspace_folder_note_path(path)
+        if note.exists() and read_teamspace_registered(note):
             entities.append(path.name)
     return entities
 
@@ -213,46 +213,46 @@ def load_bootstrap(root: Path):
 
 
 def rename_main(argv: list[str]) -> None:
-    parser = argparse.ArgumentParser(description="Rename a context folder and rewrite structured references.")
-    parser.add_argument("old_slug", help="Existing context folder slug.")
-    parser.add_argument("new_slug", help="New context folder slug.")
+    parser = argparse.ArgumentParser(description="Rename a teamspace folder and rewrite structured references.")
+    parser.add_argument("old_slug", help="Existing teamspace folder slug.")
+    parser.add_argument("new_slug", help="New teamspace folder slug.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    rename_context_folder(root, args.old_slug, args.new_slug, args.dry_run)
+    rename_teamspace_folder(root, args.old_slug, args.new_slug, args.dry_run)
 
 
 def parse_create_args(argv: list[str], *, register_mode: bool) -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="Create or register a context folder in the root vault workspace.")
+    parser = argparse.ArgumentParser(description="Create or register a teamspace folder in the root vault workspace.")
     if register_mode:
-        parser.add_argument("name", nargs="?", help="Existing shared context folder name.")
-        parser.add_argument("-n", "--name", dest="name_flag", help="Existing shared context folder name.")
+        parser.add_argument("name", nargs="?", help="Existing shared teamspace folder name.")
+        parser.add_argument("-n", "--name", dest="name_flag", help="Existing shared teamspace folder name.")
     else:
-        parser.add_argument("-n", "--name", required=True, help="Context folder name, for example new-context-folder.")
+        parser.add_argument("-n", "--name", required=True, help="Teamspace folder name, for example new-teamspace-folder.")
     parser.add_argument(
         "-s",
         "--status",
         required=not register_mode,
         choices=sorted(VALID_STATUSES),
-        help="Context folder status. Register mode defaults to folder-note status, then active.",
+        help="Teamspace folder status. Register mode defaults to folder-note status, then active.",
     )
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery from the current directory or script location.")
-    parser.add_argument("--default-context-folder", dest="default_entity", metavar="CONTEXT_FOLDER", default=None, help="Default capture context folder. Defaults to current root TaskNotes setting or personal.")
+    parser.add_argument("--default-teamspace-folder", dest="default_entity", metavar="TEAMSPACE_FOLDER", default=None, help="Default capture teamspace folder. Defaults to current root TaskNotes setting or personal.")
     parser.add_argument("--default-sub-vault", dest="default_entity", help=argparse.SUPPRESS)
     parser.add_argument("--default-entity", dest="default_entity", help=argparse.SUPPRESS)
     parser.add_argument("--blog", action="store_true", help="Create blog item and publication folders.")
     parser.add_argument("--social-content", action="store_true", help="Create social, YouTube, ideas, and archive folders.")
     parser.add_argument("--newsletters", action="store_true", help="Create newsletter item and publication folders.")
-    parser.add_argument("--content-schedules", action="store_true", help="Enable cadence and schedule generation for this context folder.")
-    parser.add_argument("--folder-template", choices=sorted(VALID_FOLDER_TEMPLATES), help="Apply one physical folder pack when creating a new context folder.")
+    parser.add_argument("--content-schedules", action="store_true", help="Enable cadence and schedule generation for this teamspace folder.")
+    parser.add_argument("--folder-template", choices=sorted(VALID_FOLDER_TEMPLATES), help="Apply one physical folder pack when creating a new teamspace folder.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
     if register_mode:
         args.name = args.name_flag or args.name
         if not args.name:
-            parser.error("register requires a context folder name")
+            parser.error("register requires a teamspace folder name")
         if args.folder_template:
             parser.error("--folder-template is creation-only; register the folder first, then manage its physical folders directly")
     return args
@@ -262,16 +262,16 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
     args = parse_create_args(argv, register_mode=register_mode)
 
     root = resolve_vault_root(args.root, __file__)
-    name = validate_slug(args.name, "context folder name")
+    name = validate_slug(args.name, "teamspace folder name")
 
     entity_root = root / name
     if entity_root.exists() and not entity_root.is_dir():
-        raise SystemExit(f"Context folder path exists and is not a directory: {entity_root}")
+        raise SystemExit(f"Teamspace folder path exists and is not a directory: {entity_root}")
 
-    entity_note = context_folder_note_path(entity_root)
+    entity_note = teamspace_folder_note_path(entity_root)
     is_new_context = not entity_root.exists() and not entity_note.exists()
     if args.folder_template and not is_new_context:
-        raise SystemExit("--folder-template is only supported when creating a new context folder")
+        raise SystemExit("--folder-template is only supported when creating a new teamspace folder")
     existing_status = read_status(entity_note)
     status = args.status or existing_status or "active"
     content_schedules_enabled = read_content_schedules_enabled(entity_note) or args.content_schedules
@@ -279,7 +279,7 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
     if args.dry_run:
         print(f"[dry-run] write {entity_note}")
     else:
-        write_context_folder_note(entity_note, status, content_schedules_enabled)
+        write_teamspace_folder_note(entity_note, status, content_schedules_enabled)
 
     if args.folder_template == "business":
         install_business_scaffold(root, name, apply=not args.dry_run)
@@ -295,7 +295,7 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
     active_entities = [
         entity
         for entity in entities
-        if read_status(context_folder_note_path(root / entity)) == "active"
+        if read_status(teamspace_folder_note_path(root / entity)) == "active"
     ]
     if status == "active" and name not in active_entities:
         active_entities.append(name)
@@ -313,7 +313,7 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
     context_features.setdefault(name, set()).update(selected_features)
     content_schedule_entities = [
         entity for entity in entities
-        if read_content_schedules_enabled(context_folder_note_path(root / entity))
+        if read_content_schedules_enabled(teamspace_folder_note_path(root / entity))
     ]
     if content_schedules_enabled and name not in content_schedule_entities:
         content_schedule_entities.append(name)
@@ -328,7 +328,7 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
         default_entity = data.get("taskCreationDefaults", {}).get("defaultContexts") or default_entity
 
     if default_entity not in entities:
-        raise SystemExit(f"default context folder {default_entity!r} is not in configured context folders: {entities}")
+        raise SystemExit(f"default teamspace folder {default_entity!r} is not in configured teamspace folders: {entities}")
 
     bootstrap = bootstrap_module.Bootstrap(
         root=root,
@@ -351,7 +351,7 @@ def create_main(argv: list[str], *, register_mode: bool = False) -> None:
         )
 
 
-def default_context_folder(root: Path, entities: list[str]) -> str:
+def default_teamspace_folder(root: Path, entities: list[str]) -> str:
     default_entity = "personal"
     tasknotes = root / ".obsidian/plugins/tasknotes/data.json"
     if tasknotes.exists():
@@ -365,7 +365,7 @@ def default_context_folder(root: Path, entities: list[str]) -> str:
         return "personal"
     if entities:
         return entities[0]
-    raise SystemExit("No registered context folders remain.")
+    raise SystemExit("No registered teamspace folders remain.")
 
 
 def rerun_bootstrap(root: Path, dry_run: bool, excluded: set[str] | None = None) -> None:
@@ -374,18 +374,18 @@ def rerun_bootstrap(root: Path, dry_run: bool, excluded: set[str] | None = None)
     active_entities = [
         entity
         for entity in entities
-        if read_status(context_folder_note_path(root / entity)) == "active"
+        if read_status(teamspace_folder_note_path(root / entity)) == "active"
     ]
     context_features = {entity: detect_context_features(root / entity) for entity in entities}
     content_schedule_entities = [
         entity for entity in entities
-        if read_content_schedules_enabled(context_folder_note_path(root / entity))
+        if read_content_schedules_enabled(teamspace_folder_note_path(root / entity))
     ]
     bootstrap = bootstrap_module.Bootstrap(
         root=root,
         entities=entities,
         active_entities=active_entities,
-        default_entity=default_context_folder(root, entities),
+        default_entity=default_teamspace_folder(root, entities),
         context_features=context_features,
         content_schedule_entities=content_schedule_entities,
         install_vault_command_enabled=True,
@@ -396,37 +396,37 @@ def rerun_bootstrap(root: Path, dry_run: bool, excluded: set[str] | None = None)
 
 
 def unregister_main(argv: list[str]) -> None:
-    parser = argparse.ArgumentParser(description="Unregister a context folder while keeping its files.")
-    parser.add_argument("name", help="Context folder slug.")
+    parser = argparse.ArgumentParser(description="Unregister a teamspace folder while keeping its files.")
+    parser.add_argument("name", help="Teamspace folder slug.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     parser.add_argument("--dry-run", action="store_true")
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    name = validate_slug(args.name, "context folder name")
+    name = validate_slug(args.name, "teamspace folder name")
     context_root = root / name
-    note = context_folder_note_path(context_root)
+    note = teamspace_folder_note_path(context_root)
     if not context_root.is_dir() or not note.exists():
-        raise SystemExit(f"Context folder not found: {name}")
-    set_frontmatter_value(note, "context_registered", "false", args.dry_run)
+        raise SystemExit(f"Teamspace folder not found: {name}")
+    set_frontmatter_value(note, "teamspace_registered", "false", args.dry_run)
     rerun_bootstrap(root, args.dry_run, excluded={name} if args.dry_run else None)
 
 
 def remove_main(argv: list[str]) -> None:
-    parser = argparse.ArgumentParser(description="Remove a context folder from disk and regenerate vault views.")
-    parser.add_argument("name", help="Context folder slug.")
+    parser = argparse.ArgumentParser(description="Remove a teamspace folder from disk and regenerate vault views.")
+    parser.add_argument("name", help="Teamspace folder slug.")
     parser.add_argument("--root", default=None, help="Vault root. Defaults to auto-discovery.")
     parser.add_argument("--apply", action="store_true", help="Compatibility flag; `vault folder remove` already applies by default.")
     parser.add_argument("--dry-run", action="store_true", help="Print planned changes without deleting files.")
     args = parser.parse_args(argv)
 
     root = resolve_vault_root(args.root, __file__)
-    name = validate_slug(args.name, "context folder name")
+    name = validate_slug(args.name, "teamspace folder name")
     context_root = root / name
     if not context_root.exists():
-        raise SystemExit(f"Context folder not found: {name}")
+        raise SystemExit(f"Teamspace folder not found: {name}")
     if not context_root.is_dir() or context_root.is_symlink():
-        raise SystemExit(f"Context folder path is not a normal directory: {context_root}")
+        raise SystemExit(f"Teamspace folder path is not a normal directory: {context_root}")
 
     dry_run = args.dry_run or not args.apply
     if dry_run:

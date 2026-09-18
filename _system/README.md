@@ -12,30 +12,32 @@ Concise source of truth for vault architecture, ownership, and routing. Detailed
 - [[_system/docs/terminal/README|Terminal]]: terminal setup, daily commands, architecture, and recovery.
 - [[_system/bootstrap/README|Bootstrap]]: public export, installs, releases, and upgrades.
 - [[_system/agents/README|Agents]]: shared skills and skill storage.
+- [[_system/templates/gtm/README|GTM template]]: reusable GTM rules and [[README-crm]] for individual CRM capture.
+- [[_system/templates/README|Templates]]: teamspace packs, GTM scaffold, and the social-post template source.
 - [[_system/tools/README|General Tools]]: tools outside `vault`.
 
 ## Mental Model
 
 ```text
 root workspace = only Obsidian vault and control panel
-context folders = source-of-truth operating workspaces
+teamspace folders = source-of-truth operating workspaces
 _system = operating docs, scripts, local user data, skills, and shared Obsidian support
 _library = raw and semi-processed learning/source material
 _wiki = synthesized reusable knowledge
 other = archive or holding area used only intentionally
 ```
 
-Context folders are folders inside root vault, not standalone vaults. Open root workspace for Obsidian and agent work.
+Teamspace folders are folders inside root vault, not standalone vaults. Open root workspace for Obsidian and agent work.
 
-Use `vault inventory` for current registered contexts, statuses, projects, and epics. Do not hardcode current working set into architecture docs.
+Use `vault inventory` for current registered teamspaces, statuses, projects, and epics. Do not hardcode current working set into architecture docs.
 
-## Context Folders
+## Teamspace Folders
 
-Each context folder owns current operating information for one entity or domain:
+Each teamspace folder owns current operating information for one entity or domain:
 
 ```text
-<context-folder>/
-  <context-folder>.md
+<teamspace-folder>/
+  <teamspace-folder>.md
   _obsidian/
     attachments/
     bases/
@@ -50,7 +52,7 @@ Each context folder owns current operating information for one entity or domain:
   <ordinary context-specific folders>
 ```
 
-Context folder note is local routing/control note. Main controls:
+Teamspace folder note is local routing/control note. Main controls:
 
 ```yaml
 ---
@@ -64,24 +66,24 @@ default_capture: true
 - `status: active`: included by default in generated rollups.
 - `status: archived`: retained but excluded from default rollups.
 - blank/missing status: not active.
-- `periodic_notes_enabled: false`: excludes the context from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
-- Content capabilities are inferred from their item/publication folders; they are not stored as context types or broad enablement flags.
+- `periodic_notes_enabled: false`: excludes the teamspace from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
+- Content capabilities are inferred from their item/publication folders; they are not stored as teamspace types or broad enablement flags.
 - `content_schedules_enabled: true`: enables cadence and schedule generation. Omit it when schedules are not wanted.
-- `default_capture: true`: preferred context for unspecific capture; fallback is first active context.
+- `default_capture: true`: preferred teamspace for unspecific capture; fallback is first active teamspace.
 - Entity operating sections such as `## Identity` and `## Momentum` are optional human organization, not generator inputs.
 
-Context folders hold source-of-truth docs, assets, tasks, decisions, SOPs, training, periodic notes, and active references. Samples, courses, research dumps, and learning notes belong in `_library`; durable synthesis belongs in `_wiki`.
+Teamspace folders hold source-of-truth docs, assets, tasks, decisions, SOPs, training, periodic notes, and active references. Samples, courses, research dumps, and learning notes belong in `_library`; durable synthesis belongs in `_wiki`.
 
-Commands and full rules: [[_system/docs/commands/Context Folders|Context Folders]].
+Commands and full rules: [[_system/docs/commands/Teamspace Folders|Teamspace Folders]].
 
 ## Ownership And Core Paths
 
-- Tasks: `<context-folder>/_obsidian/tasks/`
-- Projects: `<context-folder>/_obsidian/projects/`
-- Epics: `<context-folder>/_obsidian/epics/`
-- Periodic notes: `<context-folder>/_obsidian/periodic/<daily|weekly|monthly|quarterly|yearly>/`
-- Content: `<context-folder>/_obsidian/content/`
-- Content schedules: `<context-folder>/_obsidian/content-schedules/`
+- Tasks: `<teamspace-folder>/_obsidian/tasks/`
+- Projects: `<teamspace-folder>/_obsidian/projects/`
+- Epics: `<teamspace-folder>/_obsidian/epics/`
+- Periodic notes: `<teamspace-folder>/_obsidian/periodic/<daily|weekly|monthly|quarterly|yearly>/`
+- Content: `<teamspace-folder>/_obsidian/content/`
+- Content schedules: `<teamspace-folder>/_obsidian/content-schedules/`
 - Attachments: owning top-level folder's `_obsidian/attachments/`
 - Shared Bases: `_system/_obsidian/bases/`
 - Shared templates: `_system/_obsidian/templates/shared/`
@@ -104,9 +106,9 @@ Google Calendar events and time blocks use the direct GWS workflow in `$gws-i-cu
 
 ## Periodic Notes
 
-Context folder periodic notes are editable source of truth. Generated vault rollups combine them through Sync Embeds.
+Teamspace folder periodic notes are editable source of truth. Generated vault rollups combine them through Sync Embeds.
 
-Templates live under each context folder's `_obsidian/templates/periodic/`. Commands and generated paths: [[_system/docs/commands/Periodic Rollups|Periodic Rollups]].
+Templates live under each teamspace folder's `_obsidian/templates/periodic/`. Commands and generated paths: [[_system/docs/commands/Periodic Rollups|Periodic Rollups]].
 
 ## Content
 
@@ -133,6 +135,7 @@ SOP: [[_system/docs/commands/Attachments|Attachments]].
 - `docs/`: command, Obsidian, and workflow documentation.
 - `inbox/`: Brain Dump and attachment ingestion files.
 - `migrations/`: idempotent public-upgrade migrations and their registry.
+- `templates/`: reusable teamspace packs and shared GTM/content source templates.
 - `sync/`: disabled, unused, and unsupported historical rclone backup/sync tooling; keep its automation off.
 - `tools/`: reusable tools outside `vault` dispatcher.
 
@@ -152,7 +155,7 @@ Current command behavior: [[_system/docs/commands/Refresh|Refresh]].
 
 `_library` stores learning material, references, swipe files, imports, templates being studied, course material, research dumps, and source notes. Read [[_library/LIBRARY|Library]] before organizing it.
 
-`_wiki` stores clearer, reusable synthesis guided by [[_wiki/AGENTS]] and [[_wiki/karpathy-initial-proompt]]. Promote learned material into a context folder only when it becomes an operating artifact.
+`_wiki` stores clearer, reusable synthesis guided by [[_wiki/AGENTS]] and [[_wiki/karpathy-initial-proompt]]. Promote learned material into a teamspace folder only when it becomes an operating artifact.
 
 ## Other Workflows
 
@@ -166,4 +169,4 @@ Current command behavior: [[_system/docs/commands/Refresh|Refresh]].
 - Use `README.md` for folder doorway docs.
 - Use `README-<topic>.md` for companion SOPs, references, and quick starts.
 - Use `AGENTS.md` only for agent behavior and routing.
-- Move legacy material one small slice at a time into matching context folder. Never bulk-migrate because new structure exists.
+- Move legacy material one small slice at a time into matching teamspace folder. Never bulk-migrate because new structure exists.

@@ -2,9 +2,9 @@
 type: agent-reference
 status: enabled
 ---
-# Context Folders
+# Teamspace Folders
 
-Context folders are source-of-truth operating workspaces inside root Obsidian vault. They are not standalone vaults and do not own separate Obsidian profiles or agent symlinks.
+Teamspace folders are source-of-truth operating workspaces inside root Obsidian vault. They are not standalone vaults and do not own separate Obsidian profiles or agent symlinks.
 
 Use current generated inventory instead of hardcoded folder lists:
 
@@ -14,7 +14,7 @@ vault inventory
 
 ## Control Note
 
-Each folder owns `<context-folder>/<context-folder>.md`. Frontmatter controls discovery and generation:
+Each folder owns `<teamspace-folder>/<teamspace-folder>.md`. Frontmatter controls discovery and generation:
 
 ```yaml
 ---
@@ -28,7 +28,7 @@ default_capture: true
 - `status: active`: included in default rollups.
 - `status: archived`: retained but excluded from default rollups.
 - blank/missing status: not active.
-- `periodic_notes_enabled: false`: excludes this context from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
+- `periodic_notes_enabled: false`: excludes this teamspace from source periodic-note generation and vault periodic rollups. Omit it to keep periodic notes enabled.
 - Blog, social-content, and newsletter support is inferred from their capability folders.
 - `content_schedules_enabled: true`: participates in cadence and schedule refresh. Omit it otherwise.
 - `default_capture: true`: preferred unspecific capture destination; fallback is first active folder.
@@ -38,8 +38,8 @@ Context note also holds local routing and entity operating sections. Headings su
 ## Structure
 
 ```text
-<context-folder>/
-  <context-folder>.md
+<teamspace-folder>/
+  <teamspace-folder>.md
   _obsidian/
     attachments/
     bases/
@@ -59,17 +59,17 @@ Context note also holds local routing and entity operating sections. Headings su
   <ordinary context-specific folders>
 ```
 
-Operating folders use `_obsidian` so ordinary context-specific folders remain visually distinct. No default `notes` folder.
+Operating folders use `_obsidian` so ordinary teamspace-specific folders remain visually distinct. No default `notes` folder.
 
-Context folders hold current docs, assets, tasks, periodic notes, SOPs, internal training, decisions, and active references. Samples, downloaded templates, course notes, and research dumps belong in `_library`; reusable synthesis belongs in `_wiki`.
+Teamspace folders hold current docs, assets, tasks, periodic notes, SOPs, internal training, decisions, and active references. Samples, downloaded templates, course notes, and research dumps belong in `_library`; reusable synthesis belongs in `_wiki`.
 
 ## Create And Register
 
-Create/register a new context folder:
+Create/register a new teamspace folder:
 
 ```bash
-vault folder -n new-context-folder -s active
-vault folder -n new-context-folder -s archived
+vault folder -n new-teamspace-folder -s active
+vault folder -n new-teamspace-folder -s archived
 ```
 
 Creation is core-first. Add only the capabilities needed:
@@ -86,16 +86,16 @@ vault folder -n studio -s active --folder-template business
 - `--social-content` creates social posts, YouTube, ideas, and archive folders.
 - `--newsletters` creates newsletter item and publication folders.
 - `--content-schedules` creates cadence/schedule infrastructure and persists schedule participation.
-- `--folder-template personal-brand|business` applies one physical pack during new-context creation only.
+- `--folder-template personal-brand|business` applies one physical pack during new-teamspace creation only.
 
-Content flags may be added while registering an existing context. A folder template cannot: it is a creation-time seed and its name is never persisted.
+Content flags may be added while registering an existing teamspace. A folder template cannot: it is a creation-time seed and its name is never persisted.
 
-Creation writes control note, creates operating structure and local templates/shared-template links, then refreshes discovered context wiring.
+Creation writes control note, creates operating structure and local templates/shared-template links, then refreshes discovered teamspace wiring.
 
-Physical packs are directly browsable under `_system/bootstrap/templates/context-folders/`. They do not define a context type. The `personal-brand` pack keeps identity and marketing memory inside `brand/` while retaining `products`, `writing`, `media`, and `relationships` as sibling workspaces. The `business` pack seeds the company, GTM, relationship CRM, and established operating scaffold, then configures its managed toolkit. Neither pack copies the shared [[stack]]; its rules live in [[README-marketing-stack]].
+Physical packs are directly browsable under `_system/templates/teamspaces/`. They do not define a teamspace type. The `personal-brand` pack keeps identity and marketing memory inside `brand/` while retaining `products`, `writing`, `media`, and `relationships` as sibling workspaces. The `business` pack seeds the company, GTM, relationship CRM, and established operating scaffold, then configures its managed toolkit. Shared marketing-tool rules live in [[README-marketing-stack]].
 
 `--context-type` and `--content-enabled` were removed. Use the independent capability, schedule, and folder-template options above.
 
-Use `status: archived` for inactive-but-kept folders. Rename through `vault folder` command so structured path/context references update together.
+Use `status: archived` for inactive-but-kept folders. Rename through `vault folder` command so structured path/teamspace references update together.
 
 Implementation script: `_system/commands/folder.py`.
