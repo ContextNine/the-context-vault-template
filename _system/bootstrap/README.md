@@ -109,7 +109,7 @@ Correct wording: Export includes plugin metadata/styles and non-sensitive settin
 Public install script:
 
 - installs Homebrew if it is missing, then invokes `_system/deps/install.py` against `_system/deps/packages.yaml`; private CTX2 and agent prerequisites are deliberately excluded;
-- clones `MDerman/the-context-vault-template` into the default target `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/Vault`, or a first-argument target override;
+- clones `ContextNine/the-context-vault-template` into the default target `~/Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/Vault`, or a first-argument target override;
 - expands quoted `~`, `~/...`, and `~user/...` target overrides before creating the target directory;
 - resolves relative target overrides from the directory where the installer was launched;
 - creates the target directory if it is missing and refuses only when the target exists and is non-empty;

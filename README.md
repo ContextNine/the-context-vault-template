@@ -9,8 +9,8 @@ It uses [Context Nine](https://community.obsidian.md/plugins/context-nine), its 
 Install the skill for each agent you use:
 
 ```bash
-gh skill install MDerman/the-context-vault-template skills/ctx9-install-context-vault --agent codex --scope user
-gh skill install MDerman/the-context-vault-template skills/ctx9-install-context-vault --agent claude-code --scope user
+gh skill install ContextNine/the-context-vault-template skills/ctx9-install-context-vault --agent codex --scope user
+gh skill install ContextNine/the-context-vault-template skills/ctx9-install-context-vault --agent claude-code --scope user
 ```
 
 Start a new Codex or Claude Code session, then tell your agent:

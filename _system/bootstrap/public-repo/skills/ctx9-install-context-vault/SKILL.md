@@ -12,7 +12,7 @@ Install the public Context Vault with the user in control of its location and se
 
 1. Ask the user where the Vault should live. Expand `~`, resolve the absolute path, and confirm the destination is absent or empty.
 2. Check that `git`, `python3`, and an interactive TTY are available. Do not read credential files.
-3. Download `install.sh` from `https://github.com/MDerman/the-context-vault-template` into a temporary directory.
+3. Download `install.sh` from `https://github.com/ContextNine/the-context-vault-template` into a temporary directory.
 4. Run the installer from a real TTY and pass the chosen target path:
 
 ```bash

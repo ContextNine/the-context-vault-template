@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REPO_URL="https://github.com/MDerman/the-context-vault-template.git"
+REPO_URL="https://github.com/ContextNine/the-context-vault-template.git"
 RELEASE_TAG="${CTX9_VAULT_RELEASE_TAG:-}"
-SKILL_SYSTEM_REPO_URL="https://github.com/MDerman/the-skill-problem-system.git"
+SKILL_SYSTEM_REPO_URL="https://github.com/ContextNine/the-skill-problem-system.git"
 DEFAULT_TARGET_RELATIVE="Library/Mobile Documents/iCloud~md~obsidian/Documents/Obsidian/Vault"
 RELEASE_METADATA_RELATIVE="_system/bootstrap/release.json"
 INSTALL_STATE_RELATIVE="_system/local/state/install.json"

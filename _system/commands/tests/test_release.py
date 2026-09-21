@@ -41,12 +41,12 @@ class ReleaseTests(unittest.TestCase):
 
     def test_repo_slug_normalizes_https_and_ssh_urls(self) -> None:
         self.assertEqual(
-            release.repo_slug("https://github.com/MDerman/the-context-vault-template.git"),
-            "MDerman/the-context-vault-template",
+            release.repo_slug("https://github.com/ContextNine/the-context-vault-template.git"),
+            "ContextNine/the-context-vault-template",
         )
         self.assertEqual(
-            release.repo_slug("git@github.com:MDerman/the-context-vault-template.git"),
-            "MDerman/the-context-vault-template",
+            release.repo_slug("git@github.com:ContextNine/the-context-vault-template.git"),
+            "ContextNine/the-context-vault-template",
         )
 
     def test_choose_version_rejects_duplicate_tag(self) -> None:

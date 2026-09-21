@@ -25,8 +25,8 @@ from vault_layout import (
 )
 
 
-DEFAULT_REPO_URL = "https://github.com/MDerman/the-context-vault-template.git"
-SKILLS_REPO_URL = "https://github.com/MDerman/the-skill-problem-system.git"
+DEFAULT_REPO_URL = "https://github.com/ContextNine/the-context-vault-template.git"
+SKILLS_REPO_URL = "https://github.com/ContextNine/the-skill-problem-system.git"
 SKILLS_RELEASE_PATH = Path("_system/agents/internal/release/release.json")
 SKILLS_EXPORT_CONFIG_PATH = Path("_system/agents/internal/release/agent-package-export.json")
 SKILLS_EXPORT = Path("_system/agents/internal/src/fleet.py")

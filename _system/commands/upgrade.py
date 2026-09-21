@@ -26,7 +26,7 @@ from vault_layout import (
 )
 
 
-DEFAULT_REPO_URL = "https://github.com/MDerman/the-context-vault-template.git"
+DEFAULT_REPO_URL = "https://github.com/ContextNine/the-context-vault-template.git"
 INSTALL_PATH = INSTALL_STATE_PATH
 POLICY_PATH = BOOTSTRAP_POLICY_PATH
 REPORT_ROOT = UPGRADE_REPORTS_DIR

@@ -4,7 +4,7 @@
   "dependency_lock_sha256": "f0963836900fc760c88226ccbf872a7c85f8ff71deaea2d3e1a555745def124b",
   "notes": "Public bootstrap release v0.3.1.",
   "released_at": "2026-09-18T14:18:57Z",
-  "repo_url": "https://github.com/MDerman/the-context-vault-template.git",
+  "repo_url": "https://github.com/ContextNine/the-context-vault-template.git",
   "schema_version": 2,
   "tag": "v0.3.1",
   "version": "0.3.1"
