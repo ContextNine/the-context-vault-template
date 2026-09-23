@@ -72,6 +72,12 @@ vault release publish --bump patch
 
 Release metadata lives in `_system/bootstrap/release.json`. It stores the SemVer, tag, release timestamp, dependency lock path, and dependency lock SHA-256. Any public release must update this file through `vault release publish`; do not commit a public export with stale release metadata.
 
+The pushed tag starts the public repository's release workflow. That workflow
+runs the public tests and publishes a deterministic Vault archive, its SHA-256
+checksum, and a sidecar release record containing the tag's full source commit.
+GitHub attests all three files. The sidecar avoids placing a commit hash inside
+the commit it identifies.
+
 Dependency lock metadata lives in `_system/local/dependencies.lock.json`. It records verified public Vault package state and Obsidian plugin release inputs. Agent skills and external agent sources are independently owned.
 
 ## Plugin Code
